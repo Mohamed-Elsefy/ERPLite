@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="ERPLite.Data/ERPLite.Data.csproj" />
+  <Project Path="ERPLite.Repositories/ERPLite.Repositories.csproj" />
+  <Project Path="ERPLite.Services/ERPLite.Services.csproj" />
+  <Project Path="ERPLite.Shared/ERPLite.Shared.csproj" Id="f3ab043a-0e3e-4823-8aa3-9cd46b2c7592" />
+  <Project Path="ERPLite.Web/ERPLite.Web.csproj" />
+</Solution>

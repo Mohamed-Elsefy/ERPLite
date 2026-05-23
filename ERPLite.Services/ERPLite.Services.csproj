@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ERPLite.Data\ERPLite.Data.csproj" />
+    <ProjectReference Include="..\ERPLite.Repositories\ERPLite.Repositories.csproj" />
+    <ProjectReference Include="..\ERPLite.Shared\ERPLite.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DTOs\Auth\" />
+    <Folder Include="DTOs\HR\" />
+    <Folder Include="DTOs\Inventory\" />
+    <Folder Include="DTOs\AI\" />
+    <Folder Include="DTOs\Reports\" />
+    <Folder Include="DTOs\Sales\" />
+    <Folder Include="Interfaces\Auth\" />
+    <Folder Include="Interfaces\HR\" />
+    <Folder Include="Interfaces\Inventory\" />
+    <Folder Include="Interfaces\AI\" />
+    <Folder Include="Interfaces\Notifications\" />
+    <Folder Include="Interfaces\Reports\" />
+    <Folder Include="Interfaces\Sales\" />
+    <Folder Include="Mapping\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="Constants\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="DependencyInjection\" />
+    <Folder Include="Validators\" />
+    <Folder Include="Services\Auth\" />
+    <Folder Include="Services\HR\" />
+    <Folder Include="Services\Inventory\" />
+    <Folder Include="Services\AI\" />
+    <Folder Include="Services\Notifications\" />
+    <Folder Include="Services\Reports\" />
+    <Folder Include="Services\Sales\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,36 @@
+## 😎 Visual Studio Tooling
+.vs/
+[Db]b/
+*.user
+*.userosscache
+*.sln.docstates
+
+## 🏗️ Build Outputs
+bin/
+obj/
+[Log]s/
+Unoptimized/
+
+## 🔐 User Secrets & Local Settings
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.targets
+appsettings.Development.json
+
+## 🌐 Front-end & Node (If used in web apps)
+node_modules/
+.pnpm-store/
+jspm_packages/
+bower_components/
+
+## 🍏 OS generated files
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+
+## 🧪 Test Results and Coverage
+TestResults/
+*.clog
