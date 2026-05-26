@@ -1,0 +1,214 @@
+ERPLite.sln
+│
+├── ERPLite.Web                         --> Presentation Layer (MVC Web App)
+│
+├── ERPLite.Services                   --> Business Logic Layer
+│
+├── ERPLite.Repositories               --> Data Access Layer
+│
+├── ERPLite.Data                       --> Database/Core EF Layer
+│
+└── ERPLite.Shared                     --> Shared/Common Utilities (Optional but Recommended)
+
+
+ERPLite.Web
+│
+├── Controllers
+│   ├── Auth
+│   ├── HR
+│   ├── Inventory
+│   ├── Sales
+│   ├── Reports
+│   ├── AI
+│   └── Notifications
+│
+├── Views
+│   ├── Shared
+│   ├── Auth
+│   ├── HR
+│   ├── Inventory
+│   ├── Sales
+│   ├── Reports
+│   ├── AI
+│   └── Notifications
+│
+├── ViewModels
+│   ├── Auth
+│   ├── HR
+│   ├── Inventory
+│   ├── Sales
+│   ├── Reports
+│   └── AI
+│
+├── Areas
+│   ├── Admin
+│   ├── Manager
+│   └── Employee
+│
+├── Middlewares
+│
+├── Filters
+│
+├── Extensions
+│
+├── Helpers
+│
+├── wwwroot
+│   ├── css
+│   ├── js
+│   ├── images
+│   └── lib
+│
+├── appsettings.json
+├── Program.cs
+└── Properties
+
+
+
+
+ERPLite.Services
+│
+├── Interfaces
+│   ├── Auth
+│   ├── HR
+│   ├── Inventory
+│   ├── Sales
+│   ├── Reports
+│   ├── AI
+│   └── Notifications
+│
+├── Services
+│   ├── Auth
+│   ├── HR
+│   ├── Inventory
+│   ├── Sales
+│   ├── Reports
+│   ├── AI
+│   └── Notifications
+│
+├── DTOs
+│   ├── Auth
+│   ├── HR
+│   ├── Inventory
+│   ├── Sales
+│   ├── Reports
+│   └── AI
+│
+├── Validators
+│
+├── Mapping
+│
+├── Helpers
+│
+├── Constants
+│
+├── Exceptions
+│
+└── DependencyInjection
+
+
+
+ERPLite.Repositories
+│
+├── Interfaces
+│   ├── Common
+│   ├── Auth
+│   ├── HR
+│   ├── Inventory
+│   ├── Sales
+│   ├── Reports
+│   ├── AI
+│   └── Notifications
+│
+├── Repositories
+│   ├── Common
+│   ├── Auth
+│   ├── HR
+│   ├── Inventory
+│   ├── Sales
+│   ├── Reports
+│   ├── AI
+│   └── Notifications
+│
+├── UnitOfWork
+│
+├── Specifications
+│
+├── QueryBuilders
+│
+├── Filters
+│
+├── Extensions
+│
+└── DependencyInjection
+
+
+ERPLite.Data
+│
+├── Context
+│   └── ApplicationDbContext.cs
+│
+├── Entities
+│   ├── Identity
+│   │   ├── ApplicationUser
+│   │   └── ApplicationRole
+│   │
+│   ├── HR
+│   │   ├── Department
+│   │   ├── Employee
+│   │   └── Attendance
+│   │
+│   ├── Inventory
+│   │   ├── Category
+│   │   ├── Supplier
+│   │   └── Product
+│   │
+│   ├── Sales
+│   │   ├── Customer
+│   │   ├── Order
+│   │   ├── OrderItem
+│   │   └── Payment
+│   │
+│   ├── AI
+│   │   ├── AIReport
+│   │   └── AILog
+│   │
+│   └── System
+│       ├── Notification
+│       └── ActivityLog
+│
+├── Configurations
+│   ├── Identity
+│   ├── HR
+│   ├── Inventory
+│   ├── Sales
+│   ├── AI
+│   └── System
+│
+├── Migrations
+│
+├── Seeders
+│
+├── Enums
+│
+├── Constants
+│
+└── Extensions
+
+
+
+ERPLite.Shared
+│
+├── Responses
+│
+├── Pagination
+│
+├── Constants
+│
+├── Enums
+│
+├── Helpers
+│
+├── Exceptions
+│
+└── Results

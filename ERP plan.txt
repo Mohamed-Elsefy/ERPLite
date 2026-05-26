@@ -1,0 +1,395 @@
+🧠 ERPLite — Project Execution Roadmap
+
+الخطة التالية مبنية على:
+
+Lightweight Clean Architecture
+ASP.NET Core MVC
+EF Core
+Identity
+Repository Pattern
+Service Layer
+AI Insights Engine
+Background Services
+
+الهدف من الخطة:
+
+بناء النظام بشكل تدريجي ومنظم
+تقليل الأخطاء المعمارية
+ضمان ثبات الـ Foundation قبل التوسع
+تسهيل الاختبار والتطوير لاحقًا
+📌 المرحلة 0 — Project Foundation
+🎯 الهدف
+
+إنشاء البنية الأساسية للمشروع قبل كتابة أي Logic.
+
+✅ المهام
+1. إنشاء الـ Solution
+ERPLite.sln
+2. إنشاء المشاريع (Projects)
+ERPLite.Web
+ERPLite.Services
+ERPLite.Repositories
+ERPLite.Data
+ERPLite.Shared
+3. ربط الـ Dependencies
+Web → Services
+Services → Repositories
+Repositories → Data
+
+وكل الطبقات يمكنها استخدام:
+
+Shared
+4. تثبيت الـ Packages الأساسية
+Web
+Microsoft.AspNetCore.Identity.EntityFrameworkCore
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.Tools
+AutoMapper
+FluentValidation
+Data
+Microsoft.EntityFrameworkCore
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.AspNetCore.Identity.EntityFrameworkCore
+Services
+AutoMapper
+FluentValidation
+5. إنشاء Folder Structure بالكامل
+
+طبقًا للهيكل الذي تم تصميمه سابقًا.
+
+📌 المرحلة 1 — Database & Core Infrastructure
+🎯 الهدف
+
+بناء قاعدة البيانات والكيانات الأساسية.
+
+✅ ترتيب التنفيذ الصحيح
+1. Identity System
+إنشاء:
+ApplicationUser
+ApplicationRole
+إعداد:
+ApplicationDbContext
+إضافة:
+ASP.NET Core Identity
+2. HR Module
+Entities
+Department
+Employee
+Attendance
+العلاقات
+Department → Employees
+Employee → Attendance
+User → Employee
+3. Inventory Module
+Entities
+Category
+Supplier
+Product
+إضافة:
+Soft Delete
+4. Sales Module
+Entities
+Customer
+Order
+OrderItem
+Payment
+أهم نقطة
+
+حساب:
+
+TotalPrice
+SubTotal
+
+Server-Side فقط.
+
+5. AI Module
+Entities
+AIReport
+AILog
+6. Utility Modules
+Entities
+Notification
+ActivityLog
+✅ بعد الانتهاء
+إنشاء:
+Fluent API Configurations
+ثم:
+Initial Migration
+Update Database
+📌 المرحلة 2 — Repository Layer
+🎯 الهدف
+
+فصل الوصول للبيانات عن الـ Business Logic.
+
+✅ التنفيذ
+1. Generic Repository
+إنشاء:
+IGenericRepository
+GenericRepository
+2. Unit Of Work
+إنشاء:
+IUnitOfWork
+UnitOfWork
+3. Module Repositories
+مثال
+IProductRepository
+ProductRepository
+
+IOrderRepository
+OrderRepository
+4. Query Extensions
+مثل:
+Pagination
+Filtering
+Search
+Sorting
+Includes
+5. Soft Delete Engine
+
+تطبيق:
+
+IsActive == true
+
+بشكل مركزي.
+
+📌 المرحلة 3 — Authentication & Authorization
+🎯 الهدف
+
+تشغيل نظام المستخدمين والصلاحيات بالكامل.
+
+✅ التنفيذ
+1. Login / Logout
+2. Role Management
+Admin
+Manager
+Employee
+3. Authorization Policies
+
+طبقًا للتوثيق:
+
+[Authorize(Roles="Admin")]
+4. Cookie Authentication
+5. Seed Default Roles
+6. Create First Admin
+📌 المرحلة 4 — Services Layer
+🎯 الهدف
+
+تنفيذ الـ Business Logic الحقيقي.
+
+✅ الأولويات
+1. Auth Services
+AuthenticationService
+UserService
+RoleService
+2. HR Services
+EmployeeService
+AttendanceService
+DepartmentService
+3. Inventory Services
+ProductService
+SupplierService
+CategoryService
+4. Sales Services
+
+الأهم في المشروع.
+
+تنفيذ:
+OrderService
+PaymentService
+CustomerService
+يحتوي على:
+حساب الفواتير
+تقليل المخزون
+Validation
+Transaction Handling
+5. Notification Service
+6. Activity Logging Service
+📌 المرحلة 5 — MVC Presentation Layer
+🎯 الهدف
+
+بناء واجهة النظام.
+
+✅ التنفيذ
+1. Layout System
+Admin Layout
+Manager Layout
+Employee Layout
+2. Dashboard
+Admin Dashboard
+KPIs
+Charts
+Notifications
+Manager Dashboard
+Department Insights
+Employee Dashboard
+Attendance
+Tasks
+3. CRUD Screens
+Modules:
+HR
+Inventory
+Sales
+Customers
+Orders
+Payments
+4. Validation
+Client + Server Validation
+5. Error Handling UI
+📌 المرحلة 6 — Reports System
+🎯 الهدف
+
+إنشاء التقارير والتصدير.
+
+✅ التنفيذ
+Reports
+Inventory Reports
+Sales Reports
+HR Reports
+Export
+PDF
+Excel
+KPIs
+Top Products
+Revenue
+Low Stock
+Attendance Rates
+📌 المرحلة 7 — AI Insights Engine
+
+طبقًا للتوثيق الخاص بالنظام.
+
+🎯 الهدف
+
+إنشاء محرك التحليل الذكي.
+
+✅ التنفيذ
+1. Aggregation Layer
+باستخدام:
+LINQ
+لا يتم إرسال Raw Data.
+2. Prompt Builder
+
+بناء:
+
+Structured JSON Summary
+3. OpenAI Integration
+4. AI Caching System
+
+تطبيق:
+
+InputSummary Matching
+
+لتقليل:
+
+Token Cost
+5. AI Reports Dashboard
+6. AI Notifications
+📌 المرحلة 8 — Background Services
+
+طبقًا للتوثيق.
+
+🎯 الهدف
+
+تشغيل المهام الدورية التلقائية.
+
+✅ التنفيذ
+1. Inventory Monitoring Worker
+كل يوم:
+12:00 AM
+2. Low Stock Detection
+3. Auto Notifications
+
+لـ:
+
+Admin
+Manager
+4. Scoped DbContext Handling
+
+باستخدام:
+
+IServiceScopeFactory
+📌 المرحلة 9 — Security & Optimization
+🎯 الهدف
+
+تأمين وتحسين النظام.
+
+✅ التنفيذ
+Security
+Authorization
+Input Validation
+Anti-Forgery
+Secure Cookies
+Exception Handling
+Optimization
+Caching
+AsNoTracking
+Pagination
+Lazy Loading Avoidance
+Indexes
+Logging
+Activity Logs
+Error Logs
+AI Logs
+📌 المرحلة 10 — Testing & Deployment
+✅ التنفيذ
+1. Manual Testing
+2. Role Testing
+Admin
+Manager
+Employee
+3. Financial Testing
+
+خصوصًا:
+
+Orders
+Payments
+Stock Updates
+4. AI Testing
+5. Database Backup Strategy
+6. Publish
+IIS
+Azure
+Docker
+🧭 ترتيب التنفيذ الفعلي المقترح
+1. Foundation
+2. Database
+3. Repositories
+4. Authentication
+5. Services
+6. MVC UI
+7. Reports
+8. AI Engine
+9. Background Workers
+10. Security & Optimization
+11. Testing & Deployment
+⚠️ أهم قواعد التنفيذ
+لا تبدأ بـ UI أولًا
+
+ابدأ دائمًا بالـ Database + Services.
+
+لا تكتب Business Logic داخل Controllers
+لا تستخدم DbContext داخل MVC مباشرة
+كل العمليات المالية داخل Services فقط
+لا ترسل Raw Data للـ AI
+استخدم Transactions في:
+Orders
+Payments
+Stock Updates
+🧠 النتيجة النهائية بعد اكتمال المشروع
+
+سيكون لديك:
+
+ERP System
++
+AI Analytics Engine
++
+Background Automation
++
+Role-Based Security
++
+Financial Management
++
+Inventory Tracking
++
+HR System
++
+Reporting System

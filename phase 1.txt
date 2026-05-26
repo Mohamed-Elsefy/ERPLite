@@ -1,0 +1,533 @@
+ERPLite — Phase 1 Summary
+Database & Core Infrastructure
+
+هذه المرحلة تمثل الأساس الحقيقي للمشروع بالكامل، وتم خلالها بناء:
+
+البنية الأساسية لقاعدة البيانات
+جميع الـ Entities
+العلاقات بين الجداول
+إعدادات EF Core
+Fluent API Configurations
+Identity Integration
+ApplicationDbContext
+Initial Database Architecture
+
+تم تنفيذ هذه المرحلة وفق معمارية:
+
+Lightweight Clean Architecture
+ASP.NET Core Identity
+Entity Framework Core
+Fluent API
+Repository-Friendly Design
+1) Identity System
+الهدف
+
+بناء نظام المستخدمين والصلاحيات الأساسي للنظام.
+
+الكيانات
+ApplicationUser
+
+يرث من:
+
+IdentityUser
+الخصائص
+Property	Type
+FullName	string
+CreatedAt	DateTime
+Employee	Employee?
+العلاقة
+ApplicationUser (1)
+↔ Employee (0..1)
+
+العلاقة اختيارية.
+
+ApplicationRole
+
+يرث من:
+
+IdentityRole
+
+تم الاعتماد على:
+
+string Identity IDs
+ASP.NET Core Identity الافتراضي
+2) ApplicationDbContext
+
+تم إنشاء:
+
+Context/ApplicationDbContext.cs
+
+ويرث من:
+
+IdentityDbContext<ApplicationUser, ApplicationRole, string>
+DbSets الموجودة
+HR
+DbSet<Department>
+DbSet<Employee>
+DbSet<Attendance>
+Inventory
+DbSet<Category>
+DbSet<Supplier>
+DbSet<Product>
+Sales
+DbSet<Customer>
+DbSet<Order>
+DbSet<OrderItem>
+DbSet<Payment>
+AI
+DbSet<AIReport>
+DbSet<AILog>
+System
+DbSet<Notification>
+DbSet<ActivityLog>
+ربط Fluent API تلقائيًا
+
+داخل:
+
+OnModelCreating()
+
+تم استخدام:
+
+modelBuilder.ApplyConfigurationsFromAssembly(
+    typeof(ApplicationDbContext).Assembly);
+
+لاكتشاف جميع الـ Configurations تلقائيًا.
+
+3) HR Module
+Department Entity
+الخصائص
+Property	Type
+Id	int
+Name	string
+Description	string?
+العلاقات
+Department (1)
+→ Employees (M)
+Employee Entity
+الخصائص
+Property	Type
+Id	int
+FullName	string
+Email	string
+Salary	decimal
+HireDate	DateTime
+DepartmentId	int
+UserId	string?
+العلاقات
+Department (1)
+→ Employees (M)
+
+ApplicationUser (1)
+↔ Employee (0..1)
+
+Employee (1)
+→ Attendances (M)
+Attendance Entity
+الخصائص
+Property	Type
+Id	int
+EmployeeId	int
+Date	DateTime
+CheckInTime	DateTime
+CheckOutTime	DateTime?
+Status	string
+العلاقات
+Employee (1)
+→ Attendance (M)
+Attendance Unique Constraint
+
+تم تطبيق:
+
+HasIndex(a => new { a.EmployeeId, a.Date })
+    .IsUnique();
+
+لمنع تسجيل حضور الموظف أكثر من مرة بنفس اليوم.
+
+4) Inventory Module
+Category Entity
+الخصائص
+Property	Type
+Id	int
+Name	string
+Description	string?
+IsActive	bool
+Supplier Entity
+الخصائص
+Property	Type
+Id	int
+Name	string
+Phone	string
+Address	string?
+IsActive	bool
+Product Entity
+الخصائص
+Property	Type
+Id	int
+Name	string
+Price	decimal
+QuantityInStock	int
+MinStockLevel	int
+CategoryId	int
+SupplierId	int
+IsActive	bool
+العلاقات
+Category (1)
+→ Products (M)
+
+Supplier (1)
+→ Products (M)
+
+Product (1)
+→ OrderItems (M)
+Soft Delete Preparation
+
+تم تجهيز:
+
+IsActive
+Default Value = true
+
+وسيتم لاحقًا بناء:
+
+Global Query Filters
+Soft Delete Engine
+
+داخل Repository Layer.
+
+Product Index
+
+تم إنشاء Index على:
+
+Product.Name
+
+لتحسين:
+
+Search
+Filtering
+Query Performance
+5) Sales Module
+
+هذه أهم طبقة مالية بالمشروع.
+
+Customer Entity
+الخصائص
+Property	Type
+Id	int
+FullName	string
+Phone	string
+CreatedAt	DateTime
+IsActive	bool
+العلاقات
+Customer (1)
+→ Orders (M)
+Order Entity
+الخصائص
+Property	Type
+Id	int
+OrderDate	DateTime
+CustomerId	int
+CreatedByUserId	string
+TotalPrice	decimal
+Status	string
+العلاقات
+Customer (1)
+→ Orders (M)
+
+ApplicationUser (1)
+→ Orders (M)
+
+Order (1)
+→ OrderItems (M)
+
+Order (1)
+→ Payments (M)
+ملاحظات مالية مهمة
+TotalPrice
+
+لا يتم حسابه داخل Entity.
+
+سيتم حسابه لاحقًا داخل:
+
+Services Layer
+
+لضمان:
+
+Financial Integrity
+Server-Side Validation
+OrderItem Entity
+الخصائص
+Property	Type
+Id	int
+OrderId	int
+ProductId	int
+Quantity	int
+UnitPrice	decimal
+SubTotal	decimal
+العلاقات
+Order (1)
+→ OrderItems (M)
+
+Product (1)
+→ OrderItems (M)
+Snapshot Pricing
+
+تم تصميم:
+
+UnitPrice
+
+ليحتفظ بسعر المنتج وقت الشراء حتى لو تغير لاحقًا.
+
+Payment Entity
+الخصائص
+Property	Type
+Id	int
+OrderId	int
+Amount	decimal
+PaymentMethod	string
+PaymentDate	DateTime
+Status	string
+العلاقات
+Order (1)
+→ Payments (M)
+دعم تعدد الدفعات
+
+تم تصميم العلاقة:
+
+Order (1)
+→ Payments (M)
+
+لدعم:
+
+Partial Payments
+Installments
+Multiple Transactions
+6) AI Module
+AIReport Entity
+الخصائص
+Property	Type
+Id	int
+Type	string
+CreatedAt	DateTime
+GeneratedByUserId	string
+InputSummary	string
+AIResponse	string
+RelatedEntityId	int?
+RelatedEntityType	string?
+العلاقات
+ApplicationUser (1)
+→ AIReports (M)
+الهدف
+
+تخزين:
+
+AI Analysis
+JSON Summary
+AI Response
+Related Entity Reference
+AILog Entity
+الخصائص
+Property	Type
+Id	int
+Prompt	string
+Response	string
+TokensUsed	int
+CreatedAt	DateTime
+الهدف
+
+توثيق:
+
+OpenAI Calls
+Token Usage
+Raw Requests & Responses
+7) System Utility Module
+Notification Entity
+الخصائص
+Property	Type
+Id	int
+Title	string
+Message	string
+Type	string
+Priority	string
+IsRead	bool
+CreatedAt	DateTime
+UserId	string
+العلاقات
+ApplicationUser (1)
+→ Notifications (M)
+الهدف
+
+دعم:
+
+System Notifications
+AI Alerts
+Inventory Alerts
+Priority Notifications
+ActivityLog Entity
+الخصائص
+Property	Type
+Id	int
+Action	string
+EntityName	string
+EntityId	int
+UserId	string
+Timestamp	DateTime
+العلاقات
+ApplicationUser (1)
+→ ActivityLogs (M)
+الهدف
+
+تطبيق:
+
+Audit Trail
+Activity Tracking
+Security Logging
+8) Fluent API Configurations
+
+تم إنشاء Configurations منفصلة لكل Entity داخل:
+
+Configurations/
+ما تم تطبيقه داخل Configurations
+Required Fields
+
+باستخدام:
+
+.IsRequired()
+Max Length Constraints
+
+باستخدام:
+
+.HasMaxLength()
+Decimal Precision
+
+تم استخدام:
+
+.HasPrecision(18,2)
+
+في:
+
+Salary
+Price
+TotalPrice
+UnitPrice
+SubTotal
+Amount
+العلاقات
+
+تم تطبيق:
+
+One-To-Many
+One-To-One
+
+باستخدام:
+
+HasOne()
+WithMany()
+WithOne()
+DeleteBehavior
+
+تم الاعتماد بشكل أساسي على:
+
+DeleteBehavior.Restrict
+
+لحماية:
+
+البيانات المالية
+سجلات الحضور
+العلاقات الحساسة
+Employee ↔ User Relation
+
+تم استخدام:
+
+DeleteBehavior.SetNull
+
+حتى لا يؤدي حذف الحساب إلى حذف الموظف.
+
+Indexes
+
+تم إنشاء:
+
+Product.Name Index
+Order.OrderDate Index
+Attendance Composite Unique Index
+9) Database Architecture Decisions
+عدم استخدام DataAnnotations
+
+تم الاعتماد بالكامل على:
+
+Fluent API
+
+لأنها:
+
+أكثر احترافية
+أفضل للمشاريع الكبيرة
+تفصل الـ Entities عن قواعد قاعدة البيانات
+عدم وضع Business Logic داخل Entities
+
+لم يتم حساب:
+
+TotalPrice
+SubTotal
+
+داخل الـ Entities.
+
+وسيتم تنفيذ ذلك لاحقًا داخل:
+
+Services Layer
+استخدام decimal ماليًا
+
+تم منع استخدام:
+
+float
+double
+
+في جميع القيم المالية.
+
+استخدام Restrict بدل Cascade Delete
+
+لمنع:
+
+فقدان البيانات المالية
+حذف سجلات مرتبطة
+حذف بيانات حساسة
+10) Program.cs Setup
+
+تم تجهيز:
+
+DbContext Registration
+builder.Services.AddDbContext<ApplicationDbContext>(...)
+Identity Registration
+builder.Services
+    .AddIdentity<ApplicationUser, ApplicationRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+11) Migration & Database Creation
+
+تم تنفيذ:
+
+Add-Migration InitialCreate
+
+ثم:
+
+Update-Database
+النتيجة النهائية للمرحلة
+
+تم بناء:
+
+قاعدة البيانات بالكامل
+جميع الجداول
+العلاقات
+القيود
+البنية الأساسية للـ ERP
+التكامل مع Identity
+البنية المعمارية القابلة للتوسع
+
+وأصبح المشروع جاهزًا للانتقال إلى:
+
+Phase 2 — Repository Layer
+
+والتي ستتضمن:
+
+Generic Repository
+Unit Of Work
+Query Extensions
+Soft Delete Engine
+Data Access Architecture

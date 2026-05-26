@@ -1,8 +1,295 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    /* === STATS CARDS === */
+    .stat-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s ease;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+    .stat-icon {
+        width: 56px; height: 56px;
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+    }
+    .stat-icon.purple { background: rgba(99,102,241,0.12); color: #6366f1; }
+    .stat-icon.green  { background: rgba(16,185,129,0.12); color: #10b981; }
+    .stat-icon.orange { background: rgba(245,158,11,0.12); color: #f59e0b; }
+    .stat-icon.red    { background: rgba(239,68,68,0.12);  color: #ef4444; }
+    .stat-label { font-size: 0.82rem; color: #64748b; font-weight: 400; }
+    .stat-value { font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1.2; }
+    .stat-change { font-size: 0.78rem; font-weight: 500; }
+    .stat-change.up   { color: #10b981; }
+    .stat-change.down { color: #ef4444; }
+
+    /* === MODULE CARDS === */
+    .module-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+        color: inherit;
+    }
+    .module-card:hover { transform: translateY(-4px); box-shadow: 0 15px 30px -8px rgba(0,0,0,0.12); color: inherit; }
+    .module-icon {
+        width: 50px; height: 50px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+    .module-title { font-size: 1rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem; }
+    .module-desc  { font-size: 0.82rem; color: #94a3b8; line-height: 1.5; }
+    .module-arrow { margin-top: 1rem; color: #cbd5e1; font-size: 0.85rem; transition: all 0.2s; }
+    .module-card:hover .module-arrow { color: #6366f1; transform: translateX(4px); }
+
+    /* === ACTIVITY === */
+    .activity-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    }
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid #f8fafc;
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        margin-top: 6px;
+        flex-shrink: 0;
+    }
+    .activity-text { font-size: 0.875rem; color: #334155; line-height: 1.5; }
+    .activity-time { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+
+    /* === AI CARD === */
+    .ai-banner {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        border-radius: 16px;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(99,102,241,0.2);
+    }
+    .ai-banner::before {
+        content: '';
+        position: absolute;
+        top: -50px; right: -50px;
+        width: 200px; height: 200px;
+        border-radius: 50%;
+        background: rgba(99,102,241,0.15);
+        filter: blur(40px);
+    }
+    .ai-banner-title { color: white; font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .ai-banner-desc  { color: #94a3b8; font-size: 0.85rem; margin-bottom: 1.25rem; line-height: 1.6; }
+    .btn-ai {
+        background: linear-gradient(135deg, #6366f1, #f472b6);
+        border: none;
+        color: white;
+        padding: 0.6rem 1.4rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-ai:hover { opacity: 0.9; transform: translateY(-1px); }
+    .section-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 1.25rem;
+    }
+</style>
+
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon purple"><i class="fa-solid fa-cart-shopping"></i></div>
+            <div>
+                <div class="stat-label">Total Orders</div>
+                <div class="stat-value">1,284</div>
+                <div class="stat-change up"><i class="fa-solid fa-arrow-up me-1"></i>12.5% this month</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fa-solid fa-dollar-sign"></i></div>
+            <div>
+                <div class="stat-label">Total Revenue</div>
+                <div class="stat-value">$84.2K</div>
+                <div class="stat-change up"><i class="fa-solid fa-arrow-up me-1"></i>8.1% vs last month</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon orange"><i class="fa-solid fa-users"></i></div>
+            <div>
+                <div class="stat-label">Total Employees</div>
+                <div class="stat-value">142</div>
+                <div class="stat-change up"><i class="fa-solid fa-arrow-up me-1"></i>3 new this week</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div>
+                <div class="stat-label">Low Stock Items</div>
+                <div class="stat-value">7</div>
+                <div class="stat-change down"><i class="fa-solid fa-arrow-down me-1"></i>Needs attention</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modules + Activity Row -->
+<div class="row g-3 mb-4">
+    <!-- Module Quick Access -->
+    <div class="col-lg-8">
+        <div class="section-title">System Modules</div>
+        <div class="row g-3">
+            <div class="col-sm-6 col-md-4">
+                <a href="#" class="module-card">
+                    <div class="module-icon" style="background: rgba(99,102,241,0.1);">
+                        <i class="fa-solid fa-users" style="color:#6366f1;"></i>
+                    </div>
+                    <div class="module-title">HR Management</div>
+                    <div class="module-desc">Employees, departments & attendance tracking</div>
+                    <div class="module-arrow"><i class="fa-solid fa-arrow-right"></i> Open Module</div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <a href="#" class="module-card">
+                    <div class="module-icon" style="background: rgba(16,185,129,0.1);">
+                        <i class="fa-solid fa-boxes-stacked" style="color:#10b981;"></i>
+                    </div>
+                    <div class="module-title">Inventory</div>
+                    <div class="module-desc">Products, suppliers & stock monitoring</div>
+                    <div class="module-arrow"><i class="fa-solid fa-arrow-right"></i> Open Module</div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <a href="#" class="module-card">
+                    <div class="module-icon" style="background: rgba(245,158,11,0.1);">
+                        <i class="fa-solid fa-cart-shopping" style="color:#f59e0b;"></i>
+                    </div>
+                    <div class="module-title">Sales</div>
+                    <div class="module-desc">Orders, customers & payment tracking</div>
+                    <div class="module-arrow"><i class="fa-solid fa-arrow-right"></i> Open Module</div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <a href="#" class="module-card">
+                    <div class="module-icon" style="background: rgba(239,68,68,0.1);">
+                        <i class="fa-solid fa-chart-line" style="color:#ef4444;"></i>
+                    </div>
+                    <div class="module-title">Reports</div>
+                    <div class="module-desc">Generate Excel / PDF reports</div>
+                    <div class="module-arrow"><i class="fa-solid fa-arrow-right"></i> Open Module</div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <a href="#" class="module-card">
+                    <div class="module-icon" style="background: rgba(139,92,246,0.1);">
+                        <i class="fa-solid fa-brain" style="color:#8b5cf6;"></i>
+                    </div>
+                    <div class="module-title">AI Insights</div>
+                    <div class="module-desc">AI-powered analysis & recommendations</div>
+                    <div class="module-arrow"><i class="fa-solid fa-arrow-right"></i> Open Module</div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <a href="#" class="module-card">
+                    <div class="module-icon" style="background: rgba(20,184,166,0.1);">
+                        <i class="fa-solid fa-bell" style="color:#14b8a6;"></i>
+                    </div>
+                    <div class="module-title">Notifications</div>
+                    <div class="module-desc">System alerts and priority messages</div>
+                    <div class="module-arrow"><i class="fa-solid fa-arrow-right"></i> Open Module</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="col-lg-4">
+        <div class="section-title">Recent Activity</div>
+        <div class="activity-card">
+            <div class="activity-item">
+                <div class="activity-dot" style="background:#10b981;"></div>
+                <div>
+                    <div class="activity-text">New order #1284 created by Sales Team</div>
+                    <div class="activity-time"><i class="fa-regular fa-clock me-1"></i>2 minutes ago</div>
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-dot" style="background:#ef4444;"></div>
+                <div>
+                    <div class="activity-text">Low stock alert: Keyboard (4 remaining)</div>
+                    <div class="activity-time"><i class="fa-regular fa-clock me-1"></i>15 minutes ago</div>
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-dot" style="background:#6366f1;"></div>
+                <div>
+                    <div class="activity-text">Employee Ahmed Hassan checked in</div>
+                    <div class="activity-time"><i class="fa-regular fa-clock me-1"></i>1 hour ago</div>
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-dot" style="background:#f59e0b;"></div>
+                <div>
+                    <div class="activity-text">AI Report for May 2026 is ready</div>
+                    <div class="activity-time"><i class="fa-regular fa-clock me-1"></i>3 hours ago</div>
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-dot" style="background:#10b981;"></div>
+                <div>
+                    <div class="activity-text">Payment received for Order #1278</div>
+                    <div class="activity-time"><i class="fa-regular fa-clock me-1"></i>Yesterday</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Banner -->
+<div class="ai-banner">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <div class="ai-banner-title"><i class="fa-solid fa-brain me-2" style="color:#818cf8;"></i>AI Insights Engine is Ready</div>
+            <div class="ai-banner-desc">Generate intelligent business analysis reports powered by GPT-4o. Get executive summaries, risk detection, and next-month forecasts automatically.</div>
+            <button class="btn-ai"><i class="fa-solid fa-wand-magic-sparkles me-2"></i>Generate AI Report</button>
+        </div>
+        <div class="col-md-4 text-end d-none d-md-block">
+            <i class="fa-solid fa-robot" style="font-size:5rem; opacity:0.15; color:white;"></i>
+        </div>
+    </div>
 </div>

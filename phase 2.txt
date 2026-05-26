@@ -1,0 +1,636 @@
+ERPLite — Phase 2 Summary
+Repository Layer + Data Access Architecture
+
+هذه المرحلة تمثل بناء طبقة الوصول للبيانات (Data Access Layer) بالكامل داخل مشروع ERPLite باستخدام:
+
+Repository Pattern
+Generic Repository
+Unit Of Work
+Query Extensions
+Soft Delete Architecture
+Transaction Management
+Dependency Injection
+
+الهدف الأساسي من هذه المرحلة هو:
+
+فصل الوصول للبيانات عن الـ Business Logic
+منع استخدام DbContext مباشرة خارج الـ Repository Layer
+بناء بنية احترافية قابلة للتوسع
+تجهيز المشروع للـ Services Layer والـ Authentication والـ Financial Operations
+الهيكل النهائي بعد Phase 2
+ERPLite.Repositories
+│
+├── Interfaces
+│   ├── Common
+│   │   ├── IGenericRepository.cs
+│   │   └── IUnitOfWork.cs
+│   │
+│   ├── Inventory
+│   │   ├── IProductRepository.cs
+│   │   ├── ICategoryRepository.cs
+│   │   └── ISupplierRepository.cs
+│   │
+│   ├── Sales
+│   │   ├── ICustomerRepository.cs
+│   │   ├── IOrderRepository.cs
+│   │   └── IPaymentRepository.cs
+│   │
+│   └── HR
+│       └── IAttendanceRepository.cs
+│
+├── Repositories
+│   ├── Common
+│   │   └── GenericRepository.cs
+│   │
+│   ├── Inventory
+│   │   ├── ProductRepository.cs
+│   │   ├── CategoryRepository.cs
+│   │   └── SupplierRepository.cs
+│   │
+│   ├── Sales
+│   │   ├── CustomerRepository.cs
+│   │   ├── OrderRepository.cs
+│   │   └── PaymentRepository.cs
+│   │
+│   └── HR
+│       └── AttendanceRepository.cs
+│
+├── Extensions
+│   ├── PaginationExtensions.cs
+│   ├── PaginationResult.cs
+│   ├── SearchExtensions.cs
+│   └── SortingExtensions.cs
+│
+├── UnitOfWork
+│   └── UnitOfWork.cs
+│
+└── DependencyInjection.cs
+أولًا — Generic Repository Architecture
+IGenericRepository<T, TKey>
+
+تم إنشاء:
+
+IGenericRepository<T, TKey>
+
+بدل:
+
+IGenericRepository<T>
+
+لدعم:
+
+int Keys
+string Keys الخاصة بـ ASP.NET Identity
+السبب
+
+لأن:
+
+ApplicationUser : IdentityUser<string>
+
+يستخدم:
+
+string Id
+
+ولذلك تم اعتماد Generic Key Architecture.
+
+العمليات الموجودة داخل IGenericRepository
+Read Operations
+Task<T?> GetByIdAsync(TKey id);
+
+Task<IEnumerable<T>> GetAllAsync();
+
+Task<IEnumerable<T>> FindAsync(
+    Expression<Func<T, bool>> predicate);
+
+Task<T?> FirstOrDefaultAsync(
+    Expression<Func<T, bool>> predicate);
+
+Task<bool> AnyAsync(
+    Expression<Func<T, bool>> predicate);
+
+Task<int> CountAsync(
+    Expression<Func<T, bool>>? predicate = null);
+
+IQueryable<T> GetQueryable();
+Write Operations
+Task AddAsync(T entity);
+
+Task AddRangeAsync(IEnumerable<T> entities);
+
+void Update(T entity);
+
+void Delete(T entity);
+
+void SoftDelete(T entity);
+
+void Restore(T entity);
+GenericRepository<T, TKey>
+
+تم إنشاء:
+
+GenericRepository<T, TKey>
+
+باستخدام:
+
+ApplicationDbContext
+DbSet<T>
+أهم القرارات المعمارية
+عدم استخدام SaveChanges داخل Repository
+
+الـ Repository مسؤول فقط عن:
+
+Data Manipulation
+
+أما الحفظ النهائي فيتم داخل:
+
+UnitOfWork
+دعم IQueryable
+
+تم إنشاء:
+
+IQueryable<T> GetQueryable();
+
+لدعم:
+
+Includes
+Pagination
+Search
+Sorting
+Aggregation
+LINQ Composition
+استخدام virtual
+
+كل Methods داخل GenericRepository تم تعريفها كالتالي:
+
+public virtual
+
+حتى يمكن عمل:
+
+override
+
+داخل Specialized Repositories.
+
+ثانيًا — Specialized Repositories
+
+تم إنشاء Repositories متخصصة لكل Module.
+
+Product Repository
+Interface
+IProductRepository
+الوظائف الموجودة
+GetAllWithDetailsAsync()
+
+GetByIdWithDetailsAsync(int id)
+
+GetLowStockProductsAsync()
+
+SearchProductsAsync(string keyword)
+
+GetProductsByCategoryAsync(int categoryId)
+Includes المستخدمة
+.Include(p => p.Category)
+.Include(p => p.Supplier)
+الهدف
+
+تحميل بيانات المنتج مع:
+
+الفئة
+المورد
+
+داخل Query واحدة.
+
+Category Repository
+الوظائف
+GetActiveCategoriesAsync()
+
+GetCategoryWithProductsAsync(int id)
+
+CategoryExistsAsync(string name)
+Includes
+.Include(c => c.Products)
+الهدف
+
+دعم:
+
+عرض المنتجات داخل الفئة
+التحقق من التكرار
+تقارير الفئات
+Supplier Repository
+الوظائف
+GetActiveSuppliersAsync()
+
+GetSupplierWithProductsAsync(int id)
+
+SearchSuppliersAsync(string keyword)
+
+SupplierExistsAsync(string name)
+Search يدعم
+اسم المورد
+رقم الهاتف
+Includes
+.Include(s => s.Products)
+Customer Repository
+الوظائف
+GetActiveCustomersAsync()
+
+GetCustomerWithOrdersAsync(int id)
+
+SearchCustomersAsync(string keyword)
+
+CustomerExistsAsync(string phone)
+Includes
+.Include(c => c.Orders)
+الهدف
+
+دعم:
+
+Customer Details
+Customer History
+Orders Loading
+Order Repository
+
+هذا أهم Repository داخل النظام.
+
+الوظائف
+GetOrderWithDetailsAsync(int id)
+
+GetRecentOrdersAsync(int count)
+
+GetOrdersByCustomerAsync(int customerId)
+
+GetOrdersByDateRangeAsync(
+    DateTime startDate,
+    DateTime endDate)
+
+GetTotalRevenueAsync()
+
+GetRevenueByDateRangeAsync(
+    DateTime startDate,
+    DateTime endDate)
+Includes المستخدمة
+.Include(o => o.Customer)
+
+.Include(o => o.CreatedByUser)
+
+.Include(o => o.OrderItems)
+    .ThenInclude(oi => oi.Product)
+
+.Include(o => o.Payments)
+الهدف
+
+تحميل:
+
+العميل
+الموظف
+عناصر الطلب
+المنتجات
+المدفوعات
+
+داخل Query واحدة.
+
+Revenue Queries
+
+تم استخدام:
+
+SumAsync()
+
+لحساب:
+
+إجمالي الإيرادات
+الإيرادات حسب التاريخ
+النسخة الاحترافية المستخدمة
+.Select(o => (decimal?)o.TotalPrice)
+.SumAsync() ?? 0
+
+لحماية النظام من:
+
+Null Sum Exception
+Payment Repository
+الوظائف
+GetPaymentsByOrderAsync(int orderId)
+
+GetPaymentsByStatusAsync(string status)
+
+GetTotalPaidAmountAsync(int orderId)
+
+GetRecentPaymentsAsync(int count)
+الهدف
+
+دعم:
+
+الأقساط
+الدفعات
+Financial Tracking
+Remaining Balance Calculations
+Attendance Repository
+الوظائف
+GetEmployeeAttendanceAsync(int employeeId)
+
+GetAttendanceByDateAsync(
+    int employeeId,
+    DateTime date)
+
+HasAttendanceTodayAsync(int employeeId)
+
+GetTodayAttendanceAsync()
+
+GetAttendanceByDateRangeAsync(
+    DateTime startDate,
+    DateTime endDate)
+تحسين Queries الخاصة بالتاريخ
+
+بدل:
+
+a.Date.Date == today
+
+تم اعتماد:
+
+a.Date >= today &&
+a.Date < tomorrow
+
+لتحسين ترجمة SQL ومنع Client Evaluation.
+
+ثالثًا — ReadOnly Optimization Pattern
+
+تم تطبيق:
+
+.AsNoTracking()
+
+على جميع Queries القرائية داخل Specialized Repositories.
+
+الهدف
+
+تقليل:
+
+Memory Usage
+CPU Usage
+Change Tracking Overhead
+تم عدم استخدام AsNoTracking داخل
+GetByIdAsync()
+
+داخل GenericRepository.
+
+لأنها قد تستخدم لاحقًا في عمليات التعديل.
+
+رابعًا — Unit Of Work Architecture
+
+تم إنشاء:
+
+IUnitOfWork
+UnitOfWork
+مسؤوليات UnitOfWork
+إدارة SaveChanges
+إدارة Transactions
+تجميع Repositories
+ضمان Atomic Operations
+العمليات الموجودة
+Task<int> SaveChangesAsync();
+
+Task<IDbContextTransaction>
+    BeginTransactionAsync();
+
+Task CommitTransactionAsync();
+
+Task RollbackTransactionAsync();
+دعم Transactions
+
+تم دعم:
+
+BeginTransactionAsync()
+CommitTransactionAsync()
+RollbackTransactionAsync()
+
+لدعم العمليات المالية مثل:
+
+إنشاء الطلب
+إنشاء الدفع
+خصم المخزون
+
+داخل Transaction واحدة.
+
+Repositories المسجلة داخل UnitOfWork
+IProductRepository Products
+
+ICategoryRepository Categories
+
+ISupplierRepository Suppliers
+
+ICustomerRepository Customers
+
+IOrderRepository Orders
+
+IPaymentRepository Payments
+
+IAttendanceRepository Attendances
+خامسًا — Soft Delete Engine
+
+تم بناء نظام Soft Delete احترافي كامل.
+
+ISoftDeletable
+
+تم إنشاء:
+
+ISoftDeletable
+
+ويحتوي:
+
+bool IsActive
+تم تطبيقه على
+Category
+Supplier
+Product
+Customer
+لم يتم تطبيقه على
+Orders
+Payments
+Attendance
+Logs
+
+لأنها:
+
+Historical / Financial Data
+Generic Soft Delete
+
+تم إضافة:
+
+void SoftDelete(T entity);
+
+void Restore(T entity);
+
+داخل GenericRepository.
+
+التنفيذ
+softDeletable.IsActive = false;
+Restore
+softDeletable.IsActive = true;
+Global Query Filters
+
+تم بناء:
+
+ApplySoftDeleteQueryFilters()
+
+داخل:
+
+ERPLite.Data/Extensions/ModelBuilderExtensions.cs
+الهدف
+
+أي Entity تطبق:
+
+ISoftDeletable
+
+سيتم تطبيق:
+
+IsActive == true
+
+تلقائيًا على كل Queries.
+
+النتيجة
+
+لم يعد هناك حاجة لتكرار:
+
+.Where(x => x.IsActive)
+
+داخل كل Repository.
+
+دعم IgnoreQueryFilters
+
+لدعم:
+
+لوحة الإدارة
+استرجاع العناصر المحذوفة
+
+تم دعم:
+
+.IgnoreQueryFilters()
+سادسًا — Query Extensions
+
+تم إنشاء نظام Extensions مركزي.
+
+Pagination
+PaginationResult<T>
+
+يحتوي:
+
+Items
+PageNumber
+PageSize
+TotalCount
+TotalPages
+PaginationExtensions
+ToPagedResultAsync()
+الوظيفة
+
+تطبيق:
+
+Skip
+Take
+Count
+
+بشكل مركزي.
+
+SortingExtensions
+ApplySorting()
+
+يدعم:
+
+OrderBy()
+OrderByDescending()
+SearchExtensions
+ApplySearch()
+
+يدعم:
+
+Where()
+
+بطريقة قابلة لإعادة الاستخدام.
+
+سابعًا — Dependency Injection
+
+تم إنشاء:
+
+ERPLite.Repositories/DependencyInjection.cs
+التسجيل
+services.AddScoped<IUnitOfWork, UnitOfWork>();
+داخل Program.cs
+builder.Services.AddRepositories();
+ثامنًا — القرارات المعمارية المهمة
+ممنوع استخدام DbContext داخل Controllers
+
+يجب الوصول للبيانات فقط عبر:
+
+Repositories
+UnitOfWork
+Repository مسؤول فقط عن Data Access
+
+وليس:
+
+الحسابات
+Business Rules
+Validation
+Financial Logic
+الحسابات المالية ستكون داخل Services Layer
+
+مثل:
+
+Taxes
+Discounts
+Profit
+Commission
+Balance Logic
+Lazy Loading غير مستخدم
+
+تم الاعتماد على:
+
+Include()
+ThenInclude()
+
+لتجنب:
+
+N+1 Problem
+Query Optimization
+
+تم اعتماد:
+
+AsNoTracking()
+
+لتحسين الأداء.
+
+Transaction Safety
+
+تم دعم:
+
+Commit
+Rollback
+Atomic Operations
+
+لحماية البيانات المالية.
+
+النتيجة النهائية بعد Phase 2
+
+أصبح المشروع يحتوي على:
+
+Professional Repository Layer
+Generic Repository Pattern
+Unit Of Work Pattern
+Transaction Management
+Soft Delete System
+Query Filters
+Pagination
+Sorting
+Search
+Financial Data Access Architecture
+Optimized Read Queries
+Scalable Data Layer
+المرحلة التالية
+Phase 3 — Authentication & Authorization
+
+والتي ستتضمن:
+
+ASP.NET Identity
+Cookie Authentication
+Login / Logout
+Role Management
+Permission System
+Claims
+Authorization Policies
+Admin Seeder
+Access Control Architecture
