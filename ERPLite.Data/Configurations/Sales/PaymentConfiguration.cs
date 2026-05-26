@@ -18,10 +18,12 @@ namespace ERPLite.Data.Configurations.Sales
                 .IsRequired();
 
             builder.Property(p => p.PaymentMethod)
+                .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();
 
             builder.Property(p => p.Status)
+                .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();
 
