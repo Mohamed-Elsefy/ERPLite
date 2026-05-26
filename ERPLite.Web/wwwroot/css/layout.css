@@ -1,0 +1,162 @@
+/* ============================================
+   ERPLite - Layout & Sidebar Styles
+   File: wwwroot/css/layout.css
+============================================ */
+
+:root {
+    --sidebar-width: 260px;
+    --sidebar-bg: #0f172a;
+    --sidebar-hover: rgba(99, 102, 241, 0.15);
+    --sidebar-active: rgba(99, 102, 241, 0.25);
+    --accent: #6366f1;
+    --accent-light: #818cf8;
+    --text-muted-custom: #94a3b8;
+    --body-bg: #f1f5f9;
+    --card-bg: #ffffff;
+    --topbar-height: 65px;
+}
+
+* { font-family: 'Outfit', sans-serif; box-sizing: border-box; }
+body { background: var(--body-bg); margin: 0; padding: 0; min-height: 100vh; }
+
+/* === SIDEBAR === */
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    min-height: 100vh;
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+.sidebar-logo {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.sidebar-logo .logo-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(to right, #818cf8, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.sidebar-logo .logo-sub {
+    font-size: 0.72rem;
+    color: var(--text-muted-custom);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+.sidebar-menu { padding: 1rem 0.75rem; flex: 1; }
+.menu-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #475569;
+    padding: 0.75rem 0.75rem 0.35rem;
+    font-weight: 600;
+}
+.nav-item-custom a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: 10px;
+    color: var(--text-muted-custom);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    margin-bottom: 2px;
+}
+.nav-item-custom a:hover {
+    background: var(--sidebar-hover);
+    color: #e2e8f0;
+}
+.nav-item-custom a.active {
+    background: var(--sidebar-active);
+    color: var(--accent-light);
+    font-weight: 600;
+}
+.nav-item-custom a i { width: 20px; text-align: center; font-size: 0.95rem; }
+
+/* === SIDEBAR FOOTER === */
+.sidebar-footer {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid rgba(255,255,255,0.07);
+}
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+.user-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #f472b6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.95rem; font-weight: 700; color: white;
+    flex-shrink: 0;
+}
+.user-name { color: #e2e8f0; font-size: 0.88rem; font-weight: 600; }
+.user-role { color: var(--text-muted-custom); font-size: 0.72rem; }
+.btn-logout {
+    width: 100%;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.2);
+    color: #f87171;
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.btn-logout:hover { background: rgba(239,68,68,0.2); color: #fca5a5; }
+
+/* === MAIN CONTENT === */
+.main-wrapper {
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.topbar {
+    height: var(--topbar-height);
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    gap: 1rem;
+}
+.topbar-title { font-size: 1.1rem; font-weight: 600; color: #1e293b; flex: 1; }
+.topbar-right { display: flex; align-items: center; gap: 1rem; }
+.notif-btn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid #e2e8f0;
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    color: #64748b;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+.notif-btn:hover { border-color: var(--accent); color: var(--accent); }
+.notif-badge {
+    position: absolute;
+    top: -3px; right: -3px;
+    width: 16px; height: 16px;
+    background: #ef4444;
+    border-radius: 50%;
+    font-size: 0.6rem;
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+}
+.page-content { padding: 2rem; flex: 1; }

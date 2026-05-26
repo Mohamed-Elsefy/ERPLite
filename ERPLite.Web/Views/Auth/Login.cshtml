@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Login";
-    Layout = null; // No layout for login page
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -11,148 +11,25 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ERPLite System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg-color: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --text-color: #f8fafc;
-        }
-        body {
-            font-family: 'Outfit', sans-serif;
-            background: linear-gradient(135deg, var(--bg-color) 0%, #1e1b4b 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-color);
-            margin: 0;
-            overflow: hidden;
-        }
-        /* Background decorative elements */
-        .blob {
-            position: absolute;
-            filter: blur(80px);
-            z-index: 0;
-            opacity: 0.5;
-        }
-        .blob-1 {
-            width: 400px; height: 400px;
-            background: #4f46e5;
-            top: -100px; left: -100px;
-            border-radius: 50%;
-        }
-        .blob-2 {
-            width: 500px; height: 500px;
-            background: #ec4899;
-            bottom: -150px; right: -100px;
-            border-radius: 50%;
-        }
-        .login-wrapper {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            max-width: 450px;
-            padding: 20px;
-        }
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 3rem 2.5rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
-        }
-        .glass-card:hover {
-            transform: translateY(-5px);
-        }
-        .logo-text {
-            font-size: 2.2rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(to right, #818cf8, #f472b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .subtitle {
-            text-align: center;
-            color: #94a3b8;
-            margin-bottom: 2.5rem;
-            font-weight: 300;
-        }
-        .form-control {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 0.8rem 1.2rem;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-        .form-control:focus {
-            background: rgba(15, 23, 42, 0.8);
-            border-color: #818cf8;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-            color: white;
-        }
-        .form-control::placeholder {
-            color: #64748b;
-        }
-        .form-label {
-            color: #cbd5e1;
-            font-weight: 400;
-            margin-bottom: 0.5rem;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%);
-            border: none;
-            padding: 0.8rem;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -10px rgba(79, 70, 229, 0.5);
-            background: linear-gradient(135deg, var(--primary-hover) 0%, #4f46e5 100%);
-        }
-        .form-check-input {
-            background-color: rgba(15, 23, 42, 0.6);
-            border-color: rgba(255,255,255,0.2);
-        }
-        .form-check-input:checked {
-            background-color: var(--primary);
-            border-color: var(--primary);
-        }
-        .text-danger {
-            font-size: 0.85rem;
-            margin-top: 0.25rem;
-            display: block;
-        }
-    </style>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
 </head>
 <body>
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
-    
+
     <div class="login-wrapper">
         <div class="glass-card">
             <div class="logo-text">ERPLite System</div>
             <div class="subtitle">Intelligent AI-Powered Management</div>
-            
+
             <form asp-controller="Auth" asp-action="Login" method="post">
                 <input type="hidden" asp-for="ReturnUrl" />
-                
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #fca5a5; border-radius: 10px;"></div>
+
+                <div asp-validation-summary="ModelOnly"
+                     class="alert alert-danger"
+                     style="background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.2);color:#fca5a5;border-radius:10px;"></div>
 
                 <div class="mb-4">
                     <label asp-for="Email" class="form-label">Email Address</label>
@@ -168,7 +45,8 @@
 
                 <div class="mb-4 form-check">
                     <input asp-for="RememberMe" class="form-check-input" id="rememberMe" />
-                    <label asp-for="RememberMe" class="form-check-label" for="rememberMe" style="color: #cbd5e1;">Keep me logged in</label>
+                    <label asp-for="RememberMe" class="form-check-label" for="rememberMe"
+                           style="color:#cbd5e1;">Keep me logged in</label>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100">Access Dashboard</button>

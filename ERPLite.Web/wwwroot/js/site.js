@@ -1,4 +1,15 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+// ============================================
+// ERPLite - Main JS File
+// File: wwwroot/js/site.js
+// ============================================
 
-// Write your JavaScript code.
+// Active nav link highlight based on current URL
+document.addEventListener('DOMContentLoaded', function () {
+    const currentPath = window.location.pathname.toLowerCase();
+    document.querySelectorAll('.nav-item-custom a').forEach(link => {
+        const href = link.getAttribute('href')?.toLowerCase();
+        if (href && href !== '#' && currentPath.startsWith(href)) {
+            link.classList.add('active');
+        }
+    });
+});
