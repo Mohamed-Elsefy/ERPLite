@@ -42,6 +42,11 @@ namespace ERPLite.Data.Seeders
                 {
                     await userManager.AddToRoleAsync(adminUser, "Admin");
                 }
+                else
+                {
+                    var errors = string.Join(", ", createPowerUser.Errors.Select(e => e.Description));
+                    throw new Exception($"Failed to create admin user: {errors}");
+                }
             }
         }
     }
