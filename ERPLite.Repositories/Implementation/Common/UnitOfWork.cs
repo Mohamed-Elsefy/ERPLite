@@ -1,0 +1,109 @@
+﻿using ERPLite.Repositories.Interfaces.Common;
+using ERPLite.Repositories.Interfaces.HR;
+using ERPLite.Repositories.Interfaces.Inventory;
+using ERPLite.Repositories.Interfaces.Sales;
+using Microsoft.EntityFrameworkCore.Storage;
+
+
+namespace ERPLite.Repositories.Implementation.Common
+{
+    public class UnitOfWork(
+            AppDbContext context,
+            IProductRepository productRepo,
+            ICategoryRepository categoryRepo,
+            ISupplierRepository supplierRepo,
+            ICustomerRepository customerRepo,
+            IOrderRepository orderRepo,
+            IPaymentRepository paymentRepo,
+            IAttendanceRepository attendanceRepo
+        ) : IUnitOfWork, IAsyncDisposable
+    {
+        private IDbContextTransaction? _currentTransaction;
+
+        // =================================
+        // Register Repositories
+        // =================================
+        public IProductRepository Products { get; } = productRepo;
+        public ICategoryRepository Categories { get; } = categoryRepo;
+        public ISupplierRepository Suppliers { get; } = supplierRepo;
+        public ICustomerRepository Customers { get; } = customerRepo;
+        public IOrderRepository Orders { get; } = orderRepo;
+        public IPaymentRepository Payments { get; } = paymentRepo;
+        public IAttendanceRepository Attendances { get; } = attendanceRepo;
+
+        // =================================
+        // Save Changes
+        // =================================
+        public async Task<int> SaveChangesAsync()
+        {
+            return await context.SaveChangesAsync();
+        }
+
+        // =================================
+        // Transactions
+        // =================================
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            if (_currentTransaction != null)
+                return _currentTransaction;
+
+            _currentTransaction = await context.Database.BeginTransactionAsync();
+            return _currentTransaction;
+        }
+
+        public async Task CommitTransactionAsync()
+        {
+            try
+            {
+                await context.SaveChangesAsync();
+
+                if (_currentTransaction != null)
+                {
+                    await _currentTransaction.CommitAsync();
+                }
+            }
+            catch
+            {
+                await RollbackTransactionAsync();
+                throw;
+            }
+            finally
+            {
+                if (_currentTransaction != null)
+                {
+                    await _currentTransaction.DisposeAsync();
+                    _currentTransaction = null;
+                }
+            }
+        }
+
+        public async Task RollbackTransactionAsync()
+        {
+            if (_currentTransaction != null)
+            {
+                await _currentTransaction.RollbackAsync();
+                await _currentTransaction.DisposeAsync();
+                _currentTransaction = null;
+            }
+        }
+
+        // =================================
+        // Dispose Pattern
+        // =================================
+        public void Dispose()
+        {
+            _currentTransaction?.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_currentTransaction != null)
+            {
+                await _currentTransaction.DisposeAsync();
+                _currentTransaction = null;
+            }
+            GC.SuppressFinalize(this);
+        }
+    }
+}

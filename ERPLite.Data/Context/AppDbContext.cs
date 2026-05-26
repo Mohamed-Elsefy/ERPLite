@@ -4,6 +4,7 @@ using ERPLite.Data.Entities.Identity;
 using ERPLite.Data.Entities.Inventory;
 using ERPLite.Data.Entities.Sales;
 using ERPLite.Data.Entities.System;
+using ERPLite.Data.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,7 +43,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfigurationsFromAssembly(
-            typeof(AppDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+        ModelBuilderExtensions.ApplySoftDeleteQueryFilters(modelBuilder);
     }
 }

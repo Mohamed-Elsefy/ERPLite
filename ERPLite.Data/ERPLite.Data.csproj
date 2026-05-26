@@ -13,9 +13,6 @@
 
   <ItemGroup>
     <Folder Include="Configurations\Identity\" />
-    <Folder Include="Enums\" />
-    <Folder Include="Constants\" />
-    <Folder Include="Extensions\" />
     <Folder Include="Seeders\" />
   </ItemGroup>
 

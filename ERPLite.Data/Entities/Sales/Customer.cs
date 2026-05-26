@@ -1,6 +1,8 @@
-﻿namespace ERPLite.Data.Entities.Sales
+﻿using ERPLite.Data.Constants;
+
+namespace ERPLite.Data.Entities.Sales
 {
-    public class Customer
+    public class Customer : ISoftDeletable
     {
         public int Id { get; set; }
 

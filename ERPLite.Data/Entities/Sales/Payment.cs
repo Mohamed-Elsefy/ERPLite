@@ -1,4 +1,6 @@
-﻿namespace ERPLite.Data.Entities.Sales
+﻿using ERPLite.Data.Enums;
+
+namespace ERPLite.Data.Entities.Sales
 {
     public class Payment
     {
@@ -10,10 +12,10 @@
 
         public decimal Amount { get; set; }
 
-        public string PaymentMethod { get; set; } = null!;
+        public PaymentMethod PaymentMethod { get; set; }
 
         public DateTime PaymentDate { get; set; }
 
-        public string Status { get; set; } = null!;
+        public PaymentStatus Status { get; set; }
     }
 }

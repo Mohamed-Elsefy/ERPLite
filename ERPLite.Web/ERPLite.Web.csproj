@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ERPLite.Repositories\ERPLite.Repositories.csproj" />
     <ProjectReference Include="..\ERPLite.Services\ERPLite.Services.csproj" />
     <ProjectReference Include="..\ERPLite.Shared\ERPLite.Shared.csproj" />
   </ItemGroup>
