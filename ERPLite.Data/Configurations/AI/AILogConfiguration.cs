@@ -4,8 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ERPLite.Data.Configurations.AI
 {
-    public class AILogConfiguration
-        : IEntityTypeConfiguration<AILog>
+    public class AILogConfiguration : IEntityTypeConfiguration<AILog>
     {
         public void Configure(EntityTypeBuilder<AILog> builder)
         {

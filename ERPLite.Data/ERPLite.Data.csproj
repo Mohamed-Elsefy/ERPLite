@@ -13,7 +13,11 @@
 
   <ItemGroup>
     <Folder Include="Configurations\Identity\" />
-    <Folder Include="Seeders\" />
+    <Folder Include="Enums\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ERPLite.Shared\ERPLite.Shared.csproj" />
   </ItemGroup>
 
 </Project>

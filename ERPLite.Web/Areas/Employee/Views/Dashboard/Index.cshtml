@@ -1,0 +1,122 @@
+﻿@{
+    ViewData["Title"] = "Employee Dashboard";
+}
+
+<div class="row g-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center bg-white p-4 rounded shadow-sm border-start border-warning border-4">
+            <div>
+                <h2 class="fw-bold mb-1 text-dark">Employee Self-Service Portal</h2>
+                <p class="text-muted mb-0">Welcome back! Have a productive and successful workday ahead.</p>
+            </div>
+
+            <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post" id="logoutForm">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-danger d-flex align-items-center gap-2 px-3 py-2 fw-semibold shadow-sm">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Sign Out</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm h-100 bg-white">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="bg-primary-subtle text-primary p-3 rounded-3 me-3">
+                    <i class="bi bi-clipboard-check-fill fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium">Pending Tasks</h6>
+                    <h4 class="fw-bold mb-0 text-dark">3 New Tasks</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm h-100 bg-white">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="bg-success-subtle text-success p-3 rounded-3 me-3">
+                    <i class="bi bi-calendar2-range-fill fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium">Annual Leave Balance</h6>
+                    <h4 class="fw-bold mb-0 text-dark">18 Days Left</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm h-100 bg-white">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="bg-info-subtle text-info p-3 rounded-3 me-3">
+                    <i class="bi bi-clock-history fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium">Logged Hours (Current Month)</h6>
+                    <h4 class="fw-bold mb-0 text-dark">142 Hours</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm p-4 h-100 bg-white">
+            <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+                <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Employee Self-Services
+            </h5>
+            <div class="row g-2">
+                <div class="col-6">
+                    <a href="#" class="btn btn-light border py-3 px-3 w-100 text-start h-100 d-flex flex-column justify-content-center bg-body-hover">
+                        <i class="bi bi-file-earmark-plus-fill text-primary fs-4 mb-2"></i>
+                        <span class="fw-semibold text-dark">Request Leave</span>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="#" class="btn btn-light border py-3 px-3 w-100 text-start h-100 d-flex flex-column justify-content-center bg-body-hover">
+                        <i class="bi bi-cash-stack text-success fs-4 mb-2"></i>
+                        <span class="fw-semibold text-dark">View Payslip</span>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="#" class="btn btn-light border py-3 px-3 w-100 text-start h-100 d-flex flex-column justify-content-center bg-body-hover">
+                        <i class="bi bi-geo-alt-fill text-danger fs-4 mb-2"></i>
+                        <span class="fw-semibold text-dark">Clock In / Out</span>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="#" class="btn btn-light border py-3 px-3 w-100 text-start h-100 d-flex flex-column justify-content-center bg-body-hover">
+                        <i class="bi bi-question-circle-fill text-info fs-4 mb-2"></i>
+                        <span class="fw-semibold text-dark">IT Support Ticket</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6 mb-5">
+        <div class="card border-0 shadow-sm p-4 h-100 bg-white">
+            <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+                <i class="bi bi-megaphone-fill text-danger me-1"></i> Internal Announcements
+            </h5>
+            <div class="d-flex flex-column gap-3">
+                <div class="p-3 bg-light rounded-3 border-start border-danger border-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="badge bg-danger">Urgent</span>
+                        <small class="text-muted">2 days ago</small>
+                    </div>
+                    <p class="mb-0 text-dark fw-medium">Official working hours have been updated for the upcoming quarter.</p>
+                </div>
+                <div class="p-3 bg-light rounded-3 border-start border-info border-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="badge bg-info text-dark">Notice</span>
+                        <small class="text-muted">1 week ago</small>
+                    </div>
+                    <p class="mb-0 text-dark fw-medium">All employees are kindly requested to update their personal information in the HR files.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

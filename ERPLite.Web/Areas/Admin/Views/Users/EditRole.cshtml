@@ -1,0 +1,69 @@
+﻿@model ERPLite.Web.Areas.Admin.Models.Users.EditUserRoleViewModel
+@using ERPLite.Shared.Constants
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white border-0 pt-4">
+                <h3 class="fw-bold text-dark mb-1">
+                    <i class="bi bi-shield-lock-fill text-warning me-2"></i>Edit User Role
+                </h3>
+                <p class="text-muted small mb-0">Change system access level and permissions for this user.</p>
+            </div>
+
+            <div class="card-body p-4">
+                <form asp-action="EditRole" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" asp-for="UserId" />
+                    <input type="hidden" asp-for="FullName" />
+                    <input type="hidden" asp-for="Email" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Full Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                            <input class="form-control bg-light" value="@Model.FullName" disabled />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                            <input class="form-control bg-light" value="@Model.Email" disabled />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Role" class="form-label fw-semibold text-dark">Assign New Role</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white text-primary"><i class="bi bi-tags"></i></span>
+                            <select asp-for="Role" class="form-select fw-semibold">
+                                <option value="@Roles.Admin">Admin (Full Control)</option>
+                                <option value="@Roles.Manager">Manager (Department Authority)</option>
+                                <option value="@Roles.Employee">Employee (Staff Access)</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="Role" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex gap-2 justify-content-end border-top pt-3">
+                        <a asp-action="Index" class="btn btn-light px-4 fw-semibold">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold d-flex align-items-center gap-2 shadow-sm">
+                            <i class="bi bi-check-circle"></i>
+                            <span>Save Changes</span>
+                        </button>
+                    </div>
+                </form>
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

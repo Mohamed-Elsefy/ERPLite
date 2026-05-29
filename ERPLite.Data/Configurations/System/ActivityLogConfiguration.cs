@@ -4,8 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ERPLite.Data.Configurations.System
 {
-    public class ActivityLogConfiguration
-        : IEntityTypeConfiguration<ActivityLog>
+    public class ActivityLogConfiguration : IEntityTypeConfiguration<ActivityLog>
     {
         public void Configure(EntityTypeBuilder<ActivityLog> builder)
         {

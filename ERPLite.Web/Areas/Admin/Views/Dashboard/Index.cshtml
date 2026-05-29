@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="row g-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center bg-white p-4 rounded shadow-sm border-start border-primary border-4">
+            <div>
+                <h2 class="fw-bold mb-1 text-dark">System Administration Dashboard</h2>
+                <p class="text-muted mb-0">Welcome back, Administrator. You have full access to global ERPLite operations.</p>
+            </div>
+
+            <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post" id="logoutForm">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-danger d-flex align-items-center gap-2 px-3 py-2 fw-semibold shadow-sm">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Sign Out</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100 bg-white">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="bg-success-subtle text-success p-3 rounded-3 me-3">
+                    <i class="bi bi-currency-dollar fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium">Total Gross Revenue</h6>
+                    <h4 class="fw-bold mb-0 text-dark">$124,500</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100 bg-white">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="bg-primary-subtle text-primary p-3 rounded-3 me-3">
+                    <i class="bi bi-people-fill fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium">Active Personnel</h6>
+                    <h4 class="fw-bold mb-0 text-dark">42 Employees</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100 bg-white">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="bg-warning-subtle text-warning p-3 rounded-3 me-3">
+                    <i class="bi bi-box-seam-fill fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium">Stock Items (In-House)</h6>
+                    <h4 class="fw-bold mb-0 text-dark">1,250 Products</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100 bg-white">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="bg-danger-subtle text-danger p-3 rounded-3 me-3">
+                    <i class="bi bi-receipt fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium">Unpaid Invoices</h6>
+                    <h4 class="fw-bold mb-0 text-dark">8 Open Invoices</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 mb-5">
+        <div class="card border-0 shadow-sm p-4 bg-white">
+            <h5 class="fw-bold text-dark mb-3">
+                <i class="bi bi-sliders text-primary me-1"></i> Global Administration Shortcuts
+            </h5>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="#" class="btn btn-light border py-2 px-3 text-start bg-body-hover">
+                    <i class="bi bi-gear-fill me-2 text-primary"></i> Global System Settings
+                </a>
+                <a href="#" class="btn btn-light border py-2 px-3 text-start bg-body-hover">
+                    <i class="bi bi-shield-lock-fill me-2 text-success"></i> Identity & Role Configuration
+                </a>
+                <a href="#" class="btn btn-light border py-2 px-3 text-start bg-body-hover">
+                    <i class="bi bi-file-earmark-bar-graph-fill me-2 text-info"></i> Financial Audit Reports
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,7 +1,7 @@
-using ERPLite.Data.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using ERPLite.Data.Seeders;
 using ERPLite.Repositories.DependencyInjection;
+using ERPLite.Web.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,16 +13,24 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add Identity Services
-builder.Services
-    .AddIdentity<ApplicationUser, ApplicationRole>()
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
+// this is Extension method for Identity Services
+// Identity Services are added in the ERPLite.Web.Extensions.IdentityServices.cs file 
+builder.Services.AddIdentityServices();
 
 // Add Repositories 
 builder.Services.AddRepositories();
 
 
 var app = builder.Build();
+
+// Seed Roles and Users
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    await IdentitySeeder
+        .SeedRolesAndUsersAsync(services);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -33,16 +41,24 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseRouting();
 
-app.UseAuthorization();
+app.UseStaticFiles();
 
 app.MapStaticAssets();
 
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Auth}/{action=Login}/{id?}");
 
 
 app.Run();

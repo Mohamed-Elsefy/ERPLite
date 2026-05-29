@@ -4,8 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ERPLite.Data.Configurations.HR
 {
-    public class AttendanceConfiguration
-        : IEntityTypeConfiguration<Attendance>
+    public class AttendanceConfiguration : IEntityTypeConfiguration<Attendance>
     {
         public void Configure(EntityTypeBuilder<Attendance> builder)
         {

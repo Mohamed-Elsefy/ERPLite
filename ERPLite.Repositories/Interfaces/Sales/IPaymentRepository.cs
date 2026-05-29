@@ -1,6 +1,6 @@
 ﻿using ERPLite.Data.Entities.Sales;
-using ERPLite.Data.Enums;
 using ERPLite.Repositories.Interfaces.Common;
+using ERPLite.Shared.Enums;
 
 namespace ERPLite.Repositories.Interfaces.Sales
 {

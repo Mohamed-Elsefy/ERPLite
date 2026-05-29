@@ -1,4 +1,5 @@
-﻿using ERPLite.Data.Enums;
+﻿
+using ERPLite.Shared.Enums;
 
 namespace ERPLite.Data.Entities.Sales
 {

@@ -1,7 +1,7 @@
 ﻿using ERPLite.Data.Entities.Sales;
-using ERPLite.Data.Enums;
 using ERPLite.Repositories.Implementation.Common;
 using ERPLite.Repositories.Interfaces.Sales;
+using ERPLite.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace ERPLite.Repositories.Implementation.Sales

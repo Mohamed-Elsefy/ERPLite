@@ -1,4 +1,4 @@
-﻿namespace ERPLite.Data.Enums
+﻿namespace ERPLite.Shared.Enums
 {
     public enum PaymentStatus
     {
