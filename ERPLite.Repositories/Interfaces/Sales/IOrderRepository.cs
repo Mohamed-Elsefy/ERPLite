@@ -15,6 +15,14 @@ namespace ERPLite.Repositories.Interfaces.Sales
 
         Task<decimal> GetTotalRevenueAsync();
 
+        Task<int> GetPaidOrdersCountAsync();
+
+        Task<int> GetUnpaidOrdersCountAsync();
+
         Task<decimal> GetRevenueByDateRangeAsync(DateTime startDate, DateTime endDate);
+
+        Task<bool> HasPaymentsAsync(int orderId);
+
+        Task<int> GetCountAsync();
     }
 }

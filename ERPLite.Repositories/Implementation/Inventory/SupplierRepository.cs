@@ -11,9 +11,6 @@ namespace ERPLite.Repositories.Implementation.Inventory
         {
         }
 
-        // =====================================
-        // Active Suppliers
-        // =====================================
 
         public async Task<IEnumerable<Supplier>>  GetActiveSuppliersAsync()
         {
@@ -22,9 +19,6 @@ namespace ERPLite.Repositories.Implementation.Inventory
                 .ToListAsync();
         }
 
-        // =====================================
-        // Supplier With Products
-        // =====================================
 
         public async Task<Supplier?> GetSupplierWithProductsAsync(int id)
         {
@@ -34,34 +28,35 @@ namespace ERPLite.Repositories.Implementation.Inventory
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        // =====================================
-        // Search Suppliers
-        // =====================================
 
         public async Task<IEnumerable<Supplier>> SearchSuppliersAsync(string keyword)
         {
             if (string.IsNullOrWhiteSpace(keyword)) return await GetAllAsync();
 
-            keyword = keyword.Trim();
+            var cleanKeyword = keyword.Trim();
 
             return await _dbSet
                 .AsNoTracking()
-                .Where(s => EF.Functions.Like(s.Name, $"%{keyword}%")
-                         || EF.Functions.Like(s.Phone, $"%{keyword}%"))
+                .Where(s => EF.Functions.Like(s.Name, $"%{cleanKeyword}%")
+                         || EF.Functions.Like(s.Phone, $"%{cleanKeyword}%"))
                 .ToListAsync();
         }
 
-        // =====================================
-        // Exists Check
-        // =====================================
 
-        public async Task<bool> SupplierExistsAsync(string name)
+        public async Task<bool> SupplierExistsAsync(string name, int? excludedSupplierId = null)
         {
             if (string.IsNullOrWhiteSpace(name)) return false;
+            var cleanName = name.Trim();
 
-            name = name.Trim();
+            return await _dbSet.AnyAsync(s =>
+                s.Name == cleanName &&
+                (!excludedSupplierId.HasValue || s.Id != excludedSupplierId.Value));
+        }
 
-            return await _dbSet.AnyAsync(s => EF.Functions.Like(s.Name, name));
+        public async Task<bool> HasProductsAsync(int supplierId)
+        {
+            return await _context.Products
+                .AnyAsync(x => x.SupplierId == supplierId);
         }
     }
 }

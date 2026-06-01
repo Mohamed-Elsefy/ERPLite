@@ -20,6 +20,10 @@ namespace ERPLite.Data.Configurations.System
                 .HasMaxLength(100)
                 .IsRequired();
 
+            builder.Property(al => al.Description)
+                .HasMaxLength(500)
+                .IsRequired();
+
             builder.Property(al => al.Timestamp)
                 .IsRequired();
 

@@ -11,6 +11,8 @@ namespace ERPLite.Repositories.Interfaces.Inventory
 
         Task<IEnumerable<Supplier>> SearchSuppliersAsync(string keyword);
 
-        Task<bool> SupplierExistsAsync(string name);
+        Task<bool> SupplierExistsAsync(string name, int? excludedSupplierId = null);
+
+        Task<bool> HasProductsAsync(int supplierId);
     }
 }

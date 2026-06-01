@@ -1,6 +1,7 @@
 ﻿using ERPLite.Data.Entities.Sales;
 using ERPLite.Repositories.Implementation.Common;
 using ERPLite.Repositories.Interfaces.Sales;
+using ERPLite.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace ERPLite.Repositories.Implementation.Sales
@@ -10,10 +11,6 @@ namespace ERPLite.Repositories.Implementation.Sales
         public OrderRepository(AppDbContext context) : base(context)
         {
         }
-
-        // =====================================
-        // Order With Full Details
-        // =====================================
 
         public async Task<Order?> GetOrderWithDetailsAsync(int id)
         {
@@ -27,10 +24,6 @@ namespace ERPLite.Repositories.Implementation.Sales
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
-        // =====================================
-        // Recent Orders
-        // =====================================
-
         public async Task<IEnumerable<Order>> GetRecentOrdersAsync(int count)
         {
             return await _dbSet
@@ -41,9 +34,6 @@ namespace ERPLite.Repositories.Implementation.Sales
                 .ToListAsync();
         }
 
-        // =====================================
-        // Orders By Customer
-        // =====================================
 
         public async Task<IEnumerable<Order>> GetOrdersByCustomerAsync(int customerId)
         {
@@ -56,9 +46,6 @@ namespace ERPLite.Repositories.Implementation.Sales
                 .ToListAsync();
         }
 
-        // =====================================
-        // Orders By Date Range
-        // =====================================
 
         public async Task<IEnumerable<Order>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
@@ -72,29 +59,41 @@ namespace ERPLite.Repositories.Implementation.Sales
                 .ToListAsync();
         }
 
-        // =====================================
-        // Total Revenue
-        // =====================================
 
         public async Task<decimal> GetTotalRevenueAsync()
         {
             return await _dbSet
-            .Select(o => (decimal?)o.TotalPrice)
-            .SumAsync() ?? 0;
+                .SumAsync(o => (decimal?)o.TotalPrice) ?? 0;
         }
-
-        // =====================================
-        // Revenue By Date Range
-        // =====================================
 
         public async Task<decimal> GetRevenueByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
             return await _dbSet
-            .Where(o =>
-                o.OrderDate >= startDate &&
-                o.OrderDate <= endDate)
-            .Select(o => (decimal?)o.TotalPrice)
-            .SumAsync() ?? 0;
+                .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate)
+                .SumAsync(o => (decimal?)o.TotalPrice) ?? 0;
+        }
+
+        public async Task<bool> HasPaymentsAsync(int orderId)
+        {
+            return await _context.Payments
+                .AnyAsync(p => p.OrderId == orderId);
+        }
+
+        public async Task<int> GetCountAsync()
+        {
+            return await _dbSet.CountAsync();
+        }
+
+        public async Task<int> GetPaidOrdersCountAsync()
+        {
+            return await _dbSet
+                .CountAsync(x => x.PaymentStatus == OrderPaymentStatus.Paid);
+        }
+
+        public async Task<int> GetUnpaidOrdersCountAsync()
+        {
+            return await _dbSet
+                .CountAsync(x => x.PaymentStatus != OrderPaymentStatus.Paid);
         }
     }
 }

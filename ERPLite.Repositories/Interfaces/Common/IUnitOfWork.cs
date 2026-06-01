@@ -1,6 +1,7 @@
 ﻿using ERPLite.Repositories.Interfaces.HR;
 using ERPLite.Repositories.Interfaces.Inventory;
 using ERPLite.Repositories.Interfaces.Sales;
+using ERPLite.Repositories.Interfaces.System;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ERPLite.Repositories.Interfaces.Common
@@ -24,6 +25,14 @@ namespace ERPLite.Repositories.Interfaces.Common
         IPaymentRepository Payments { get; }
 
         IAttendanceRepository Attendances { get; }
+
+        IEmployeeRepository Employees { get; }
+
+        IDepartmentRepository Departments { get; }
+
+        IOrderItemRepository OrderItems { get; }
+
+        IActivityLogRepository ActivityLogs { get; }
 
 
         // =================================

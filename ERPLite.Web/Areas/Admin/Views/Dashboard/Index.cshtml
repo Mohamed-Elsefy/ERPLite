@@ -1,25 +1,32 @@
-﻿@{
+﻿@using ERPLite.Web.Areas.Admin.Models.Dashboard
+@model AdminDashboardViewModel
+
+@{
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="row g-4">
+<div class="row mt-3">
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center bg-white p-4 rounded shadow-sm border-start border-primary border-4">
-            <div>
-                <h2 class="fw-bold mb-1 text-dark">System Administration Dashboard</h2>
-                <p class="text-muted mb-0">Welcome back, Administrator. You have full access to global ERPLite operations.</p>
+        <div class="card border-0 shadow-sm bg-light-subtle">
+            <div class="card-body d-flex justify-content-between align-items-center p-3">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary text-white p-2 rounded-3 me-3">
+                        <i class="bi bi-file-earmark-bar-graph fs-4"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0 fw-bold text-dark">Management Reports & Exports</h5>
+                        <p class="text-muted mb-0 small">Generate, audit and export system financial, workforce, and inventory records.</p>
+                    </div>
+                </div>
+                <a asp-area="Admin" asp-controller="Reports" asp-action="Index" class="btn btn-primary shadow-sm d-flex align-items-center gap-2">
+                    <i class="bi bi-gear-fill"></i> Open Reports Center
+                </a>
             </div>
-
-            <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post" id="logoutForm">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-outline-danger d-flex align-items-center gap-2 px-3 py-2 fw-semibold shadow-sm">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>Sign Out</span>
-                </button>
-            </form>
         </div>
     </div>
+</div>
 
+<div class="row g-4 mt-2">
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="card border-0 shadow-sm h-100 bg-white">
             <div class="card-body d-flex align-items-center p-4">
@@ -27,8 +34,8 @@
                     <i class="bi bi-currency-dollar fs-3"></i>
                 </div>
                 <div>
-                    <h6 class="text-muted mb-1 fw-medium">Total Gross Revenue</h6>
-                    <h4 class="fw-bold mb-0 text-dark">$124,500</h4>
+                    <h6 class="text-muted mb-1 fw-medium">Total Revenue</h6>
+                    <h4 class="fw-bold mb-0 text-dark">@Model.Statistics.TotalRevenue.ToString("C")</h4>
                 </div>
             </div>
         </div>
@@ -42,55 +49,36 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-1 fw-medium">Active Personnel</h6>
-                    <h4 class="fw-bold mb-0 text-dark">42 Employees</h4>
+                    <h4 class="fw-bold mb-0 text-dark">@Model.Statistics.TotalEmployees Employees</h4>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-body d-flex align-items-center p-4">
-                <div class="bg-warning-subtle text-warning p-3 rounded-3 me-3">
-                    <i class="bi bi-box-seam-fill fs-3"></i>
-                </div>
-                <div>
-                    <h6 class="text-muted mb-1 fw-medium">Stock Items (In-House)</h6>
-                    <h4 class="fw-bold mb-0 text-dark">1,250 Products</h4>
+    <div class="col-12 mt-4">
+        <h4 class="fw-bold text-dark mb-3">Financial Analytics Framework</h4>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card bg-success border-0 text-white shadow-sm p-3">
+                    <h6 class="text-white-50">Collected Cash Revenue</h6>
+                    <h3 class="fw-bold">@Model.Analytics.TotalPaidRevenue.ToString("C")</h3>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-body d-flex align-items-center p-4">
-                <div class="bg-danger-subtle text-danger p-3 rounded-3 me-3">
-                    <i class="bi bi-receipt fs-3"></i>
-                </div>
-                <div>
-                    <h6 class="text-muted mb-1 fw-medium">Unpaid Invoices</h6>
-                    <h4 class="fw-bold mb-0 text-dark">8 Open Invoices</h4>
+            <div class="col-md-4">
+                <div class="card bg-danger border-0 text-white shadow-sm p-3">
+                    <h6 class="text-white-50">Outstanding Receivables Balance</h6>
+                    <h3 class="fw-bold">@Model.Analytics.OutstandingBalance.ToString("C")</h3>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="col-12 mb-5">
-        <div class="card border-0 shadow-sm p-4 bg-white">
-            <h5 class="fw-bold text-dark mb-3">
-                <i class="bi bi-sliders text-primary me-1"></i> Global Administration Shortcuts
-            </h5>
-            <div class="d-flex flex-wrap gap-2">
-                <a href="#" class="btn btn-light border py-2 px-3 text-start bg-body-hover">
-                    <i class="bi bi-gear-fill me-2 text-primary"></i> Global System Settings
-                </a>
-                <a href="#" class="btn btn-light border py-2 px-3 text-start bg-body-hover">
-                    <i class="bi bi-shield-lock-fill me-2 text-success"></i> Identity & Role Configuration
-                </a>
-                <a href="#" class="btn btn-light border py-2 px-3 text-start bg-body-hover">
-                    <i class="bi bi-file-earmark-bar-graph-fill me-2 text-info"></i> Financial Audit Reports
-                </a>
+            <div class="col-md-4">
+                <div class="card bg-dark border-0 text-white shadow-sm p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Paid Invoices: <strong>@Model.Analytics.PaidOrders</strong></span>
+                        <span>Open Invoices: <strong>@Model.Analytics.UnpaidOrders</strong></span>
+                    </div>
+                    <hr class="my-2 border-white-50" />
+                    <span class="small text-white-50">Total Document Pools: @Model.Analytics.TotalOrders</span>
+                </div>
             </div>
         </div>
     </div>

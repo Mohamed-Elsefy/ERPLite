@@ -13,5 +13,7 @@ namespace ERPLite.Repositories.Interfaces.Sales
         Task<decimal> GetTotalPaidAmountAsync(int orderId);
 
         Task<IEnumerable<Payment>> GetRecentPaymentsAsync(int count);
+
+        Task<decimal> GetGlobalTotalPaidAmountAsync();
     }
 }
