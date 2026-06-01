@@ -9,6 +9,6 @@ namespace ERPLite.Repositories.Interfaces.Inventory
 
         Task<Category?> GetCategoryWithProductsAsync(int id);
 
-        Task<bool> CategoryExistsAsync(string name);
+        Task<bool> CategoryExistsAsync(string name, int? excludedCategoryId = null);
     }
 }

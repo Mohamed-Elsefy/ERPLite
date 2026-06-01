@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ERPLite.Web.Areas.Admin.Models.Users.UserListViewModel>
+﻿@using ERPLite.Web.Areas.Admin.Models.Users
+@model UserIndexViewModel
 
 <div class="card border-0 shadow-sm rounded-3">
     <div class="card-header bg-white border-0 pt-4 pb-3">
@@ -22,8 +23,8 @@
                         <span class="input-group-text bg-light border-end-0 text-muted">
                             <i class="bi bi-search"></i>
                         </span>
-                        <input type="text" name="search" class="form-control border-start-0 bg-light"
-                               value="@ViewData["CurrentSearch"]" placeholder="Search by name or email address..." />
+                        <input type="text" asp-for="SearchTerm" name="search" class="form-control border-start-0 bg-light"
+                               placeholder="Search by name or email address..." value="@Model.SearchTerm" />
                     </div>
                 </div>
                 <div class="col-md-3 d-flex gap-2">
@@ -31,7 +32,7 @@
                         Search
                     </button>
 
-                    @if (ViewData["CurrentSearch"] != null && !string.IsNullOrWhiteSpace(ViewData["CurrentSearch"]?.ToString()))
+                    @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
                     {
                         <a asp-action="Index" class="btn btn-outline-secondary px-3 d-flex align-items-center shadow-sm" title="Clear Search">
                             <i class="bi bi-x-lg"></i>
@@ -55,7 +56,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (!Model.Any())
+                    @if (!Model.Users.Any())
                     {
                         <tr>
                             <td colspan="5" class="text-center text-muted py-5">
@@ -66,7 +67,7 @@
                     }
                     else
                     {
-                        @foreach (var user in Model)
+                        @foreach (var user in Model.Users)
                         {
                             <tr class="border-bottom">
                                 <td class="ps-3 fw-semibold text-dark">@user.FullName</td>

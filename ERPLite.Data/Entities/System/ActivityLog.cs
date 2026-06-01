@@ -10,12 +10,14 @@ namespace ERPLite.Data.Entities.System
 
         public string EntityName { get; set; } = null!;
 
-        public int EntityId { get; set; }
+        public int EntityId { get; set; }     
+
+        public string Description { get; set; } = null!;
 
         public string UserId { get; set; } = null!;
 
         public ApplicationUser User { get; set; } = null!;
 
-        public DateTime Timestamp { get; set; }
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     }
 }

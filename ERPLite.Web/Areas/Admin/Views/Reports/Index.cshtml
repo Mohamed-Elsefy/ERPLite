@@ -1,0 +1,95 @@
+﻿@{
+    ViewData["Title"] = "Management Reports Dashboard";
+}
+
+<div class="container-fluid pt-4">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-chart-pie text-primary mr-2"></i>Management Reports Dashboard</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center mb-3">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Human Resources</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Employees & Payroll</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                    <a asp-area="Admin" asp-controller="Reports" asp-action="EmployeesPdf" class="btn btn-primary btn-sm btn-block shadow-sm">
+                        <i class="fas fa-download fa-sm text-white-50 mr-1"></i> Export PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center mb-3">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Inventory Management</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Stock Assets & Valuation</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-boxes fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                    <a asp-area="Admin" asp-controller="Reports" asp-action="InventoryPdf" class="btn btn-success btn-sm btn-block shadow-sm">
+                        <i class="fas fa-download fa-sm text-white-50 mr-1"></i> Export PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center mb-3">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Finance & Accounting</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Executive Summary</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                    <a asp-area="Admin" asp-controller="Reports" asp-action="FinancialPdf" class="btn btn-warning btn-sm text-white btn-block shadow-sm">
+                        <i class="fas fa-download fa-sm text-white-50 mr-1"></i> Export PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-light d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-shopping-cart text-orange mr-2"></i>Sales Performance Report</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-area="Admin" asp-controller="Reports" asp-action="SalesPdf" method="get" target="_blank">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="small text-gray-600">From Date</label>
+                                <input type="date" name="from" class="form-group form-control form-control-sm" value="@DateTime.Today.AddDays(-30).ToString("yyyy-MM-dd")" />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="small text-gray-600">To Date</label>
+                                <input type="date" name="to" class="form-group form-control form-control-sm" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-info btn-sm shadow-sm mt-2">
+                            <i class="fas fa-file-pdf mr-1"></i> Generate & Download Sales PDF
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

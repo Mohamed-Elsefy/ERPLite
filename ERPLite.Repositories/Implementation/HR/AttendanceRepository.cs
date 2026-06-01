@@ -11,10 +11,6 @@ namespace ERPLite.Repositories.Implementation.HR
         {
         }
 
-        // =====================================
-        // Employee Attendance
-        // =====================================
-
         public async Task<IEnumerable<Attendance>> GetEmployeeAttendanceAsync(int employeeId)
         {
             return await _dbSet
@@ -25,13 +21,8 @@ namespace ERPLite.Repositories.Implementation.HR
                 .ToListAsync();
         }
 
-        // =====================================
-        // Attendance By Date
-        // =====================================
 
-        public async Task<Attendance?> GetAttendanceByDateAsync(
-                int employeeId,
-                DateTime date)
+        public async Task<Attendance?> GetAttendanceByDateAsync(int employeeId,DateTime date)
         {
             return await _dbSet
                 .AsNoTracking()
@@ -39,10 +30,6 @@ namespace ERPLite.Repositories.Implementation.HR
                     a.EmployeeId == employeeId &&
                     a.Date.Date == date.Date);
         }
-
-        // =====================================
-        // Has Attendance Today
-        // =====================================
 
         public async Task<bool> HasAttendanceTodayAsync(int employeeId)
         {
@@ -56,10 +43,6 @@ namespace ERPLite.Repositories.Implementation.HR
                 a.Date < tomorrow);
         }
 
-        // =====================================
-        // Today Attendance
-        // =====================================
-
         public async Task<IEnumerable<Attendance>> GetTodayAttendanceAsync()
         {
             var today = DateTime.Today;
@@ -72,10 +55,6 @@ namespace ERPLite.Repositories.Implementation.HR
                 .ToListAsync();
         }
 
-        // =====================================
-        // Attendance By Date Range
-        // =====================================
-
         public async Task<IEnumerable<Attendance>> GetAttendanceByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
             return await _dbSet
@@ -86,6 +65,12 @@ namespace ERPLite.Repositories.Implementation.HR
                     a.Date <= endDate)
                 .OrderByDescending(a => a.Date)
                 .ToListAsync();
+        }
+
+        public async Task<bool> HasAttendanceRecordsAsync(int employeeId)
+        {
+            return await _dbSet
+                .AnyAsync(x => x.EmployeeId == employeeId);
         }
     }
 }

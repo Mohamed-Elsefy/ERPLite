@@ -1,74 +1,75 @@
 ﻿@model ERPLite.Web.Areas.Admin.Models.Users.CreateUserViewModel
 @using ERPLite.Shared.Constants
 
-<h2>Create User</h2>
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white border-0 pt-4">
+                <h3 class="fw-bold text-dark mb-1">
+                    <i class="bi bi-person-plus-fill text-primary me-2"></i>Create User
+                </h3>
+                <p class="text-muted small mb-0">Register a new security principal and user account in the system.</p>
+            </div>
 
-<form asp-action="Create" method="post">
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
 
-    <div asp-validation-summary="ModelOnly"
-         class="text-danger">
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label fw-semibold text-secondary">Employee Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                            <input asp-for="FullName" class="form-control" placeholder="John Doe" />
+                        </div>
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-semibold text-secondary">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                            <input asp-for="Email" class="form-control" placeholder="name@company.com" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label fw-semibold text-secondary">Security Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
+                            <input asp-for="Password" class="form-control" placeholder="••••••••" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Role" class="form-label fw-semibold text-dark">System Authorization Role</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white text-primary"><i class="bi bi-tags"></i></span>
+                            <select asp-for="Role" class="form-select fw-semibold">
+                                <option value="">-- Select Authority Level --</option>
+                                <option value="@Roles.Admin">Admin (Full Control)</option>
+                                <option value="@Roles.Manager">Manager (Department Authority)</option>
+                                <option value="@Roles.Employee">Employee (Staff Access)</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="Role" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex gap-2 justify-content-end border-top pt-3">
+                        <a asp-action="Index" class="btn btn-light px-4 fw-semibold">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold d-flex align-items-center gap-2 shadow-sm">
+                            <i class="bi bi-check-circle"></i>
+                            <span>Create Account</span>
+                        </button>
+                    </div>
+                </form>
+                <div asp-validation-summary="ModelOnly" class="text-danger small mt-3"></div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div class="mb-3">
-
-        <label asp-for="FullName"></label>
-
-        <input asp-for="FullName"
-               class="form-control" />
-
-    </div>
-
-    <div class="mb-3">
-
-        <label asp-for="Email"></label>
-
-        <input asp-for="Email"
-               class="form-control" />
-
-    </div>
-
-    <div class="mb-3">
-
-        <label asp-for="Password"></label>
-
-        <input asp-for="Password"
-               class="form-control" />
-
-    </div>
-
-    <div class="mb-3">
-
-        <label asp-for="Role"></label>
-
-        <select asp-for="Role"
-                class="form-select">
-
-            <option value="@Roles.Admin">
-                Admin
-            </option>
-
-            <option value="@Roles.Manager">
-                Manager
-            </option>
-
-            <option value="@Roles.Employee">
-                Employee
-            </option>
-
-        </select>
-
-    </div>
-
-    <button type="submit"
-            class="btn btn-primary">
-
-        Create
-
-    </button>
-
-</form>
-
-@section Scripts
-{
+@section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

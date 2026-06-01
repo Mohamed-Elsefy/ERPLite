@@ -11,10 +11,6 @@ namespace ERPLite.Repositories.Implementation.Inventory
         {
         }
 
-        // =====================================
-        // Get All Products With Details
-        // =====================================
-
         public async Task<IEnumerable<Product>> GetAllWithDetailsAsync()
         {
             return await _dbSet
@@ -24,9 +20,6 @@ namespace ERPLite.Repositories.Implementation.Inventory
                 .ToListAsync();
         }
 
-        // =====================================
-        // Get Product By Id With Details
-        // =====================================
 
         public async Task<Product?> GetByIdWithDetailsAsync(int id)
         {
@@ -37,9 +30,6 @@ namespace ERPLite.Repositories.Implementation.Inventory
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        // =====================================
-        // Low Stock Products
-        // =====================================
 
         public async Task<IEnumerable<Product>> GetLowStockProductsAsync()
         {
@@ -50,25 +40,20 @@ namespace ERPLite.Repositories.Implementation.Inventory
                 .ToListAsync();
         }
 
-        // =====================================
-        // Search
-        // =====================================
 
         public async Task<IEnumerable<Product>> SearchProductsAsync(string keyword)
         {
-            if (string.IsNullOrWhiteSpace(keyword)) return await GetAllAsync();
+            if (string.IsNullOrWhiteSpace(keyword))
+                return await GetAllAsync();
 
-            keyword = keyword.Trim();
+            var cleanKeyword = keyword.Trim();
 
             return await _dbSet
                 .AsNoTracking()
-                .Where(p => EF.Functions.Like(p.Name, $"%{keyword}%"))
+                .Where(p => EF.Functions.Like(p.Name, $"%{cleanKeyword}%"))
                 .ToListAsync();
         }
 
-        // =====================================
-        // By Category
-        // =====================================
 
         public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(int categoryId)
         {
@@ -76,6 +61,47 @@ namespace ERPLite.Repositories.Implementation.Inventory
                 .AsNoTracking()
                 .Where(p => p.CategoryId == categoryId)
                 .ToListAsync();
+        }
+
+        public async Task<bool> ExistsByNameAsync(string name, int? excludedProductId = null)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return false;
+
+            var cleanName = name.Trim();
+
+            return await _dbSet.AnyAsync(x =>
+                x.Name == cleanName &&
+                (!excludedProductId.HasValue || x.Id != excludedProductId.Value));
+        }
+
+        public async Task<bool> HasAnyOrdersAsync(int productId)
+        {
+            return await _context.OrderItems
+                .AnyAsync(x => x.ProductId == productId);
+        }
+
+        public async Task<int> GetTotalProductsCountAsync()
+        {
+            return await _dbSet.CountAsync();
+        }
+
+        public async Task<int> GetOutOfStockCountAsync()
+        {
+            return await _dbSet.CountAsync(x => x.QuantityInStock <= 0);
+        }
+
+        public async Task<decimal> GetInventoryValueAsync()
+        {
+            return await _dbSet.SumAsync(x =>
+                    x.Price * x.QuantityInStock);
+        }
+
+        public async Task<Product?> GetForOrderAsync(int id)
+        {
+            return await _dbSet
+                .AsNoTracking() 
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

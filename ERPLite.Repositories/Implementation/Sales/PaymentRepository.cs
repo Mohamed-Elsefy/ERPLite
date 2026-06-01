@@ -12,9 +12,6 @@ namespace ERPLite.Repositories.Implementation.Sales
         {
         }
 
-        // =====================================
-        // Payments By Order
-        // =====================================
 
         public async Task<IEnumerable<Payment>> GetPaymentsByOrderAsync(int orderId)
         {
@@ -26,9 +23,6 @@ namespace ERPLite.Repositories.Implementation.Sales
                 .ToListAsync();
         }
 
-        // =====================================
-        // Payments By Status
-        // =====================================
 
         public async Task<IEnumerable<Payment>> GetPaymentsByStatusAsync(PaymentStatus status)
         {
@@ -39,21 +33,14 @@ namespace ERPLite.Repositories.Implementation.Sales
                 .ToListAsync();
         }
 
-        // =====================================
-        // Total Paid Amount
-        // =====================================
 
         public async Task<decimal> GetTotalPaidAmountAsync(int orderId)
         {
             return await _dbSet
-                .Where(p => p.OrderId == orderId)
-                .Select(p => (decimal?)p.Amount)
-                .SumAsync() ?? 0;
+                .Where(x => x.OrderId == orderId)
+                .SumAsync(x => (decimal?)x.Amount) ?? 0;
         }
 
-        // =====================================
-        // Recent Payments
-        // =====================================
 
         public async Task<IEnumerable<Payment>> GetRecentPaymentsAsync(int count)
         {
@@ -63,6 +50,11 @@ namespace ERPLite.Repositories.Implementation.Sales
                 .OrderByDescending(p => p.PaymentDate)
                 .Take(count)
                 .ToListAsync();
+        }
+
+        public async Task<decimal> GetGlobalTotalPaidAmountAsync()
+        {
+            return await _dbSet.SumAsync(p => (decimal?)p.Amount) ?? 0;
         }
     }
 }

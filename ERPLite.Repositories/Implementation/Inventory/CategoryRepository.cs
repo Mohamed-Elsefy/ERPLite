@@ -11,10 +11,6 @@ namespace ERPLite.Repositories.Implementation.Inventory
         {
         }
 
-        // =====================================
-        // Active Categories
-        // =====================================
-
         public async Task<IEnumerable<Category>> GetActiveCategoriesAsync()
         {
             return await _dbSet
@@ -22,9 +18,6 @@ namespace ERPLite.Repositories.Implementation.Inventory
                 .ToListAsync();
         }
 
-        // =====================================
-        // Category With Products
-        // =====================================
 
         public async Task<Category?> GetCategoryWithProductsAsync(int id)
         {
@@ -34,14 +27,17 @@ namespace ERPLite.Repositories.Implementation.Inventory
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        // =====================================
-        // Exists Check
-        // =====================================
 
-        public async Task<bool> CategoryExistsAsync(string name)
+        public async Task<bool> CategoryExistsAsync(string name, int? excludedCategoryId = null)
         {
-            return await _dbSet
-                .AnyAsync(c => EF.Functions.Like(c.Name, $"%{name}%"));
+            if (string.IsNullOrWhiteSpace(name))
+                return false;
+
+            var cleanName = name.Trim();
+
+            return await _dbSet.AnyAsync(c =>
+                c.Name == cleanName &&
+                (!excludedCategoryId.HasValue || c.Id != excludedCategoryId.Value));
         }
     }
 }

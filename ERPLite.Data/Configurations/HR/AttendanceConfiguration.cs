@@ -13,6 +13,7 @@ namespace ERPLite.Data.Configurations.HR
             builder.HasKey(a => a.Id);
 
             builder.Property(a => a.Status)
+                .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();
 

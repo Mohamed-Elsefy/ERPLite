@@ -1,9 +1,15 @@
 using ERPLite.Data.Seeders;
 using ERPLite.Repositories.DependencyInjection;
 using ERPLite.Web.Extensions;
+using ERPLite.Services.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add QuestPDF
+Settings.License = LicenseType.Community;
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -19,6 +25,9 @@ builder.Services.AddIdentityServices();
 
 // Add Repositories 
 builder.Services.AddRepositories();
+
+// Add Service layer
+builder.Services.AddServicesLayer();
 
 
 var app = builder.Build();
@@ -47,6 +56,8 @@ app.UseStaticFiles();
 app.MapStaticAssets();
 
 app.UseRouting();
+
+app.UseGlobalExceptionHandling();
 
 app.UseAuthentication();
 app.UseAuthorization();

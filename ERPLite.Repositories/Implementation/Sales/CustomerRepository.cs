@@ -11,24 +11,15 @@ namespace ERPLite.Repositories.Implementation.Sales
         {
         }
 
-        // =====================================
-        // Active Customers
-        // =====================================
 
-        public async Task<IEnumerable<Customer>>
-            GetActiveCustomersAsync()
+        public async Task<IEnumerable<Customer>> GetActiveCustomersAsync()
         {
             return await _dbSet
                 .AsNoTracking()
                 .ToListAsync();
         }
 
-        // =====================================
-        // Customer With Orders
-        // =====================================
-
-        public async Task<Customer?>
-            GetCustomerWithOrdersAsync(int id)
+        public async Task<Customer?> GetCustomerWithOrdersAsync(int id)
         {
             return await _dbSet
                 .AsNoTracking()
@@ -36,12 +27,7 @@ namespace ERPLite.Repositories.Implementation.Sales
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        // =====================================
-        // Search Customers
-        // =====================================
-
-        public async Task<IEnumerable<Customer>>
-            SearchCustomersAsync(string keyword)
+        public async Task<IEnumerable<Customer>> SearchCustomersAsync(string keyword)
         {
             keyword = keyword.Trim().ToLower();
 
@@ -52,15 +38,27 @@ namespace ERPLite.Repositories.Implementation.Sales
                 .ToListAsync();
         }
 
-        // =====================================
-        // Exists Check
-        // =====================================
-
-        public async Task<bool>
-            CustomerExistsAsync(string phone)
+        public async Task<bool> CustomerExistsByPhoneAsync(string phone, int? excludedCustomerId = null)
         {
-            return await _dbSet
-                .AnyAsync(c => c.Phone == phone);
+            if (string.IsNullOrWhiteSpace(phone))
+                return false;
+
+            var cleanPhone = phone.Trim();
+
+            return await _dbSet.AnyAsync(c =>
+                c.Phone == cleanPhone &&
+                (!excludedCustomerId.HasValue || c.Id != excludedCustomerId.Value));
+        }
+
+        public async Task<bool> HasOrdersAsync(int customerId)
+        {
+            return await _context.Orders
+                .AnyAsync(x => x.CustomerId == customerId);
+        }
+
+        public async Task<int> GetCountAsync()
+        {
+            return await _dbSet.CountAsync();
         }
     }
 }

@@ -24,7 +24,6 @@
     <Folder Include="Controllers\Notifications\" />
     <Folder Include="Controllers\Reports\" />
     <Folder Include="Controllers\Sales\" />
-    <Folder Include="Middlewares\" />
     <Folder Include="Filters\" />
     <Folder Include="Helpers\" />
     <Folder Include="Models\AI\" />

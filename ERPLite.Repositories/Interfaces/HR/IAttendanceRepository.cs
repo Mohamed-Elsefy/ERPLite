@@ -14,5 +14,7 @@ namespace ERPLite.Repositories.Interfaces.HR
         Task<IEnumerable<Attendance>> GetTodayAttendanceAsync();
 
         Task<IEnumerable<Attendance>> GetAttendanceByDateRangeAsync(DateTime startDate, DateTime endDate);
+
+        Task<bool> HasAttendanceRecordsAsync(int employeeId);
     }
 }

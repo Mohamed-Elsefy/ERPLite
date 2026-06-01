@@ -11,6 +11,10 @@ namespace ERPLite.Repositories.Interfaces.Sales
 
         Task<IEnumerable<Customer>> SearchCustomersAsync(string keyword);
 
-        Task<bool> CustomerExistsAsync(string phone);
+        Task<bool> CustomerExistsByPhoneAsync(string phone, int? excludedCustomerId = null);
+
+        Task<bool> HasOrdersAsync(int customerId);
+
+        Task<int> GetCountAsync();
     }
 }

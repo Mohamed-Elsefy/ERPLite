@@ -2,6 +2,7 @@
 using ERPLite.Repositories.Interfaces.HR;
 using ERPLite.Repositories.Interfaces.Inventory;
 using ERPLite.Repositories.Interfaces.Sales;
+using ERPLite.Repositories.Interfaces.System;
 using Microsoft.EntityFrameworkCore.Storage;
 
 
@@ -15,7 +16,11 @@ namespace ERPLite.Repositories.Implementation.Common
             ICustomerRepository customerRepo,
             IOrderRepository orderRepo,
             IPaymentRepository paymentRepo,
-            IAttendanceRepository attendanceRepo
+            IAttendanceRepository attendanceRepo,
+            IEmployeeRepository employeeRepo,
+            IDepartmentRepository departmentRepo,
+            IOrderItemRepository orderItemRepo,
+            IActivityLogRepository activityLogRepo
         ) : IUnitOfWork, IAsyncDisposable
     {
         private IDbContextTransaction? _currentTransaction;
@@ -30,6 +35,10 @@ namespace ERPLite.Repositories.Implementation.Common
         public IOrderRepository Orders { get; } = orderRepo;
         public IPaymentRepository Payments { get; } = paymentRepo;
         public IAttendanceRepository Attendances { get; } = attendanceRepo;
+        public IEmployeeRepository Employees { get; } = employeeRepo;
+        public IDepartmentRepository Departments { get; } = departmentRepo;
+        public IOrderItemRepository OrderItems { get; } = orderItemRepo;
+        public IActivityLogRepository ActivityLogs { get; } = activityLogRepo;
 
         // =================================
         // Save Changes
