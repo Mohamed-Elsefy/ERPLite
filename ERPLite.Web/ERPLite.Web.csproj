@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,17 +7,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Admin\Data\**" />
+    <Compile Remove="Areas\Employee\Data\**" />
+    <Compile Remove="Areas\Manager\Data\**" />
+    <Content Remove="Areas\Admin\Data\**" />
+    <Content Remove="Areas\Employee\Data\**" />
+    <Content Remove="Areas\Manager\Data\**" />
+    <EmbeddedResource Remove="Areas\Admin\Data\**" />
+    <EmbeddedResource Remove="Areas\Employee\Data\**" />
+    <EmbeddedResource Remove="Areas\Manager\Data\**" />
+    <None Remove="Areas\Admin\Data\**" />
+    <None Remove="Areas\Employee\Data\**" />
+    <None Remove="Areas\Manager\Data\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ERPLite.Repositories\ERPLite.Repositories.csproj" />
     <ProjectReference Include="..\ERPLite.Services\ERPLite.Services.csproj" />
     <ProjectReference Include="..\ERPLite.Shared\ERPLite.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Employee\Data\" />
-    <Folder Include="Areas\Employee\Models\" />
-    <Folder Include="Areas\Manager\Data\" />
-    <Folder Include="Areas\Manager\Models\" />
     <Folder Include="Controllers\HR\" />
     <Folder Include="Controllers\Inventory\" />
     <Folder Include="Controllers\AI\" />
@@ -25,7 +35,6 @@
     <Folder Include="Controllers\Reports\" />
     <Folder Include="Controllers\Sales\" />
     <Folder Include="Filters\" />
-    <Folder Include="Helpers\" />
     <Folder Include="Models\AI\" />
     <Folder Include="Models\HR\" />
     <Folder Include="Models\Inventory\" />

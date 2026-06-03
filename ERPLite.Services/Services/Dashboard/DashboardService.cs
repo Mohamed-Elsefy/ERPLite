@@ -1,5 +1,6 @@
 ﻿using ERPLite.Repositories.Interfaces.Common;
 using ERPLite.Services.DTOs.Dashboard;
+using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Dashboard;
 
 namespace ERPLite.Services.Services.Dashboard
@@ -13,7 +14,7 @@ namespace ERPLite.Services.Services.Dashboard
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<DashboardStatisticsDto> GetStatisticsAsync()
+        public async Task<ServiceResult<DashboardStatisticsDto>> GetStatisticsAsync()
         {
             var totalEmployees = await _unitOfWork.Employees.GetActiveCountAsync();
             var totalDepartments = await _unitOfWork.Departments.GetCountAsync();
@@ -34,7 +35,7 @@ namespace ERPLite.Services.Services.Dashboard
                 LowStockProducts = lowStockProductsList?.Count() ?? 0
             };
 
-            return dto;
+            return ServiceResult<DashboardStatisticsDto>.Successful(dto);
         }
     }
 }
