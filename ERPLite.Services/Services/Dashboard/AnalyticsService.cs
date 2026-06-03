@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using ERPLite.Repositories.Interfaces.Common;
+﻿using ERPLite.Repositories.Interfaces.Common;
 using ERPLite.Services.DTOs.Dashboard;
+using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Dashboard;
 
 namespace ERPLite.Services.Services.Dashboard
@@ -14,7 +14,7 @@ namespace ERPLite.Services.Services.Dashboard
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<SalesAnalyticsDto> GetSalesAnalyticsAsync()
+        public async Task<ServiceResult<SalesAnalyticsDto>> GetSalesAnalyticsAsync()
         {
             var totalRevenue = await _unitOfWork.Orders.GetTotalRevenueAsync();
             var totalPaidRevenue = await _unitOfWork.Payments.GetGlobalTotalPaidAmountAsync();
@@ -22,7 +22,7 @@ namespace ERPLite.Services.Services.Dashboard
             var paidOrders = await _unitOfWork.Orders.GetPaidOrdersCountAsync();
             var unpaidOrders = await _unitOfWork.Orders.GetUnpaidOrdersCountAsync();
 
-            return new SalesAnalyticsDto
+            var analyticsData = new SalesAnalyticsDto
             {
                 TotalRevenue = totalRevenue,
                 TotalPaidRevenue = totalPaidRevenue,
@@ -31,6 +31,9 @@ namespace ERPLite.Services.Services.Dashboard
                 UnpaidOrders = unpaidOrders,
                 TotalOrders = paidOrders + unpaidOrders
             };
+
+            return ServiceResult<SalesAnalyticsDto>.Successful(analyticsData);
         }
     }
+
 }
