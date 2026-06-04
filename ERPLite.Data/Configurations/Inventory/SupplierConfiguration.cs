@@ -11,7 +11,6 @@ namespace ERPLite.Data.Configurations.Inventory
             builder.ToTable("Suppliers");
 
             builder.HasKey(s => s.Id);
-
             builder.Property(s => s.Name)
                 .HasMaxLength(150)
                 .IsRequired();

@@ -16,7 +16,11 @@ namespace ERPLite.Data.Configurations.Inventory
                 .HasMaxLength(150)
                 .IsRequired();
 
-            builder.Property(p => p.Price)
+            builder.Property(p => p.CostPrice)
+                .HasPrecision(18, 2)
+                .IsRequired();
+
+            builder.Property(p => p.SellingPrice)
                 .HasPrecision(18, 2)
                 .IsRequired();
 
