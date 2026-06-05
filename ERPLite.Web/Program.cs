@@ -5,6 +5,7 @@ using ERPLite.Services.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF;
 using QuestPDF.Infrastructure;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +16,13 @@ Settings.License = LicenseType.Community;
 builder.Services.AddControllersWithViews();
 
 // Add DbContext
-builder.Services.AddDbContext<AppDbContext>(options => 
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppDbContext>(
+    (sp, options) =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.AddInterceptors(sp.GetRequiredService<ISaveChangesInterceptor>());
+
+}); 
 
 // Add Identity Services
 // this is Extension method for Identity Services

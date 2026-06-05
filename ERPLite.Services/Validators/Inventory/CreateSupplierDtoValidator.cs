@@ -17,6 +17,9 @@ namespace ERPLite.Services.Validators.Inventory
 
             RuleFor(x => x.Address)
                 .MaximumLength(250);
+
+            RuleFor(x => x.Email)
+                .EmailAddress();
         }
     }
 }

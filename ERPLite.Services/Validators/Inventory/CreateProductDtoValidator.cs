@@ -11,8 +11,11 @@ namespace ERPLite.Services.Validators.Inventory
                 .NotEmpty()
                 .MaximumLength(150);
 
-            RuleFor(x => x.Price)
+            RuleFor(x => x.SellingPrice)
                 .GreaterThan(0);
+
+            RuleFor(x => x.CostPrice)
+             .GreaterThan(0);
 
             RuleFor(x => x.QuantityInStock)
                 .GreaterThanOrEqualTo(0);

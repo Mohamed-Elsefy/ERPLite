@@ -79,7 +79,7 @@ namespace ERPLite.Services.Reports.Services
                 TotalProducts = productList.Count,
                 LowStockProducts = lowStockProducts?.Count() ?? 0,
                 OutOfStockProducts = productList.Count(p => p.QuantityInStock == 0),
-                InventoryValue = productList.Sum(p => p.QuantityInStock * p.Price),
+                InventoryValue = productList.Sum(p => p.QuantityInStock * p.SellingPrice ),
                 Products = _mapper.Map<List<ProductDto>>(productList)
             };
 

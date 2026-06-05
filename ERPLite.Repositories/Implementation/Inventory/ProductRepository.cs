@@ -94,7 +94,7 @@ namespace ERPLite.Repositories.Implementation.Inventory
         public async Task<decimal> GetInventoryValueAsync()
         {
             return await _dbSet.SumAsync(x =>
-                    x.Price * x.QuantityInStock);
+                    x.SellingPrice * x.QuantityInStock);
         }
 
         public async Task<Product?> GetForOrderAsync(int id)

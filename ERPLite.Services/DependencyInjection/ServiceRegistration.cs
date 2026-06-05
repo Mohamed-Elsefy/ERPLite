@@ -1,4 +1,5 @@
-﻿using ERPLite.Services.Interfaces.Auth;
+﻿using ERPLite.Data.Interceptors;
+using ERPLite.Services.Interfaces.Auth;
 using ERPLite.Services.Interfaces.Dashboard;
 using ERPLite.Services.Interfaces.HR;
 using ERPLite.Services.Interfaces.Inventory;
@@ -13,7 +14,9 @@ using ERPLite.Services.Services.Inventory;
 using ERPLite.Services.Services.Reports;
 using ERPLite.Services.Services.Sales;
 using ERPLite.Services.Services.System;
+using ERPLite.Shared;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -61,6 +64,10 @@ namespace ERPLite.Services.DependencyInjection
             services.AddScoped<IExportService, ExportService>();
             services.AddScoped<IPdfGenerator, PdfGenerator>();
             services.AddScoped<IReportService, ReportService>();
+
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddHttpContextAccessor();
+            services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
 
             return services;
         }

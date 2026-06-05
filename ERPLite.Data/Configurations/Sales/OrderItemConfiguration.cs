@@ -15,11 +15,6 @@ namespace ERPLite.Data.Configurations.Sales
             builder.Property(oi => oi.UnitPrice)
                 .HasPrecision(18, 2)
                 .IsRequired();
-
-            builder.Property(oi => oi.SubTotal)
-                .HasPrecision(18, 2)
-                .IsRequired();
-
             builder.Property(oi => oi.Quantity)
                 .IsRequired();
 

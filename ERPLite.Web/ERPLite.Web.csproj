@@ -29,7 +29,6 @@
 
   <ItemGroup>
     <Folder Include="Controllers\HR\" />
-    <Folder Include="Controllers\Inventory\" />
     <Folder Include="Controllers\AI\" />
     <Folder Include="Controllers\Notifications\" />
     <Folder Include="Controllers\Reports\" />

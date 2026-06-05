@@ -128,7 +128,7 @@ namespace ERPLite.Services.Services.Reports
                 {
                     table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text(prod.Id.ToString());
                     table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text(prod.Name);
-                    table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text($"${prod.Price:N2}");
+                    table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text($"${prod.SellingPrice:N2}");
 
                     var stockCell = table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2);
                     if (prod.QuantityInStock <= prod.MinStockLevel)

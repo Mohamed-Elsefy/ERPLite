@@ -9,10 +9,10 @@ namespace ERPLite.Services.Interfaces.Inventory
 
         Task<ServiceResult<CategoryDto>> GetByIdAsync(int id);
 
-        Task<ServiceResult> CreateAsync(CreateCategoryDto dto, string currentUserId);
+        Task<ServiceResult> CreateAsync(CreateCategoryDto dto);
 
-        Task<ServiceResult> UpdateAsync(UpdateCategoryDto dto, string currentUserId);
+        Task<ServiceResult> UpdateAsync(UpdateCategoryDto dto);
 
-        Task<ServiceResult> DeleteAsync(int id, string currentUserId);
+        Task<ServiceResult> DeleteAsync(int id);
     }
 }

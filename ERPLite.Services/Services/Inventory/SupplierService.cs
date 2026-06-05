@@ -5,6 +5,7 @@ using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Inventory;
 using ERPLite.Services.Interfaces.System;
+using ERPLite.Shared;
 using ERPLite.Shared.Constants;
 
 namespace ERPLite.Services.Services.Inventory
@@ -14,12 +15,18 @@ namespace ERPLite.Services.Services.Inventory
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
+        private readonly ICurrentUserService _currentUser;
 
-        public SupplierService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService)
+        public SupplierService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IActivityLogService activityLogService,
+            ICurrentUserService currentUser)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
+            _currentUser = currentUser;
         }
 
         public async Task<ServiceResult<IEnumerable<SupplierDto>>> GetAllAsync()
@@ -40,11 +47,12 @@ namespace ERPLite.Services.Services.Inventory
             return ServiceResult<SupplierDto>.Successful(dto);
         }
 
-        public async Task<ServiceResult> CreateAsync(CreateSupplierDto dto, string currentUserId)
+        public async Task<ServiceResult> CreateAsync(CreateSupplierDto dto)
         {
             var exists = await _unitOfWork.Suppliers.SupplierExistsAsync(dto.Name);
             if (exists)
                 return ServiceResult.Failed("Supplier already exists.");
+            var user = _currentUser.UserId;
 
             var supplier = _mapper.Map<Supplier>(dto);
 
@@ -52,7 +60,7 @@ namespace ERPLite.Services.Services.Inventory
             await _unitOfWork.SaveChangesAsync();
 
             await _activityLogService.LogAsync(
-                userId: currentUserId,
+                userId: user,
                 action: "Create",
                 entityName: SystemModules.Suppliers,
                 entityId: supplier.Id,
@@ -62,7 +70,7 @@ namespace ERPLite.Services.Services.Inventory
             return ServiceResult.Successful("Supplier created successfully.");
         }
 
-        public async Task<ServiceResult> UpdateAsync(UpdateSupplierDto dto, string currentUserId)
+        public async Task<ServiceResult> UpdateAsync(UpdateSupplierDto dto)
         {
             var supplier = await _unitOfWork.Suppliers.GetByIdAsync(dto.Id);
             if (supplier == null)
@@ -73,12 +81,13 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Supplier name already exists.");
 
             _mapper.Map(dto, supplier);
+            var user = _currentUser.UserId;
 
             _unitOfWork.Suppliers.Update(supplier);
             await _unitOfWork.SaveChangesAsync();
 
             await _activityLogService.LogAsync(
-                userId: currentUserId,
+                userId: user,
                 action: "Update",
                 entityName: SystemModules.Suppliers,
                 entityId: supplier.Id,
@@ -88,7 +97,7 @@ namespace ERPLite.Services.Services.Inventory
             return ServiceResult.Successful("Supplier updated successfully.");
         }
 
-        public async Task<ServiceResult> DeleteAsync(int id, string currentUserId)
+        public async Task<ServiceResult> DeleteAsync(int id)
         {
             var supplier = await _unitOfWork.Suppliers.GetByIdAsync(id);
             if (supplier == null)
@@ -99,12 +108,12 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Cannot delete supplier with products.");
 
             var supplierName = supplier.Name;
-
+            var user = _currentUser.UserId;
             _unitOfWork.Suppliers.SoftDelete(supplier);
             await _unitOfWork.SaveChangesAsync();
 
             await _activityLogService.LogAsync(
-                userId: currentUserId,
+                userId: user,
                 action: "Delete",
                 entityName: SystemModules.Suppliers,
                 entityId: id,

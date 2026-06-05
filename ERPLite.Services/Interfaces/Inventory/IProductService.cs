@@ -11,10 +11,10 @@ namespace ERPLite.Services.Interfaces.Inventory
 
         Task<ServiceResult<IEnumerable<ProductDto>>> GetLowStockProductsAsync();
 
-        Task<ServiceResult> CreateAsync(CreateProductDto dto, string currentUserId);
+        Task<ServiceResult> CreateAsync(CreateProductDto dto);
 
-        Task<ServiceResult> UpdateAsync(UpdateProductDto dto, string currentUserId);
+        Task<ServiceResult> UpdateAsync(UpdateProductDto dto);
 
-        Task<ServiceResult> DeleteAsync(int id, string currentUserId);
+        Task<ServiceResult> DeleteAsync(int id);
     }
 }

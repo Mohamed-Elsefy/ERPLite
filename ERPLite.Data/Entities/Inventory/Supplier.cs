@@ -2,7 +2,7 @@
 
 namespace ERPLite.Data.Entities.Inventory
 {
-    public class Supplier : ISoftDeletable
+    public class Supplier : BaseEntity, ISoftDeletable
     {
         public int Id { get; set; }
 

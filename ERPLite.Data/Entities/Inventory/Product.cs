@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ERPLite.Data.Entities.Inventory
 {
-    public class Product : ISoftDeletable
+    public class Product : BaseEntity, ISoftDeletable
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;

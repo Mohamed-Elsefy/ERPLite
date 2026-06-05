@@ -28,8 +28,8 @@ namespace ERPLite.Web.Areas.Admin.Controllers
 
             var viewModel = new AdminDashboardViewModel
             {
-                Statistics = statistics,
-                Analytics = analytics
+                Statistics = statistics.Data,
+                Analytics = analytics.Data
             };
 
             return View(viewModel);

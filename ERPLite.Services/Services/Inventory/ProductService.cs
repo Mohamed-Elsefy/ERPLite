@@ -5,6 +5,7 @@ using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Inventory;
 using ERPLite.Services.Interfaces.System;
+using ERPLite.Shared;
 using ERPLite.Shared.Constants;
 
 namespace ERPLite.Services.Services.Inventory
@@ -14,12 +15,17 @@ namespace ERPLite.Services.Services.Inventory
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
+        private readonly ICurrentUserService _currentUser;
 
-        public ProductService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService)
+        public ProductService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IActivityLogService activityLogService, ICurrentUserService currentUser)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
+            _currentUser = currentUser;
         }
 
         public async Task<ServiceResult<IEnumerable<ProductDto>>> GetAllAsync()
@@ -48,7 +54,7 @@ namespace ERPLite.Services.Services.Inventory
             return ServiceResult<IEnumerable<ProductDto>>.Successful(result);
         }
 
-        public async Task<ServiceResult> CreateAsync(CreateProductDto dto, string currentUserId)
+        public async Task<ServiceResult> CreateAsync(CreateProductDto dto)
         {
             if (await _unitOfWork.Products.ExistsByNameAsync(dto.Name))
                 return ServiceResult.Failed("Product already exists.");
@@ -62,12 +68,12 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Supplier not found.");
 
             var product = _mapper.Map<Product>(dto);
-
+            var user = _currentUser.UserId;
             await _unitOfWork.Products.AddAsync(product);
             await _unitOfWork.SaveChangesAsync();
 
             await _activityLogService.LogAsync(
-                userId: currentUserId,
+                userId: user,
                 action: "Create",
                 entityName: SystemModules.Products,
                 entityId: product.Id,
@@ -77,7 +83,7 @@ namespace ERPLite.Services.Services.Inventory
             return ServiceResult.Successful("Product created successfully.");
         }
 
-        public async Task<ServiceResult> UpdateAsync(UpdateProductDto dto, string currentUserId)
+        public async Task<ServiceResult> UpdateAsync(UpdateProductDto dto)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(dto.Id);
             if (product == null)
@@ -95,12 +101,13 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Product name already exists.");
 
             _mapper.Map(dto, product);
+            var user = _currentUser.UserId;
 
             _unitOfWork.Products.Update(product);
             await _unitOfWork.SaveChangesAsync();
 
             await _activityLogService.LogAsync(
-                userId: currentUserId,
+                userId: user,
                 action: "Update",
                 entityName: SystemModules.Products,
                 entityId: product.Id,
@@ -110,7 +117,7 @@ namespace ERPLite.Services.Services.Inventory
             return ServiceResult.Successful("Product updated successfully.");
         }
 
-        public async Task<ServiceResult> DeleteAsync(int id, string currentUserId)
+        public async Task<ServiceResult> DeleteAsync(int id)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(id);
             if (product == null)
@@ -121,12 +128,13 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Cannot delete product used in orders.");
 
             var productName = product.Name;
+            var user = _currentUser.UserId;
 
             _unitOfWork.Products.SoftDelete(product);
             await _unitOfWork.SaveChangesAsync();
 
             await _activityLogService.LogAsync(
-                userId: currentUserId,
+                userId: user,
                 action: "Delete",
                 entityName: SystemModules.Products,
                 entityId: id,

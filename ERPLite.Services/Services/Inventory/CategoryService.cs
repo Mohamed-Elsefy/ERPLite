@@ -5,6 +5,7 @@ using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Inventory;
 using ERPLite.Services.Interfaces.System;
+using ERPLite.Shared;
 using ERPLite.Shared.Constants;
 
 namespace ERPLite.Services.Services.Inventory
@@ -14,12 +15,17 @@ namespace ERPLite.Services.Services.Inventory
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
+        private readonly ICurrentUserService _currentUser;
 
-        public CategoryService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService)
+        public CategoryService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IActivityLogService activityLogService, ICurrentUserService currentUser)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
+           _currentUser = currentUser;
         }
 
         public async Task<ServiceResult<IEnumerable<CategoryDto>>> GetAllAsync()
@@ -40,18 +46,18 @@ namespace ERPLite.Services.Services.Inventory
             return ServiceResult<CategoryDto>.Successful(dto);
         }
 
-        public async Task<ServiceResult> CreateAsync(CreateCategoryDto dto, string currentUserId)
+        public async Task<ServiceResult> CreateAsync(CreateCategoryDto dto)
         {
             if (await _unitOfWork.Categories.CategoryExistsAsync(dto.Name))
                 return ServiceResult.Failed("Category already exists.");
 
             var category = _mapper.Map<Category>(dto);
-
+            var user = _currentUser.UserId;
             await _unitOfWork.Categories.AddAsync(category);
             await _unitOfWork.SaveChangesAsync();
 
             await _activityLogService.LogAsync(
-                userId: currentUserId,
+                userId: user,
                 action: "Create",
                 entityName: SystemModules.Categories,
                 entityId: category.Id,
@@ -61,7 +67,7 @@ namespace ERPLite.Services.Services.Inventory
             return ServiceResult.Successful("Category created successfully.");
         }
 
-        public async Task<ServiceResult> UpdateAsync(UpdateCategoryDto dto, string currentUserId)
+        public async Task<ServiceResult> UpdateAsync(UpdateCategoryDto dto)
         {
             var category = await _unitOfWork.Categories.GetByIdAsync(dto.Id);
             if (category == null)
@@ -72,12 +78,13 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Category name already exists.");
 
             _mapper.Map(dto, category);
+            var user = _currentUser.UserId;
 
             _unitOfWork.Categories.Update(category);
             await _unitOfWork.SaveChangesAsync();
 
             await _activityLogService.LogAsync(
-                userId: currentUserId,
+                userId: user,
                 action: "Update",
                 entityName: SystemModules.Categories,
                 entityId: category.Id,
@@ -87,7 +94,7 @@ namespace ERPLite.Services.Services.Inventory
             return ServiceResult.Successful("Category updated successfully.");
         }
 
-        public async Task<ServiceResult> DeleteAsync(int id, string currentUserId)
+        public async Task<ServiceResult> DeleteAsync(int id)
         {
             var category = await _unitOfWork.Categories.GetCategoryWithProductsAsync(id);
             if (category == null)
@@ -97,12 +104,13 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Cannot delete category with products.");
 
             var categoryName = category.Name;
+            var user = _currentUser.UserId;
 
             _unitOfWork.Categories.SoftDelete(category);
             await _unitOfWork.SaveChangesAsync();
 
             await _activityLogService.LogAsync(
-                userId: currentUserId,
+                userId: user,
                 action: "Delete",
                 entityName: SystemModules.Categories,
                 entityId: id,

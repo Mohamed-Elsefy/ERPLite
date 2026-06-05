@@ -112,16 +112,14 @@ namespace ERPLite.Services.Services.Sales
                         return ServiceResult<int>.Failed($"Insufficient stock for product: {product.Name}. Available: {product.QuantityInStock}");
                     }
 
-                    var unitPrice = product.Price;
-                    var subTotal = unitPrice * item.Quantity;
+                    var unitPrice = product.SellingPrice;
 
                     var orderItem = new OrderItem
                     {
                         OrderId = order.Id,
                         ProductId = product.Id,
                         Quantity = item.Quantity,
-                        UnitPrice = unitPrice,
-                        SubTotal = subTotal
+                        UnitPrice = unitPrice
                     };
 
                     await _unitOfWork.OrderItems.AddAsync(orderItem);
@@ -129,7 +127,7 @@ namespace ERPLite.Services.Services.Sales
                     product.QuantityInStock -= item.Quantity;
                     _unitOfWork.Products.Update(product);
 
-                    totalPrice += subTotal;
+                    totalPrice += orderItem.SubTotal;
                 }
 
                 order.TotalPrice = totalPrice;
