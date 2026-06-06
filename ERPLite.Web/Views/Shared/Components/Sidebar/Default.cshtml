@@ -1,0 +1,146 @@
+﻿@{
+    var isAdmin = User.IsInRole(Roles.Admin);
+    var isManager = User.IsInRole(Roles.Manager);
+    var isEmployee = User.IsInRole(Roles.Employee);
+
+    var currentDashboardArea = isAdmin ? Roles.Admin : isManager ? Roles.Manager : Roles.Employee;
+
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
+
+<div class="sidebar bg-dark text-white d-flex flex-column shadow min-vh-100" style="width: 260px; min-width: 260px; z-index: 1030;">
+    <div class="p-3 border-bottom border-secondary border-opacity-20 bg-black bg-opacity-20 d-flex align-items-center justify-content-center">
+        <h4 class="mb-0 fw-bold text-info d-flex align-items-center tracking-wide">
+            <i class="bi bi-cpu-fill me-2 fs-3 text-info"></i>ERPLite <span class="badge bg-info text-dark ms-2 font-monospace" style="font-size: 0.6rem; vertical-align: middle;">PRO</span>
+        </h4>
+    </div>
+
+    <ul class="nav flex-column mt-3 px-2 flex-grow-1 gap-1">
+        <li class="nav-item">
+            <a asp-area="@currentDashboardArea" asp-controller="Dashboard" asp-action="Index"
+               class="nav-link @(currentAction == "Index" && currentController == "Dashboard" ? "active" : "")">
+                <i class="bi bi-speedometer2 me-2 fs-5"></i> Dashboard
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a asp-area="" asp-controller="Notifications" asp-action="Index"
+               class="nav-link @NavigationHelper.IsActive(currentController, "Notifications")">
+                <i class="bi bi-bell-fill me-2 fs-5 text-warning"></i> Notifications Hub
+            </a>
+        </li>
+
+        @if (isAdmin)
+        {
+            <li class="nav-item small text-uppercase tracking-wider text-muted px-3 mt-3 mb-1 fw-bold" style="font-size: 0.65rem;">System Core</li>
+
+            <li class="nav-item">
+                <a asp-area="Admin" asp-controller="Users" asp-action="Index"
+                   class="nav-link @NavigationHelper.IsActive(currentController, "Users")">
+                    <i class="bi bi-shield-lock me-2 fs-5 text-info"></i> System Users
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a asp-area="Admin" asp-controller="ActivityLogs" asp-action="Index"
+                   class="nav-link @NavigationHelper.IsActive(currentController, "ActivityLogs")">
+                    <i class="bi bi-shield-shaded me-2 fs-5 text-danger"></i> Audit Logs Trail
+                </a>
+            </li>
+        }
+
+        @if (isAdmin || isManager)
+        {
+            <li class="nav-item small text-uppercase tracking-wider text-muted px-3 mt-3 mb-1 fw-bold" style="font-size: 0.65rem;">Inventory & Sales</li>
+
+            <li class="nav-item">
+                <a asp-area="" asp-controller="Customers" asp-action="Index"
+                   class="nav-link @NavigationHelper.IsActive(currentController, "Customers")">
+                    <i class="bi bi-people-fill me-2 fs-5 text-info"></i> Customers
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a asp-area="" asp-controller="Categories" asp-action="Index"
+                   class="nav-link @NavigationHelper.IsActive(currentController, "Categories")">
+                    <i class="bi bi-tags me-2 fs-5 text-primary"></i> Categories Hub
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a asp-area="" asp-controller="Suppliers" asp-action="Index"
+                   class="nav-link @NavigationHelper.IsActive(currentController, "Suppliers")">
+                    <i class="bi bi-truck me-2 fs-5 text-success"></i> Suppliers Node
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a asp-area="" asp-controller="Products" asp-action="Index"
+                   class="nav-link @NavigationHelper.IsActive(currentController, "Products")">
+                    <i class="bi bi-box-seam me-2 fs-5 text-warning"></i> Products Catalog
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a asp-area="" asp-controller="Orders" asp-action="Index"
+                   class="nav-link @NavigationHelper.IsActive(currentController, "Orders")">
+                    <i class="bi bi-receipt-cutoff me-2 fs-5 text-success"></i> Orders Ledger
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a asp-area="" asp-controller="Payments" asp-action="Index"
+                   class="nav-link @NavigationHelper.IsActive(currentController, "Payments")">
+                    <i class="bi bi-wallet2 me-2 fs-5 text-success"></i> Payments
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a asp-area="" asp-controller="Reports" asp-action="Index"
+                   class="nav-link @NavigationHelper.IsActive(currentController, "Reports")">
+                    <i class="bi bi-file-earmark-bar-graph me-2 fs-5 text-light-emphasis"></i> Executive Reports
+                </a>
+            </li>
+
+            <li class="nav-item small text-uppercase tracking-wider text-muted px-3 mt-3 mb-1 fw-bold" style="font-size: 0.65rem;">Human Capital</li>
+
+            <li class="nav-item">
+                <a asp-area="@currentDashboardArea" asp-controller="Dashboard" asp-action="AttendanceHub"
+                   class="nav-link @(currentAction == "AttendanceHub" && currentController == "Dashboard" ? "active" : "")">
+                    <i class="bi bi-calendar-check me-2 fs-5 text-info"></i> Attendance Control
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a asp-area="" asp-controller="Departments" asp-action="Index"
+                   class="nav-link @NavigationHelper.IsActive(currentController, "Departments")">
+                    <i class="bi bi-building me-2 fs-5 text-light-emphasis"></i> Departments
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a asp-area="" asp-controller="Employees" asp-action="Index"
+                   class="nav-link @NavigationHelper.IsActive(currentController, "Employees")">
+                    <i class="bi bi-person-badge me-2 fs-5 text-light-emphasis"></i> Employees
+                </a>
+            </li>
+        }
+
+        @if (isEmployee)
+        {
+            <li class="nav-item small text-uppercase tracking-wider text-muted px-3 mt-3 mb-1 fw-bold" style="font-size: 0.65rem;">Self Service</li>
+
+            <li class="nav-item">
+                <a asp-area="Employee" asp-controller="Attendance" asp-action="Index"
+                   class="nav-link @NavigationHelper.IsActive(currentController, "Attendance")">
+                    <i class="bi bi-clock-history me-2 fs-5 text-info"></i> My Attendance
+                </a>
+            </li>
+        }
+    </ul>
+
+    <div class="p-3 border-top border-secondary border-opacity-20 text-center small text-muted font-monospace bg-black bg-opacity-10">
+        v1.0.0 &copy; 2026
+    </div>
+</div>

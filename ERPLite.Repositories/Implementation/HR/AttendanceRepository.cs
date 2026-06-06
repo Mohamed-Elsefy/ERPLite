@@ -72,5 +72,24 @@ namespace ERPLite.Repositories.Implementation.HR
             return await _dbSet
                 .AnyAsync(x => x.EmployeeId == employeeId);
         }
+
+        public async Task<IEnumerable<Attendance>> GetTodayAttendanceManagementAsync(int? departmentId)
+        {
+            var today = DateTime.Today;
+            var tomorrow = today.AddDays(1);
+
+            var query = _dbSet
+                .AsNoTracking()
+                .Include(a => a.Employee)
+                    .ThenInclude(e => e.Department)
+                .Where(a => a.Date >= today && a.Date < tomorrow);
+
+            if (departmentId.HasValue)
+            {
+                query = query.Where(a => a.Employee.DepartmentId == departmentId.Value);
+            }
+
+            return await query.ToListAsync();
+        }
     }
 }

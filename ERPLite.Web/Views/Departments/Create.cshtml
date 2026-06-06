@@ -1,0 +1,54 @@
+﻿@model CreateDepartmentViewModel
+
+@{
+    ViewData["Title"] = "Add Department";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+                <div class="avatar-circle bg-primary-subtle text-primary fw-bold me-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                    <i class="bi bi-building-add fs-5"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-dark mb-0">Create New Department</h5>
+                    <small class="text-muted">Provision a new organizational business unit into the core engine.</small>
+                </div>
+            </div>
+
+            <form asp-action="Create" method="post" autocomplete="off">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold text-secondary small text-uppercase tracking-wider">Department Unit Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted rounded-start-3"><i class="bi bi-building"></i></span>
+                        <input asp-for="Name" class="form-control border-start-0 rounded-end-3" placeholder="e.g., Human Resources, Technical Support" />
+                    </div>
+                    <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label fw-bold text-secondary small text-uppercase tracking-wider">Operational Description</label>
+                    <textarea asp-for="Description" class="form-control rounded-3" rows="4" placeholder="Document brief details about the department's responsibilities and mandate..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                    <a asp-action="Index" class="btn btn-light border rounded-pill px-4 fw-semibold small">Cancel</a>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                        <i class="bi bi-check-circle-fill me-1"></i> Provision Unit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="~/Views/Shared/Infrastructure/_ValidationScriptsPartial.cshtml" />
+}

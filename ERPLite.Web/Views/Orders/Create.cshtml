@@ -1,0 +1,164 @@
+﻿@model CreateOrderViewModel
+
+@{
+    ViewData["Title"] = "Establish Sales Order";
+}
+
+<form id="orderForm" asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    
+    <div class="row">
+        <div class="col-12 col-xl-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
+                <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+                    <i class="bi bi-person-bounding-box text-primary me-2"></i>Entity Selection
+                </h5>
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 small border-0 mb-3"></div>
+
+                <div class="mb-4">
+                    <label asp-for="CustomerId" class="form-label text-secondary small fw-bold">Target Customer Profile</label>
+                    <select asp-for="CustomerId" asp-items="Model.Customers" class="form-select bg-light rounded-3">
+                        <option value="">-- Associate Commercial Account --</option>
+                    </select>
+                    <span asp-validation-for="CustomerId" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="bg-light rounded-4 p-3 border mb-4">
+                    <small class="text-muted d-block uppercase fw-bold mb-1" style="font-size:0.65rem;">Financial Matrix</small>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold text-secondary">Grand Total:</span>
+                        <h3 class="fw-black text-success mb-0 font-monospace" id="grandTotalDisplay">$0.00</h3>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary rounded-pill py-2 fw-semibold shadow-sm">
+                        <i class="bi bi-cloud-check-fill me-1"></i>Authorize & Commit Order
+                    </button>
+                    <a asp-action="Index" class="btn btn-light border rounded-pill py-2 fw-semibold btn-sm">Discard Scope</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-8 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                    <div>
+                        <h5 class="fw-bold text-dark mb-0"><i class="bi bi-cart4 text-primary me-2"></i>Line Items Manifest</h5>
+                        <small class="text-muted">Dynamically append stock units and dictate quantity vectors.</small>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold" onclick="addNewProductRow()">
+                        <i class="bi bi-patch-plus me-1"></i>Append Row
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table align-middle" id="orderItemsTable">
+                        <thead class="table-light small fw-bold text-secondary">
+                            <tr>
+                                <th style="width: 50%;">Product Stock Identifier</th>
+                                <th style="width: 20%;">Price Unit</th>
+                                <th style="width: 15%;">Quantity</th>
+                                <th style="width: 15%;" class="text-end">Subtotal</th>
+                                <th style="width: 5%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="border-0">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form> 
+
+@section Scripts {
+    <partial name="~/Views/Shared/Infrastructure/_ValidationScriptsPartial.cshtml" />
+
+    <script>
+        let rowIndex = 0;
+        const productsCatalog = @Html.Raw(Json.Serialize(ViewBag.ProductsRaw));
+
+        function addNewProductRow() {
+            let options = '<option value="">-- Choose Stock Entry --</option>';
+            productsCatalog.forEach(p => {
+                options += `<option value="${p.id}">${p.name}</option>`;
+            });
+
+            let row = `
+            <tr class="item-row">
+                <td>
+                    <select name="Items[${rowIndex}].ProductId" class="form-select product-selector rounded-3" onchange="productSelectionChanged(this)" required>
+                        ${options}
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control price-display font-monospace bg-light" readonly value="0.00" />
+                </td>
+                <td>
+                    <input name="Items[${rowIndex}].Quantity" type="number" min="1" value="1" class="form-control quantity-input rounded-3 font-monospace" oninput="calculateRowTotals()" required />
+                </td>
+                <td class="text-end fw-bold text-dark font-monospace row-subtotal-display">
+                    $0.00
+                </td>
+                <td class="text-end">
+                    <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeProductRow(this)">
+                        <i class="bi bi-trash3-fill fs-5"></i>
+                    </button>
+                </td>
+            </tr>`;
+
+            $('#orderItemsTable tbody').append(row);
+            rowIndex++;
+            calculateRowTotals();
+        }
+
+        function productSelectionChanged(selectElement) {
+            const productId = $(selectElement).val();
+            const product = productsCatalog.find(p => p.id == productId);
+            const $row = $(selectElement).closest('tr');
+
+            if (product) {
+                $row.find('.price-display').val(product.price.toFixed(2));
+            } else {
+                $row.find('.price-display').val('0.00');
+            }
+            calculateRowTotals();
+        }
+
+        function removeProductRow(buttonElement) {
+            $(buttonElement).closest('tr').remove();
+            calculateRowTotals();
+            reIndexTableNames();
+        }
+
+        function calculateRowTotals() {
+            let grandTotal = 0;
+
+            $('.item-row').each(function() {
+                const price = parseFloat($(this).find('.price-display').val()) || 0;
+                const quantity = parseInt($(this).find('.quantity-input').val()) || 0;
+                const subTotal = price * quantity;
+
+                grandTotal += subTotal;
+                $(this).find('.row-subtotal-display').text('$' + subTotal.toFixed(2));
+            });
+
+            $('#grandTotalDisplay').text('$' + grandTotal.toFixed(2));
+        }
+
+        function reIndexTableNames() {
+            rowIndex = 0;
+            $('.item-row').each(function() {
+                $(this).find('.product-selector').attr('name', `Items[${rowIndex}].ProductId`);
+                $(this).find('.quantity-input').attr('name', `Items[${rowIndex}].Quantity`);
+                rowIndex++;
+            });
+        }
+
+        $(document).ready(function() {
+            addNewProductRow();
+        });
+    </script>
+}

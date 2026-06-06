@@ -25,7 +25,7 @@ namespace ERPLite.Services.Mapping
             CreateMap<UpdateEmployeeDto, Employee>();
 
             CreateMap<Attendance, AttendanceDto>()
-                .ForMember(d => d.EmployeeName, o => o.MapFrom(s => s.Employee.FullName))
+                .ForMember(d => d.EmployeeName, o => o.MapFrom(s => s.Employee!.FullName))
                 .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.ToString()));
 
             CreateMap<CheckInDto, Attendance>()

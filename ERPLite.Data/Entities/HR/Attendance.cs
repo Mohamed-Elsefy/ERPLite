@@ -6,7 +6,7 @@ namespace ERPLite.Data.Entities.HR
     {
         public int Id { get; set; }
 
-        public int EmployeeId { get; set; }
+        public int? EmployeeId { get; set; }
 
         public DateTime Date { get; set; }
 
@@ -16,6 +16,6 @@ namespace ERPLite.Data.Entities.HR
 
         public AttendanceStatus Status { get; set; }
 
-        public Employee Employee { get; set; } = null!;
+        public Employee? Employee { get; set; }
     }
 }

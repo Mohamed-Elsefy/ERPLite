@@ -18,5 +18,7 @@ namespace ERPLite.Repositories.Interfaces.HR
         Task<int> GetCountAsync();
 
         Task<int> GetActiveCountAsync();
+
+        Task<int> GetActiveCountByDepartmentAsync(int? departmentId);
     }
 }

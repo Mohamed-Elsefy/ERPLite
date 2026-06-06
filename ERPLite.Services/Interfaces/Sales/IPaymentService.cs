@@ -10,5 +10,9 @@ namespace ERPLite.Services.Interfaces.Sales
         Task<ServiceResult<OrderFinancialDto>> GetOrderFinancialSummaryAsync(int orderId);
 
         Task<ServiceResult<int>> CreatePaymentAsync(CreatePaymentDto dto, string currentUserId);
+
+        Task<ServiceResult<IEnumerable<PaymentDto>>> GetRecentPaymentsAsync(int count);
+
+        Task<ServiceResult<decimal>> GetRemainingBalanceAsync(int orderId);
     }
 }

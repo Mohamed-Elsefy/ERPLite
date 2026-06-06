@@ -14,5 +14,7 @@ namespace ERPLite.Services.Interfaces.Sales
         Task<ServiceResult> UpdateAsync(UpdateCustomerDto dto, string currentUserId);
 
         Task<ServiceResult> DeleteAsync(int id, string currentUserId);
+
+        Task<ServiceResult<IEnumerable<CustomerDto>>> SearchAsync(string keyword);
     }
 }

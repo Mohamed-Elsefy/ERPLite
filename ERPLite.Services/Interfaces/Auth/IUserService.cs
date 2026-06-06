@@ -1,4 +1,4 @@
-﻿using ERPLite.Services.DTOs.Auth;
+﻿using ERPLite.Services.DTOs.Users;
 using ERPLite.Services.Helpers;
 
 namespace ERPLite.Services.Interfaces.Auth
@@ -12,6 +12,8 @@ namespace ERPLite.Services.Interfaces.Auth
         Task<ServiceResult> CreateUserAsync(CreateUserDto dto, string currentUserId);
 
         Task<ServiceResult> UpdateUserRoleAsync(UpdateUserRoleDto dto, string currentUserId);
+
+        Task<ServiceResult> GrantAccessToExistingEmployeeAsync(int employeeId, string password, string role, string currentUserId);
 
         Task<ServiceResult> LockUserAsync(string userId, string currentUserId);
 

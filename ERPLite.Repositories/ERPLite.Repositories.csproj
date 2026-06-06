@@ -7,36 +7,47 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Filters\**" />
+    <Compile Remove="Implementation\AI\**" />
     <Compile Remove="Implementation\Auth\**" />
     <Compile Remove="Implementation\Notifications\**" />
+    <Compile Remove="Implementation\Reports\**" />
+    <Compile Remove="Interfaces\AI\**" />
     <Compile Remove="Interfaces\Auth\**" />
     <Compile Remove="Interfaces\Notifications\**" />
+    <Compile Remove="Interfaces\Reports\**" />
+    <Compile Remove="QueryBuilders\**" />
+    <Compile Remove="Specifications\**" />
     <Compile Remove="UnitOfWork\**" />
+    <EmbeddedResource Remove="Filters\**" />
+    <EmbeddedResource Remove="Implementation\AI\**" />
     <EmbeddedResource Remove="Implementation\Auth\**" />
     <EmbeddedResource Remove="Implementation\Notifications\**" />
+    <EmbeddedResource Remove="Implementation\Reports\**" />
+    <EmbeddedResource Remove="Interfaces\AI\**" />
     <EmbeddedResource Remove="Interfaces\Auth\**" />
     <EmbeddedResource Remove="Interfaces\Notifications\**" />
+    <EmbeddedResource Remove="Interfaces\Reports\**" />
+    <EmbeddedResource Remove="QueryBuilders\**" />
+    <EmbeddedResource Remove="Specifications\**" />
     <EmbeddedResource Remove="UnitOfWork\**" />
+    <None Remove="Filters\**" />
+    <None Remove="Implementation\AI\**" />
     <None Remove="Implementation\Auth\**" />
     <None Remove="Implementation\Notifications\**" />
+    <None Remove="Implementation\Reports\**" />
+    <None Remove="Interfaces\AI\**" />
     <None Remove="Interfaces\Auth\**" />
     <None Remove="Interfaces\Notifications\**" />
+    <None Remove="Interfaces\Reports\**" />
+    <None Remove="QueryBuilders\**" />
+    <None Remove="Specifications\**" />
     <None Remove="UnitOfWork\**" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ERPLite.Data\ERPLite.Data.csproj" />
     <ProjectReference Include="..\ERPLite.Shared\ERPLite.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Implementation\AI\" />
-    <Folder Include="Implementation\Reports\" />
-    <Folder Include="Interfaces\AI\" />
-    <Folder Include="Interfaces\Reports\" />
-    <Folder Include="Filters\" />
-    <Folder Include="QueryBuilders\" />
-    <Folder Include="Specifications\" />
   </ItemGroup>
 
 </Project>

@@ -1,48 +1,67 @@
-﻿@model ERPLite.Web.Models.Auth.LoginViewModel
+﻿@model LoginViewModel
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Secure Infrastructure Login";
 }
 
-<div class="container mt-5">
+<div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow border-0 rounded-3">
-                <div class="card-header text-center bg-dark text-white py-3 rounded-top-3">
-                    <h3 class="mb-0 fw-bold">ERPLite Login</h3>
-                </div>
+        <div class="col-12 col-sm-10 col-md-8 col-lg-5">
+            <div class="text-center mb-4">
+                <h2 class="fw-black text-dark tracking-wide d-flex align-items-center justify-content-center mb-1">
+                    <i class="bi bi-cpu-fill text-info me-2 fs-2"></i>ERPLite
+                </h2>
+                <p class="text-muted small">Enterprise Resource Planning & Stock Infrastructure</p>
+            </div>
 
-                <div class="card-body p-4 bg-white rounded-bottom-3">
-                    <form asp-controller="Auth" asp-action="Login" asp-area="" method="post">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="card-body p-4 p-sm-5 bg-white">
+                    <div class="mb-4">
+                        <h4 class="fw-bold text-dark mb-1">Sign In</h4>
+                        <p class="text-muted small mb-0">Please authenticate to access your operational node.</p>
+                    </div>
 
+                    <form asp-controller="Auth" asp-action="Login" asp-area="" method="post" autocomplete="off">
                         @Html.AntiForgeryToken()
 
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 rounded-3 small mb-3"></div>
 
                         <div class="mb-3">
-                            <label asp-for="Email" class="form-label fw-semibold">Email Address</label>
-                            <input asp-for="Email" class="form-control py-2" placeholder="name@company.com" />
-                            <span asp-validation-for="Email" class="text-danger small"></span>
+                            <label asp-for="Email" class="form-label fw-semibold text-secondary small text-uppercase">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted rounded-start-3"><i class="bi bi-envelope"></i></span>
+                                <input asp-for="Email" class="form-control border-start-0 rounded-end-3 py-2.5 fs-6" placeholder="name@company.com" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Password" class="form-label fw-semibold">Password</label>
-                            <input asp-for="Password" class="form-control py-2" />
-                            <span asp-validation-for="Password" class="text-danger small"></span>
+                            <label asp-for="Password" class="form-label fw-semibold text-secondary small text-uppercase">Security Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted rounded-start-3"><i class="bi bi-lock"></i></span>
+                                <input asp-for="Password" type="password" class="form-control border-start-0 rounded-end-3 py-2.5 fs-6" placeholder="••••••••" />
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
                         </div>
 
-                        <div class="form-check mb-3">
-                            <input asp-for="RememberMe" class="form-check-input" />
-                            <label asp-for="RememberMe" class="form-check-label text-muted">
-                                Remember Me on this device
-                            </label>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input asp-for="RememberMe" class="form-check-input rounded-2" />
+                                <label asp-for="RememberMe" class="form-check-label text-muted small">
+                                    Trust this station
+                                </label>
+                            </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
-                            Sign In
+                        <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold rounded-pill shadow-sm fs-6 transition-all">
+                            Initialize Session <i class="bi bi-box-arrow-in-right ms-1"></i>
                         </button>
                     </form>
                 </div>
+            </div>
+
+            <div class="text-center mt-4 small text-muted font-monospace">
+                Secured Environment &copy; 2026 Corporate Node
             </div>
         </div>
     </div>
@@ -50,5 +69,5 @@
 
 @section Scripts
 {
-    <partial name="_ValidationScriptsPartial" />
+    <partial name="~/Views/Shared/Infrastructure/_ValidationScriptsPartial.cshtml" />
 }

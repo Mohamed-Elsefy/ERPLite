@@ -14,12 +14,14 @@ namespace ERPLite.Services.Services.Inventory
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
+        private readonly INotificationService _notificationService;
 
-        public ProductService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService)
+        public ProductService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
+            _notificationService = notificationService;
         }
 
         public async Task<ServiceResult<IEnumerable<ProductDto>>> GetAllAsync()
@@ -97,6 +99,18 @@ namespace ERPLite.Services.Services.Inventory
             _mapper.Map(dto, product);
 
             _unitOfWork.Products.Update(product);
+
+            if (product.QuantityInStock <= product.MinStockLevel)
+            {
+                await _notificationService.CreateSystemNotificationAsync(
+                    userId: currentUserId,
+                    title: "CRITICAL VECTOR: Inventory Depletion",
+                    message: $"Product '{product.Name}' has depleted below safety parameters. Current stock: {product.QuantityInStock} units.",
+                    type: "Inventory",
+                    priority: "Urgent"
+                );
+            }
+
             await _unitOfWork.SaveChangesAsync();
 
             await _activityLogService.LogAsync(
@@ -134,6 +148,24 @@ namespace ERPLite.Services.Services.Inventory
             );
 
             return ServiceResult.Successful("Product deleted successfully.");
+        }
+
+        public async Task<ServiceResult<IEnumerable<ProductDto>>> GetProductsByCategoryIdAsync(int categoryId)
+        {
+            var products = await _unitOfWork.Products.GetProductsByCategoryAsync(categoryId);
+
+            var result = _mapper.Map<IEnumerable<ProductDto>>(products);
+
+            return ServiceResult<IEnumerable<ProductDto>>.Successful(result);
+        }
+
+        public async Task<ServiceResult<IEnumerable<ProductDto>>> GetProductsBySupplierIdAsync(int supplierId)
+        {
+            var products = await _unitOfWork.Products.GetAllWithDetailsAsync();
+            var filtered = products.Where(p => p.SupplierId == supplierId).ToList();
+
+            var result = _mapper.Map<IEnumerable<ProductDto>>(filtered);
+            return ServiceResult<IEnumerable<ProductDto>>.Successful(result);
         }
     }
 }

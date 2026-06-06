@@ -13,6 +13,7 @@ using ERPLite.Services.Services.Inventory;
 using ERPLite.Services.Services.Reports;
 using ERPLite.Services.Services.Sales;
 using ERPLite.Services.Services.System;
+using ERPLite.Services.Services.Users;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -55,7 +56,7 @@ namespace ERPLite.Services.DependencyInjection
 
             // System
             services.AddScoped<IActivityLogService, ActivityLogService>();
-            services.AddScoped<INotificationService, EmailNotificationService>();
+            services.AddScoped<INotificationService, DbNotificationService>();
 
             // Reports
             services.AddScoped<IExportService, ExportService>();

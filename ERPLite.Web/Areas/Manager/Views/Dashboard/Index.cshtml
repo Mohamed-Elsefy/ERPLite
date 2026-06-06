@@ -1,131 +1,110 @@
-﻿@{
+﻿@model ManagerDashboardViewModel
+
+@{
     ViewData["Title"] = "Manager Dashboard";
 }
 
-<div class="row g-4">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center bg-white p-4 rounded shadow-sm border-start border-success border-4">
-            <div>
-                <h2 class="fw-bold mb-1 text-dark">Operations Management Portal</h2>
-                <p class="text-muted mb-0">Welcome back, Manager. Monitor department performance and action pending requests.</p>
-            </div>
-
-            <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post" id="logoutForm">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-outline-danger d-flex align-items-center gap-2 px-3 py-2 fw-semibold shadow-sm">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>Sign Out</span>
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-body d-flex align-items-center p-4">
-                <div class="bg-danger-subtle text-danger p-3 rounded-3 me-3">
-                    <i class="bi bi-exclamation-circle-fill fs-3"></i>
-                </div>
-                <div>
-                    <h6 class="text-muted mb-1 fw-medium">Pending Leaves</h6>
-                    <h4 class="fw-bold mb-0 text-dark">5 Requests</h4>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-body d-flex align-items-center p-4">
-                <div class="bg-success-subtle text-success p-3 rounded-3 me-3">
-                    <i class="bi bi-graph-up-arrow fs-3"></i>
-                </div>
-                <div>
-                    <h6 class="text-muted mb-1 fw-medium">Department Velocity</h6>
-                    <h4 class="fw-bold mb-0 text-dark">92%</h4>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-body d-flex align-items-center p-4">
+<div class="row g-4 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="card stat-card shadow-sm h-100 bg-white border-0 p-4 rounded-4">
+            <div class="d-flex align-items-center">
                 <div class="bg-primary-subtle text-primary p-3 rounded-3 me-3">
-                    <i class="bi bi-file-earmark-spreadsheet-fill fs-3"></i>
+                    <i class="bi bi-people-fill fs-3"></i>
                 </div>
                 <div>
-                    <h6 class="text-muted mb-1 fw-medium">Reports for Review</h6>
-                    <h4 class="fw-bold mb-0 text-dark">3 Files</h4>
+                    <h6 class="text-muted mb-1 fw-medium small">Department Personnel</h6>
+                    <h3 class="fw-bold mb-0 text-dark">@Model.Statistics.TotalEmployees</h3>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-body d-flex align-items-center p-4">
+    <div class="col-12 col-md-4">
+        <div class="card stat-card shadow-sm h-100 bg-white border-0 p-4 rounded-4">
+            <div class="d-flex align-items-center">
+                <div class="bg-success-subtle text-success p-3 rounded-3 me-3">
+                    <i class="bi bi-cart-check-fill fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium small">Monitored Sales Pools</h6>
+                    <h3 class="fw-bold mb-0 text-dark">@Model.Statistics.TotalOrders</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card stat-card shadow-sm h-100 bg-white border-0 p-4 rounded-4">
+            <div class="d-flex align-items-center">
                 <div class="bg-info-subtle text-info p-3 rounded-3 me-3">
-                    <i class="bi bi-person-check-fill fs-3"></i>
+                    <i class="bi bi-building-gear fs-3"></i>
                 </div>
                 <div>
-                    <h6 class="text-muted mb-1 fw-medium">Active Staff Today</h6>
-                    <h4 class="fw-bold mb-0 text-dark">14 / 16 Present</h4>
+                    <h6 class="text-muted mb-1 fw-medium small">Active Departments</h6>
+                    <h3 class="fw-bold mb-0 text-dark">@Model.Statistics.TotalDepartments</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-lg-8">
+        <div class="row g-4">
+            <div class="col-12 col-sm-6">
+                <div class="card shadow-sm border-0 bg-white p-4 rounded-4 border-start border-primary border-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted small mb-1 fw-bold text-uppercase">Month Revenue Stream</h6>
+                            <h3 class="fw-bold mb-0 text-primary">@Model.Statistics.MonthlyRevenue.ToString("C2")</h3>
+                        </div>
+                        <i class="bi bi-lightning-charge text-primary fs-2 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6">
+                <div class="card shadow-sm border-0 bg-white p-4 rounded-4 border-start border-success border-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted small mb-1 fw-bold text-uppercase">Month Fresh Orders</h6>
+                            <h3 class="fw-bold mb-0 text-success">@Model.Statistics.NewOrdersThisMonth</h3>
+                        </div>
+                        <i class="bi bi-calendar2-check text-success fs-2 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="card shadow-sm border-0 bg-dark text-white p-4 rounded-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="fw-bold text-white mb-1"><i class="bi bi-graph-up me-2 text-warning"></i>Operational Notice</h5>
+                            <p class="text-white-50 mb-0 small">This month registered <span class="text-info fw-bold">@Model.Statistics.NewCustomersThisMonth new active customers</span> in the centralized system directories.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-12 mb-5">
-        <div class="card border-0 shadow-sm p-4 bg-white">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-dark mb-0">
-                    <i class="bi bi-check2-square text-success me-1"></i> Pending Team Approvals
-                </h5>
-                <span class="badge bg-warning text-dark"><i class="bi bi-arrow-clockwise me-1"></i>Live Sync Enabled</span>
+    <div class="col-12 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-white h-100 p-4">
+            <h5 class="fw-bold text-dark mb-3"><i class="bi bi-shield-alert text-danger me-2"></i>Inventory Baseline</h5>
+            <div class="row w-100 text-center mb-3 g-0">
+                <div class="col-6 border-end">
+                    <h2 class="fw-bold text-warning mb-0">@Model.Statistics.LowStockProducts</h2>
+                    <span class="text-muted small">Low Baseline</span>
+                </div>
+                <div class="col-6">
+                    <h2 class="fw-bold text-danger mb-0">@Model.Statistics.OutOfStockProducts</h2>
+                    <span class="text-muted small">Out of Stock</span>
+                </div>
             </div>
-
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Employee Reference</th>
-                            <th>Request Type</th>
-                            <th>Target Period</th>
-                            <th>Justification / Notes</th>
-                            <th class="text-end">Action Control</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div class="fw-semibold">Ahmed Raafat</div>
-                                <small class="text-muted">Software Developer</small>
-                            </td>
-                            <td><span class="badge bg-primary-subtle text-primary">Annual Leave</span></td>
-                            <td>June 01 - June 04, 2026</td>
-                            <td class="text-muted">Family urgent circumstances</td>
-                            <td class="text-end">
-                                <button class="btn btn-sm btn-success px-3 me-1 fw-semibold">Approve</button>
-                                <button class="btn btn-sm btn-outline-danger px-3 fw-semibold">Reject</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="fw-semibold">Sarah Karim</div>
-                                <small class="text-muted">Data Analyst</small>
-                            </td>
-                            <td><span class="badge bg-warning-subtle text-warning text-dark">Early Departure</span></td>
-                            <td>Today (2 Hours)</td>
-                            <td class="text-muted">Scheduled medical checkup</td>
-                            <td class="text-end">
-                                <button class="btn btn-sm btn-success px-3 me-1 fw-semibold">Approve</button>
-                                <button class="btn btn-sm btn-outline-danger px-3 fw-semibold">Reject</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <p class="text-muted small text-center px-1 mb-4">Stocks require review to maintain procurement cycles.</p>
+            <a asp-area="Manager" asp-controller="Products" asp-action="Index" class="btn btn-outline-dark btn-sm rounded-pill w-100 mt-auto py-2 fw-semibold">
+                <i class="bi bi-boxes me-1"></i> Manage Stock Inventory
+            </a>
         </div>
     </div>
 </div>

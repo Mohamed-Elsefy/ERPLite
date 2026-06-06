@@ -32,7 +32,7 @@ namespace ERPLite.Services.Services.Sales
 
         public async Task<ServiceResult<CustomerDto>> GetByIdAsync(int id)
         {
-            var customer = await _unitOfWork.Customers.GetByIdAsync(id);
+            var customer = await _unitOfWork.Customers.GetCustomerWithOrdersAsync(id);
             if (customer == null)
                 return ServiceResult<CustomerDto>.Failed("Customer not found.");
 
@@ -110,6 +110,17 @@ namespace ERPLite.Services.Services.Sales
             );
 
             return ServiceResult.Successful("Customer deleted successfully.");
+        }
+
+        public async Task<ServiceResult<IEnumerable<CustomerDto>>> SearchAsync(string keyword)
+        {
+            if (string.IsNullOrWhiteSpace(keyword))
+                return await GetAllAsync();
+
+            var customers = await _unitOfWork.Customers.SearchCustomersAsync(keyword);
+            var result = _mapper.Map<IEnumerable<CustomerDto>>(customers);
+
+            return ServiceResult<IEnumerable<CustomerDto>>.Successful(result);
         }
     }
 }

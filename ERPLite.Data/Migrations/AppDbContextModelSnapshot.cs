@@ -107,7 +107,7 @@ namespace ERPLite.Data.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
@@ -118,7 +118,8 @@ namespace ERPLite.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId", "Date")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[EmployeeId] IS NOT NULL");
 
                     b.ToTable("Attendances", (string)null);
                 });
@@ -236,7 +237,7 @@ namespace ERPLite.Data.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<string>("FullName")
@@ -566,7 +567,6 @@ namespace ERPLite.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -745,8 +745,7 @@ namespace ERPLite.Data.Migrations
                     b.HasOne("ERPLite.Data.Entities.HR.Employee", "Employee")
                         .WithMany("Attendances")
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Employee");
                 });
@@ -840,8 +839,7 @@ namespace ERPLite.Data.Migrations
                     b.HasOne("ERPLite.Data.Entities.Identity.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("User");
                 });

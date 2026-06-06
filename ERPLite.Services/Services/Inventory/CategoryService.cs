@@ -14,12 +14,14 @@ namespace ERPLite.Services.Services.Inventory
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
+        private readonly INotificationService _notificationService;
 
-        public CategoryService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService)
+        public CategoryService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
+            _notificationService = notificationService;
         }
 
         public async Task<ServiceResult<IEnumerable<CategoryDto>>> GetAllAsync()
@@ -48,6 +50,15 @@ namespace ERPLite.Services.Services.Inventory
             var category = _mapper.Map<Category>(dto);
 
             await _unitOfWork.Categories.AddAsync(category);
+
+            await _notificationService.CreateSystemNotificationAsync(
+    userId: currentUserId,
+    title: "New Inventory Node Structure",
+    message: $"A new structural classification group '{category.Name}' has been introduced to the catalog matrix.",
+    type: "Catalog",
+    priority: "Low"
+);
+
             await _unitOfWork.SaveChangesAsync();
 
             await _activityLogService.LogAsync(

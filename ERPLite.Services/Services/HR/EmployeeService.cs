@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using ERPLite.Data.Entities.HR;
+using ERPLite.Data.Entities.Identity;
 using ERPLite.Repositories.Interfaces.Common;
 using ERPLite.Services.DTOs.HR;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.HR;
 using ERPLite.Services.Interfaces.System;
 using ERPLite.Shared.Constants;
+using Microsoft.AspNetCore.Identity;
 
 namespace ERPLite.Services.Services.HR
 {
@@ -14,12 +16,14 @@ namespace ERPLite.Services.Services.HR
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public EmployeeService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService)
+        public EmployeeService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService, UserManager<ApplicationUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
+            _userManager = userManager;
         }
 
         public async Task<ServiceResult<IEnumerable<EmployeeDto>>> GetAllAsync()
@@ -105,24 +109,47 @@ namespace ERPLite.Services.Services.HR
             if (employee is null)
                 return ServiceResult.Failed("Employee not found.");
 
-            var hasAttendance = await _unitOfWork.Attendances.HasAttendanceRecordsAsync(id);
-            if (hasAttendance)
-                return ServiceResult.Failed("Cannot delete employee with attendance records.");
-
             var employeeName = employee.FullName;
+            var linkedUserId = employee.UserId;
 
-            _unitOfWork.Employees.Delete(employee);
-            await _unitOfWork.SaveChangesAsync();
+            using var transaction = await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                _unitOfWork.Employees.Delete(employee);
+                await _unitOfWork.SaveChangesAsync();
 
-            await _activityLogService.LogAsync(
-                userId: currentUserId,
-                action: "Delete",
-                entityName: SystemModules.Employees,
-                entityId: id,
-                description: $"Permanently deleted employee entry: '{employeeName}'."
-            );
+                if (!string.IsNullOrEmpty(linkedUserId))
+                {
+                    var user = await _userManager.FindByIdAsync(linkedUserId);
+                    if (user != null)
+                    {
+                        var userDeleteResult = await _userManager.DeleteAsync(user);
+                        if (!userDeleteResult.Succeeded)
+                        {
+                            await transaction.RollbackAsync();
+                            return ServiceResult.Failed("Failed to purge linked system user identity.");
+                        }
+                    }
+                }
 
-            return ServiceResult.Successful("Employee deleted successfully.");
+                await _unitOfWork.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                await _activityLogService.LogAsync(
+                    userId: currentUserId,
+                    action: "Delete",
+                    entityName: SystemModules.Employees,
+                    entityId: id,
+                    description: $"Permanently deleted employee entry '{employeeName}'. Correlated attendance records preserved and unlinked successfully."
+                );
+
+                return ServiceResult.Successful("Employee deleted successfully. Historical attendance data preserved.");
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return ServiceResult.Failed($"An unexpected error occurred during database update: {ex.Message}");
+            }
         }
     }
 }

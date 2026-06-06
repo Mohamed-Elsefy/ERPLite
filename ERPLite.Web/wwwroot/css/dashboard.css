@@ -1,0 +1,42 @@
+﻿.stat-card {
+    border: none;
+    border-radius: 16px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+    }
+
+.bg-success-subtle {
+    background-color: #d1fae5 !important;
+}
+
+.text-success {
+    color: #059669 !important;
+}
+
+.bg-primary-subtle {
+    background-color: #e0f2fe !important;
+}
+
+.text-primary {
+    color: #0284c7 !important;
+}
+
+.bg-warning-subtle {
+    background-color: #fef3c7 !important;
+}
+
+.text-warning {
+    color: #d97706 !important;
+}
+
+.bg-danger-subtle {
+    background-color: #fee2e2 !important;
+}
+
+.text-danger {
+    color: #dc2626 !important;
+}

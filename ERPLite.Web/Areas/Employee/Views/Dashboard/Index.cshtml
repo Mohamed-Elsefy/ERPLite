@@ -1,122 +1,103 @@
-﻿@{
-    ViewData["Title"] = "Employee Dashboard";
+﻿@model EmployeeDashboardViewModel
+
+@{
+    ViewData["Title"] = "Employee Portal";
 }
 
-<div class="row g-4">
+<div class="row mb-4">
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center bg-white p-4 rounded shadow-sm border-start border-warning border-4">
-            <div>
-                <h2 class="fw-bold mb-1 text-dark">Employee Self-Service Portal</h2>
-                <p class="text-muted mb-0">Welcome back! Have a productive and successful workday ahead.</p>
-            </div>
-
-            <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post" id="logoutForm">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-outline-danger d-flex align-items-center gap-2 px-3 py-2 fw-semibold shadow-sm">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>Sign Out</span>
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <div class="col-12 col-md-4">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-body d-flex align-items-center p-4">
-                <div class="bg-primary-subtle text-primary p-3 rounded-3 me-3">
-                    <i class="bi bi-clipboard-check-fill fs-3"></i>
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h5 class="fw-bold text-dark mb-1">Welcome back, @User.Identity?.Name!</h5>
+                    <p class="text-muted mb-0 small">Today is @DateTime.Today.ToString("D")</p>
                 </div>
                 <div>
-                    <h6 class="text-muted mb-1 fw-medium">Pending Tasks</h6>
-                    <h4 class="fw-bold mb-0 text-dark">3 New Tasks</h4>
+                    @if (Model.TodayAttendance == null)
+                    {
+                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle p-2 px-3 rounded-pill fs-6 fw-bold">
+                            <i class="bi bi-exclamation-triangle me-1"></i> Not Checked-In Yet
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success-subtle text-success border border-success-subtle p-2 px-3 rounded-pill fs-6 fw-bold">
+                            <i class="bi bi-check-circle me-1"></i> Active On Duty
+                        </span>
+                    }
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="col-12 col-md-4">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-body d-flex align-items-center p-4">
-                <div class="bg-success-subtle text-success p-3 rounded-3 me-3">
-                    <i class="bi bi-calendar2-range-fill fs-3"></i>
-                </div>
-                <div>
-                    <h6 class="text-muted mb-1 fw-medium">Annual Leave Balance</h6>
-                    <h4 class="fw-bold mb-0 text-dark">18 Days Left</h4>
-                </div>
-            </div>
-        </div>
+<div class="card border-0 shadow-sm rounded-4 bg-white">
+    <div class="card-header bg-transparent border-0 pt-4 px-4">
+        <h5 class="fw-bold text-dark mb-0">
+            <i class="bi bi-clock-history text-info me-2"></i>My Recent Attendance Records (Top 10)
+        </h5>
     </div>
-
-    <div class="col-12 col-md-4">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-body d-flex align-items-center p-4">
-                <div class="bg-info-subtle text-info p-3 rounded-3 me-3">
-                    <i class="bi bi-clock-history fs-3"></i>
-                </div>
-                <div>
-                    <h6 class="text-muted mb-1 fw-medium">Logged Hours (Current Month)</h6>
-                    <h4 class="fw-bold mb-0 text-dark">142 Hours</h4>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12 col-lg-6">
-        <div class="card border-0 shadow-sm p-4 h-100 bg-white">
-            <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
-                <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Employee Self-Services
-            </h5>
-            <div class="row g-2">
-                <div class="col-6">
-                    <a href="#" class="btn btn-light border py-3 px-3 w-100 text-start h-100 d-flex flex-column justify-content-center bg-body-hover">
-                        <i class="bi bi-file-earmark-plus-fill text-primary fs-4 mb-2"></i>
-                        <span class="fw-semibold text-dark">Request Leave</span>
-                    </a>
-                </div>
-                <div class="col-6">
-                    <a href="#" class="btn btn-light border py-3 px-3 w-100 text-start h-100 d-flex flex-column justify-content-center bg-body-hover">
-                        <i class="bi bi-cash-stack text-success fs-4 mb-2"></i>
-                        <span class="fw-semibold text-dark">View Payslip</span>
-                    </a>
-                </div>
-                <div class="col-6">
-                    <a href="#" class="btn btn-light border py-3 px-3 w-100 text-start h-100 d-flex flex-column justify-content-center bg-body-hover">
-                        <i class="bi bi-geo-alt-fill text-danger fs-4 mb-2"></i>
-                        <span class="fw-semibold text-dark">Clock In / Out</span>
-                    </a>
-                </div>
-                <div class="col-6">
-                    <a href="#" class="btn btn-light border py-3 px-3 w-100 text-start h-100 d-flex flex-column justify-content-center bg-body-hover">
-                        <i class="bi bi-question-circle-fill text-info fs-4 mb-2"></i>
-                        <span class="fw-semibold text-dark">IT Support Ticket</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12 col-lg-6 mb-5">
-        <div class="card border-0 shadow-sm p-4 h-100 bg-white">
-            <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
-                <i class="bi bi-megaphone-fill text-danger me-1"></i> Internal Announcements
-            </h5>
-            <div class="d-flex flex-column gap-3">
-                <div class="p-3 bg-light rounded-3 border-start border-danger border-3">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="badge bg-danger">Urgent</span>
-                        <small class="text-muted">2 days ago</small>
-                    </div>
-                    <p class="mb-0 text-dark fw-medium">Official working hours have been updated for the upcoming quarter.</p>
-                </div>
-                <div class="p-3 bg-light rounded-3 border-start border-info border-3">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="badge bg-info text-dark">Notice</span>
-                        <small class="text-muted">1 week ago</small>
-                    </div>
-                    <p class="mb-0 text-dark fw-medium">All employees are kindly requested to update their personal information in the HR files.</p>
-                </div>
-            </div>
+    <div class="card-body p-4">
+        <div class="table-responsive">
+            <table class="table table-hover @(Model.RecentAttendances != null && Model.RecentAttendances.Any() ? "datatable" : "") align-middle mb-0">
+                <thead class="table-light text-secondary small fw-bold">
+                    <tr>
+                        <th class="ps-3">Shift Date</th>
+                        <th>Check-In Time</th>
+                        <th>Check-Out Time</th>
+                        <th class="text-end pe-3">Duty Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.RecentAttendances != null && Model.RecentAttendances.Any())
+                    {
+                        foreach (var item in Model.RecentAttendances)
+                        {
+                            <tr>
+                                <td class="fw-medium text-dark ps-3">@item.Date.ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    <span class="text-success fw-semibold small">
+                                        <i class="bi bi-box-arrow-in-right me-1"></i>
+                                        @item.CheckInTime.ToString("hh:mm tt")
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (!item.CheckOutTime.HasValue)
+                                    {
+                                        <span class="badge bg-light text-muted border rounded-pill px-2 py-1 small italic"><i class="bi bi-activity text-primary me-1"></i> Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger fw-semibold small">
+                                            <i class="bi bi-box-arrow-left me-1"></i>
+                                            @item.CheckOutTime.Value.ToString("hh:mm tt")
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-end pe-3">
+                                    @if (item.Status == "Present" || item.Status == "OnTime")
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fw-bold small">On-Time</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1.5 fw-bold small">@item.Status</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-5">
+                                <i class="bi bi-calendar-x d-block fs-3 mb-2 text-secondary"></i>
+                                No recent attendance records found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

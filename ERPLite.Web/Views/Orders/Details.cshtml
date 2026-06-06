@@ -1,0 +1,65 @@
+﻿@model OrderDto
+
+@{
+    ViewData["Title"] = $"Sales Invoice Audit - #{Model.Id}";
+}
+
+<div class="row">
+    <div class="col-12 col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+            <small class="text-uppercase tracking-wider text-muted font-monospace d-block mb-1" style="font-size:0.65rem;">System Core Log</small>
+            <h4 class="fw-black text-dark mb-4">Order #@Model.Id.ToString("D5")</h4>
+
+            <div class="mb-3 pb-2 border-bottom">
+                <span class="text-secondary small d-block">Associated Client</span>
+                <span class="fw-bold text-dark"><i class="bi bi-building me-1 text-primary"></i>@Model.CustomerName</span>
+            </div>
+
+            <div class="mb-3 pb-2 border-bottom">
+                <span class="text-secondary small d-block">Transaction Date</span>
+                <span class="fw-semibold text-dark"><i class="bi bi-calendar3 me-1 text-primary"></i>@Model.OrderDate.ToString("yyyy-MM-dd HH:mm:ss")</span>
+            </div>
+
+            <div class="mb-4">
+                <span class="text-secondary small d-block">Financial Output</span>
+                <span class="h3 text-success fw-black font-monospace">@Model.TotalPrice.ToString("C2")</span>
+            </div>
+
+            <div class="d-grid">
+                <a asp-action="Index" class="btn btn-light border rounded-pill fw-semibold btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i>Return to General Ledger
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-8 mb-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+            <h5 class="fw-bold text-dark mb-4 pb-2 border-bottom"><i class="bi bi-list-check text-primary me-2"></i>Audited Line Items</h5>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-light small fw-bold text-secondary">
+                        <tr>
+                            <th>Product Name</th>
+                            <th class="text-center">Quantity</th>
+                            <th class="text-end">Unit Contract Price</th>
+                            <th class="text-end">Subtotal Output</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="fw-bold text-dark">@item.ProductName</td>
+                                <td class="text-center font-monospace badge bg-light text-dark border rounded-pill px-2 py-0.5 mt-2">@item.Quantity</td>
+                                <td class="text-end font-monospace">@item.UnitPrice.ToString("C2")</td>
+                                <td class="text-end font-monospace fw-bold text-success">@item.SubTotal.ToString("C2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

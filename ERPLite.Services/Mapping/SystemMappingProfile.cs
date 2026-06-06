@@ -9,7 +9,7 @@ namespace ERPLite.Services.Mapping
         public SystemMappingProfile()
         {
             CreateMap<ActivityLog, ActivityLogDto>()
-                .ForMember(d => d.UserFullName, o => o.MapFrom(s => s.User.FullName));
+                .ForMember(d => d.UserFullName, o => o.MapFrom(s => s.User!.FullName));
         }
     }
 }

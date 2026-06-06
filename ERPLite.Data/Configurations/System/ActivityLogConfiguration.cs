@@ -30,7 +30,7 @@ namespace ERPLite.Data.Configurations.System
             builder.HasOne(al => al.User)
                 .WithMany()
                 .HasForeignKey(al => al.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

@@ -1,0 +1,45 @@
+﻿@model SystemNotificationDto
+
+@{
+    ViewData["Title"] = "Notification Stream Frame";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-7">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+            <div class="d-flex align-items-center border-bottom pb-3 mb-4">
+                <div class="p-3 bg-light text-info rounded-3 me-3 border">
+                    <i class="bi bi-chat-left-dots fs-3"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-dark mb-1">System Internal Dispatch</h5>
+                    <p class="text-muted small mb-0">System core system state vector alteration report broadcasted.</p>
+                </div>
+            </div>
+
+            <div class="p-3 bg-light rounded-3 mb-4 border">
+                <h6 class="fw-bold text-dark mb-2">@Model.Title</h6>
+                <p class="text-secondary font-monospace mb-0" style="font-size: 0.95rem; line-height: 1.6;">@Model.Message</p>
+            </div>
+
+            <div class="row g-3 mb-4 text-center">
+                <div class="col-6">
+                    <div class="border rounded-3 p-2 bg-light font-monospace small text-muted">
+                        <strong>Context Node:</strong> @Model.Type
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="border rounded-3 p-2 bg-light font-monospace small text-muted">
+                        <strong>Time:</strong> @Model.CreatedAt.ToString("HH:mm:ss") UTC
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <a asp-action="Index" class="btn btn-dark rounded-pill py-2.5 fw-semibold">
+                    <i class="bi bi-arrow-left-circle me-1"></i> Standard Return to Inbox
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

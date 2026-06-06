@@ -15,10 +15,5 @@ namespace ERPLite.Services.Services.Reports
         {
             return _pdfGenerator.GenerateReportPdf(title, data);
         }
-
-        public byte[] ExportToExcel<T>(string sheetName, IEnumerable<T> data)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

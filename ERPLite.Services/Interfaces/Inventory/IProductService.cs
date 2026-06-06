@@ -16,5 +16,9 @@ namespace ERPLite.Services.Interfaces.Inventory
         Task<ServiceResult> UpdateAsync(UpdateProductDto dto, string currentUserId);
 
         Task<ServiceResult> DeleteAsync(int id, string currentUserId);
+
+        Task<ServiceResult<IEnumerable<ProductDto>>> GetProductsByCategoryIdAsync(int categoryId);
+
+        Task<ServiceResult<IEnumerable<ProductDto>>> GetProductsBySupplierIdAsync(int supplierId);
     }
 }

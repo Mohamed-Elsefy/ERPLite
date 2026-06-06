@@ -1,0 +1,56 @@
+﻿@model EditDepartmentViewModel
+
+@{
+    ViewData["Title"] = "Edit Department";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+                <div class="avatar-circle bg-warning-subtle text-warning fw-bold me-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                    <i class="bi bi-pencil-square fs-5"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-dark mb-0">Edit Department Configuration</h5>
+                    <small class="text-muted">Modify structural metadata and configuration parameters for this unit.</small>
+                </div>
+            </div>
+
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <input type="hidden" asp-for="Id" />
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold text-secondary small text-uppercase tracking-wider">Department Unit Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted rounded-start-3"><i class="bi bi-building"></i></span>
+                        <input asp-for="Name" class="form-control border-start-0 rounded-end-3" />
+                    </div>
+                    <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label fw-bold text-secondary small text-uppercase tracking-wider">Operational Description</label>
+                    <textarea asp-for="Description" class="form-control rounded-3" rows="4"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                    <a asp-action="Index" class="btn btn-light border rounded-pill px-4 fw-semibold small">Cancel</a>
+                    <button type="submit" class="btn btn-warning rounded-pill px-4 fw-semibold text-white shadow-sm">
+                        <i class="bi bi-save-fill me-1"></i> Commit Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="~/Views/Shared/Infrastructure/_ValidationScriptsPartial.cshtml" />
+}

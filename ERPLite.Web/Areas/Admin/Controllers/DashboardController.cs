@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+﻿using ERPLite.Services.DTOs.Dashboard;
 using ERPLite.Services.Interfaces.Dashboard;
 using ERPLite.Web.Areas.Admin.Models.Dashboard;
+using ERPLite.Web.Models.Dashboard;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ERPLite.Web.Areas.Admin.Controllers
 {
@@ -23,15 +24,55 @@ namespace ERPLite.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var statistics = await _dashboardService.GetStatisticsAsync();
-            var analytics = await _analyticsService.GetSalesAnalyticsAsync();
+            var statisticsResult = await _dashboardService.GetStatisticsAsync();
+            var analyticsResult = await _analyticsService.GetSalesAnalyticsAsync();
+
+            if (!statisticsResult.Success || !analyticsResult.Success)
+            {
+                return View("Error");
+            }
 
             var viewModel = new AdminDashboardViewModel
             {
-                Statistics = statistics,
-                Analytics = analytics
+                Statistics = statisticsResult.Data!,
+                Analytics = analyticsResult.Data!
             };
 
+            ViewData["PageTitle"] = "Admin Executive Dashboard";
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AttendanceHub()
+        {
+            var attendanceDataResult = await _dashboardService.GetAttendanceDashboardRecordsAsync(filterDepartmentId: null);
+
+            if (!attendanceDataResult.Success || attendanceDataResult.Data == null)
+            {
+                return View("Error");
+            }
+
+            var viewModel = new ManagementDashboardViewModel
+            {
+                IsSuperAdmin = true,
+                DepartmentName = "All Enterprise Departments",
+                TotalEmployees = attendanceDataResult.Data.TotalEmployees,
+                PresentToday = attendanceDataResult.Data.PresentCount,
+                AbsentToday = attendanceDataResult.Data.AbsentCount,
+                LateToday = attendanceDataResult.Data.LateCount,
+                AttendanceRecords = attendanceDataResult.Data.Records.Select(r => new AttendanceManagementDto
+                {
+                    AttendanceId = r.AttendanceId,
+                    EmployeeName = r.EmployeeName,
+                    DepartmentName = r.DepartmentName,
+                    Date = r.Date,
+                    CheckInTime = r.CheckInTime,
+                    CheckOutTime = r.CheckOutTime,
+                    Status = r.Status
+                })
+            };
+
+            ViewData["PageTitle"] = "Enterprise Attendance Control";
             return View(viewModel);
         }
     }

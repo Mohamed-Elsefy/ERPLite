@@ -8,12 +8,15 @@
 
 	<ItemGroup>
 	  <Compile Remove="Constants\**" />
+	  <Compile Remove="Interfaces\AI\**" />
 	  <Compile Remove="Interfaces\Notifications\**" />
 	  <Compile Remove="Services\Notifications\**" />
 	  <EmbeddedResource Remove="Constants\**" />
+	  <EmbeddedResource Remove="Interfaces\AI\**" />
 	  <EmbeddedResource Remove="Interfaces\Notifications\**" />
 	  <EmbeddedResource Remove="Services\Notifications\**" />
 	  <None Remove="Constants\**" />
+	  <None Remove="Interfaces\AI\**" />
 	  <None Remove="Interfaces\Notifications\**" />
 	  <None Remove="Services\Notifications\**" />
 	</ItemGroup>
@@ -25,9 +28,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="DTOs\AI\" />
-		<Folder Include="Interfaces\AI\" />
-		<Folder Include="Services\AI\" />
 		<Folder Include="Validators\Sales\" />
 	</ItemGroup>
 

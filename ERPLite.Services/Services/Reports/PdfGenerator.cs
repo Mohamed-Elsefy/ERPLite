@@ -39,6 +39,10 @@ namespace ERPLite.Services.Services.Reports
                         {
                             BuildEmployeesTable(col, empReport);
                         }
+                        else if (data is AttendanceReportDto attReport)
+                        {
+                            BuildAttendanceTable(col, attReport);
+                        }
                         else if (data is InventoryReportDto invReport)
                         {
                             BuildInventoryTable(col, invReport);
@@ -98,6 +102,41 @@ namespace ERPLite.Services.Services.Reports
                     table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text(emp.FullName);
                     table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text(emp.Email);
                     table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text($"${emp.Salary:N2}");
+                }
+            });
+        }
+
+        private void BuildAttendanceTable(ColumnDescriptor col, AttendanceReportDto report)
+        {
+            col.Item().PaddingBottom(10).Text($"Period: {report.From:yyyy-MM-dd} to {report.To:yyyy-MM-dd}  |  Total Sheets: {report.TotalRecords}  |  Present: {report.PresentCount}  |  Late: {report.LateCount}").Bold();
+
+            col.Item().Table(table =>
+            {
+                table.ColumnsDefinition(columns =>
+                {
+                    columns.RelativeColumn(2);   // Date
+                    columns.RelativeColumn(3);   // Employee Name
+                    columns.RelativeColumn(2);   // Status
+                    columns.RelativeColumn(2);   // Note/Time
+                });
+
+                table.Header(header =>
+                {
+                    header.Cell().Background(Colors.Indigo.Lighten4).Padding(5).Text("Date").Bold();
+                    header.Cell().Background(Colors.Indigo.Lighten4).Padding(5).Text("Employee").Bold();
+                    header.Cell().Background(Colors.Indigo.Lighten4).Padding(5).Text("Status").Bold();
+                    header.Cell().Background(Colors.Indigo.Lighten4).Padding(5).Text("Remarks").Bold();
+                });
+
+                foreach (var rec in report.Records)
+                {
+                    table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text(rec.Date.ToString("yyyy-MM-dd"));
+                    table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text(rec.EmployeeName ?? $"ID: {rec.EmployeeId}");
+
+                    var statusCell = table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2);
+                    statusCell.Text(rec.Status.ToString());
+
+                    table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text("-");
                 }
             });
         }

@@ -1,0 +1,63 @@
+﻿@model ProductDto
+
+@{
+    ViewData["Title"] = $"Asset Profiles - {Model.Name}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+            <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="avatar-circle bg-light text-primary fw-bold rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                        <i class="bi bi-box-seam fs-4"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold text-dark mb-1">@Model.Name</h5>
+                        <span class="badge bg-light text-secondary border rounded-pill px-3 font-monospace small">SKU: #@Model.Id.ToString("D4")</span>
+                    </div>
+                </div>
+                <a asp-action="Index" class="btn btn-light border btn-sm rounded-pill px-3 fw-semibold">Back</a>
+            </div>
+
+            <div class="vstack gap-3">
+                <div class="p-3 bg-light rounded-3 border d-flex justify-content-between">
+                    <span class="text-muted small fw-semibold">Category Segment</span>
+                    <span class="fw-bold text-dark small"><i class="bi bi-tag text-muted me-1"></i>@Model.CategoryName</span>
+                </div>
+
+                <div class="p-3 bg-light rounded-3 border d-flex justify-content-between">
+                    <span class="text-muted small fw-semibold">Logistics Vendor Source</span>
+                    <span class="fw-bold text-dark small"><i class="bi bi-truck text-muted me-1"></i>@Model.SupplierName</span>
+                </div>
+
+                <div class="p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+                    <span class="text-muted small fw-semibold">Unit Asset Price</span>
+                    <span class="fs-5 fw-bold text-primary">$@Model.Price.ToString("N2")</span>
+                </div>
+
+                <div class="p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+                    <span class="text-muted small fw-semibold">Live Stock Level</span>
+                    <div>
+                        <span class="fw-bold text-dark">@Model.QuantityInStock units</span>
+                        <small class="text-muted d-block font-monospace text-end" style="font-size: 0.65rem;">Min Threshold: @Model.MinStockLevel</small>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+                    <span class="text-muted small fw-semibold">Asset Capital Weight</span>
+                    <span class="fw-bold text-success fs-5">$@((Model.Price * Model.QuantityInStock).ToString("N2"))</span>
+                </div>
+            </div>
+
+            @if (User.IsInRole(Roles.Admin))
+            {
+                <div class="border-top pt-3 mt-4 text-end">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning text-white rounded-pill px-4 fw-semibold small">
+                        <i class="bi bi-pencil-square me-1"></i> Edit Specifications
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

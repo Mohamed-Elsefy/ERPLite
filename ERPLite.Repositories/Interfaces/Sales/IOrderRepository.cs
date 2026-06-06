@@ -24,5 +24,7 @@ namespace ERPLite.Repositories.Interfaces.Sales
         Task<bool> HasPaymentsAsync(int orderId);
 
         Task<int> GetCountAsync();
+
+        Task<decimal> GetUnpaidRevenueAsync();
     }
 }

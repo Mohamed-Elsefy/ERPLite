@@ -1,4 +1,4 @@
-﻿using ERPLite.Services.DTOs.Auth;
+﻿using ERPLite.Services.DTOs.Users;
 using FluentValidation;
 
 namespace ERPLite.Services.Validators.Auth

@@ -67,5 +67,17 @@ namespace ERPLite.Repositories.Implementation.HR
                 .Include(e => e.User)
                 .CountAsync(e => e.User == null || e.User.LockoutEnd == null || e.User.LockoutEnd < DateTimeOffset.UtcNow);
         }
+
+        public async Task<int> GetActiveCountByDepartmentAsync(int? departmentId)
+        {
+            var query = _context.Employees.AsNoTracking();
+
+            if (departmentId.HasValue)
+            {
+                query = query.Where(e => e.DepartmentId == departmentId.Value);
+            }
+
+            return await query.CountAsync();
+        }
     }
 }

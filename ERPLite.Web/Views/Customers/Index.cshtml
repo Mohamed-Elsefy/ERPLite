@@ -1,0 +1,108 @@
+﻿@model CustomerIndexViewModel
+
+@{
+    ViewData["Title"] = "Customers Directory";
+}
+
+<div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-person-lines-fill text-primary me-2"></i>Customers Portfolio</h4>
+            <p class="text-muted small mb-0">Track customer footprints, active trade accounts, and cross-reference phone record uniqueness.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+            <i class="bi bi-plus-circle-fill me-1"></i> Add New Customer
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 mb-3" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 mb-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <form asp-action="Index" method="get" class="row g-2 mb-4">
+        <div class="col-12 col-md-5 col-lg-4">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" name="keyword" value="@Model.SearchTerm" class="form-control border-start-0 rounded-end-3" placeholder="Search by name or phone footprint..." />
+            </div>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-light border fw-semibold rounded-3 px-3">Filter</button>
+            @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+            {
+                <a asp-action="Index" class="btn btn-link text-decoration-none text-muted small">Clear Criteria</a>
+            }
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-secondary small fw-bold">
+                <tr>
+                    <th scope="col" class="ps-3">Customer Profile</th>
+                    <th scope="col">Phone Contact</th>
+                    <th scope="col">Onboarding Date</th>
+                    <th scope="col" class="text-end pe-3">@(User.IsInRole(Roles.Admin) ? "Control Node" : "Actions")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Customers == null || !Model.Customers.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-5">
+                            <i class="bi bi-people fs-1 d-block mb-2 text-secondary"></i>No active customer profiles found matching system parameters.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model.Customers)
+                    {
+                        <tr>
+                            <td class="ps-3">
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-dark">@item.FullName</h6>
+                                    <small class="text-muted font-monospace" style="font-size: 0.7rem;">CST: #@item.Id.ToString("D4")</small>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 small">
+                                    <i class="bi bi-telephone text-secondary me-1"></i>@item.Phone
+                                </span>
+                            </td>
+                            <td class="text-secondary small">@item.CreatedAt.ToString("yyyy-MM-dd")</td>
+                            <td class="text-end pe-3">
+                                <div class="d-inline-flex gap-2 align-items-center">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">Details</a>
+
+                                    @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.Manager))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold">Edit</a>
+                                    }
+                                    @if (User.IsInRole(Roles.Admin))
+                                    {
+                                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Soft-delete customer profile? Deletion will fail if locked to historical sales orders.');" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold">Purge</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

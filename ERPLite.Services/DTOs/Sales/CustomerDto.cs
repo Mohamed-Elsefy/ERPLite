@@ -9,5 +9,7 @@
         public string Phone { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; }
+
+        public List<OrderDto> Orders { get; set; } = new();
     }
 }

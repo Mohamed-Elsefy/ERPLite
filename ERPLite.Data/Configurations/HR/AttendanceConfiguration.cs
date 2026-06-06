@@ -20,9 +20,10 @@ namespace ERPLite.Data.Configurations.HR
             builder.HasOne(a => a.Employee)
                 .WithMany(e => e.Attendances)
                 .HasForeignKey(a => a.EmployeeId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasIndex(a => new { a.EmployeeId, a.Date })
+                .HasFilter("[EmployeeId] IS NOT NULL")
                 .IsUnique();
         }
     }

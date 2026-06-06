@@ -1,5 +1,6 @@
 ﻿using ERPLite.Data.Entities.Identity;
 using ERPLite.Shared.Constants;
+using ERPLite.Web.Helpers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 
@@ -7,7 +8,7 @@ namespace ERPLite.Web.Extensions
 {
     public static class IdentityServiceExtensions
     {
-        public static IServiceCollection AddIdentityServices( this IServiceCollection services)
+        public static IServiceCollection AddIdentityServices(this IServiceCollection services)
         {
             services
                 .AddIdentity<ApplicationUser, ApplicationRole>(options =>
@@ -33,6 +34,8 @@ namespace ERPLite.Web.Extensions
                 })
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -74,6 +77,13 @@ namespace ERPLite.Web.Extensions
                 options.AddPolicy(
                     "EmployeeOnly",
                     policy => policy.RequireRole(
+                        Roles.Employee));
+
+                options.AddPolicy(
+                    "AllUsers",
+                    policy => policy.RequireRole(
+                        Roles.Admin,
+                        Roles.Manager,
                         Roles.Employee));
             });
 

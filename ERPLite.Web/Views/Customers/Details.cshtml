@@ -1,0 +1,89 @@
+﻿@model CustomerDetailsViewModel
+
+@{
+    ViewData["Title"] = "Customer Profile Analytics";
+}
+
+<div class="row g-4">
+    <div class="col-12 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 text-center h-100">
+            <div class="avatar-circle bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 65px; height: 65px;">
+                <i class="bi bi-person-badge fs-2"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-1">@Model.FullName</h5>
+            <small class="text-muted font-monospace d-block mb-3">System Key: #@Model.CustomerId.ToString("D4")</small>
+
+            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fw-bold small mx-auto mb-4">
+                <i class="bi bi-shield-check me-1"></i>Verified Account
+            </span>
+
+            <div class="text-start border-top pt-3">
+                <div class="mb-3">
+                    <label class="text-muted small fw-bold text-uppercase d-block mb-1">Phone Number</label>
+                    <span class="text-dark fw-semibold"><i class="bi bi-telephone me-2 text-secondary"></i>@Model.Phone</span>
+                </div>
+                <div class="mb-3">
+                    <label class="text-muted small fw-bold text-uppercase d-block mb-1">Onboarding Stamp</label>
+                    <span class="text-dark fw-semibold"><i class="bi bi-calendar-event me-2 text-secondary"></i>@Model.OnboardedAt.ToString("yyyy-MM-dd")</span>
+                </div>
+                <div class="mb-3 border-top pt-2">
+                    <label class="text-muted small fw-bold text-uppercase d-block mb-1">Total Trading Volume (LTV)</label>
+                    <span class="text-success fw-bold fs-5">$@Model.TotalLifetimeValue.ToString("N2")</span>
+                </div>
+            </div>
+
+            <div class="mt-auto pt-3">
+                <a asp-action="Index" class="btn btn-light border rounded-pill w-100 fw-semibold btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i>Return to Registry
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+                <div class="avatar-circle bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                    <i class="bi bi-receipt-cutoff fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-dark mb-0">Historical Orders Pipeline</h5>
+                    <small class="text-muted">Review and audit commercial sales logs and pipeline billing activities linked to this entity.</small>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-secondary small fw-bold">
+                        <tr>
+                            <th scope="col" class="ps-3">Order Token</th>
+                            <th scope="col">Placement Date</th>
+                            <th scope="col" class="text-end pe-3">Gross Valuation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.OrdersPipeline == null || !Model.OrdersPipeline.Any())
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-5">
+                                    <i class="bi bi-cart-x fs-2 d-block mb-2 text-secondary"></i>No historic transaction records discovered for this profile.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var order in Model.OrdersPipeline)
+                            {
+                                <tr>
+                                    <td class="ps-3 fw-bold text-dark small">#@order.Id.ToString("D5")</td>
+                                    <td class="text-secondary small">@order.OrderDate.ToString("yyyy-MM-dd")</td>
+                                    <td class="text-end pe-3 fw-bold text-success small">$@order.TotalPrice.ToString("N2")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

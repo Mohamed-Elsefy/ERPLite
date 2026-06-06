@@ -23,6 +23,8 @@ namespace ERPLite.Services.Mapping
                     o => o.MapFrom(s => s.Supplier.Name));
 
             CreateMap<CreateProductDto, Product>();
+
+            CreateMap<UpdateProductDto, Product>();
         }
     }
 }

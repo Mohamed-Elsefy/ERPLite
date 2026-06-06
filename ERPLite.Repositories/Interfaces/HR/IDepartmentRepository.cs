@@ -9,6 +9,8 @@ namespace ERPLite.Repositories.Interfaces.HR
 
         Task<Department?> GetWithEmployeesAsync(int id);
 
+        Task<IEnumerable<Department>> GetAllWithEmployeesAsync();
+
         Task<int> GetCountAsync();
     }
 }

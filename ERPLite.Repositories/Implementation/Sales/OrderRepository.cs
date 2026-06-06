@@ -95,5 +95,12 @@ namespace ERPLite.Repositories.Implementation.Sales
             return await _dbSet
                 .CountAsync(x => x.PaymentStatus != OrderPaymentStatus.Paid);
         }
+
+        public async Task<decimal> GetUnpaidRevenueAsync()
+        {
+            return await _dbSet
+                .Where(o => o.PaymentStatus == OrderPaymentStatus.Unpaid)
+                .SumAsync(o => (decimal?)o.TotalPrice) ?? 0;
+        }
     }
 }

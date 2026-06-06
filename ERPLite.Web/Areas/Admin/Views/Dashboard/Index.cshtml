@@ -1,85 +1,234 @@
-﻿@using ERPLite.Web.Areas.Admin.Models.Dashboard
-@model AdminDashboardViewModel
-
+﻿
 @{
     ViewData["Title"] = "Admin Dashboard";
+    var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
 }
 
-<div class="row mt-3">
-    <div class="col-12">
-        <div class="card border-0 shadow-sm bg-light-subtle">
-            <div class="card-body d-flex justify-content-between align-items-center p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-primary text-white p-2 rounded-3 me-3">
-                        <i class="bi bi-file-earmark-bar-graph fs-4"></i>
+<div class="row g-4 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card stat-card shadow-sm h-100 bg-white border-0">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="bg-primary-subtle text-primary p-3 rounded-3 me-3">
+                    <i class="bi bi-people-fill fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium">Total Employees</h6>
+                    <h4 class="fw-bold mb-0 text-dark">@Model.Statistics.TotalEmployees</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card stat-card shadow-sm h-100 bg-white border-0">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="bg-success-subtle text-success p-3 rounded-3 me-3">
+                    <i class="bi bi-box-seam-fill fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium">Total Products</h6>
+                    <h4 class="fw-bold mb-0 text-dark">@Model.Statistics.TotalProducts</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card stat-card shadow-sm h-100 bg-white border-0">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="bg-warning-subtle text-warning p-3 rounded-3 me-3">
+                    <i class="bi bi-cart-check-fill fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium">Total Orders</h6>
+                    <h4 class="fw-bold mb-0 text-dark">@Model.Statistics.TotalOrders</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card stat-card shadow-sm h-100 bg-white border-0">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="bg-danger-subtle text-danger p-3 rounded-3 me-3">
+                    <i class="bi bi-currency-dollar fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium">Total Revenue</h6>
+                    <h4 class="fw-bold mb-0 text-dark">@Model.Statistics.TotalRevenue.ToString("C2", culture)</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-12 col-md-3">
+        <div class="card shadow-sm border-0 bg-white p-3 rounded-3 border-start border-primary border-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted small mb-1 fw-bold text-uppercase">Monthly Revenue</h6>
+                    <h3 class="fw-bold mb-0 text-primary">@Model.Statistics.MonthlyRevenue.ToString("C2", culture)</h3>
+                </div>
+                <i class="bi bi-graph-up-arrow text-primary fs-2 opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+        <div class="card shadow-sm border-0 bg-white p-3 rounded-3 border-start border-success border-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted small mb-1 fw-bold text-uppercase">New Orders</h6>
+                    <h3 class="fw-bold mb-0 text-success">@Model.Statistics.NewOrdersThisMonth</h3>
+                </div>
+                <i class="bi bi-bag-plus text-success fs-2 opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+        <div class="card shadow-sm border-0 bg-white p-3 rounded-3 border-start border-info border-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted small mb-1 fw-bold text-uppercase">New Customers</h6>
+                    <h3 class="fw-bold mb-0 text-info">@Model.Statistics.NewCustomersThisMonth</h3>
+                </div>
+                <i class="bi bi-person-plus text-info fs-2 opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+        <div class="card shadow-sm border-0 bg-white p-3 rounded-3 border-start border-4" style="border-left-color: #6366f1 !important;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted small mb-1 fw-bold text-uppercase">Inventory Value</h6>
+                    <h3 class="fw-bold mb-0" style="color: #6366f1;">@Model.Statistics.TotalInventoryValue.ToString("C2", culture)</h3>
+                </div>
+                <i class="bi bi-wallet2 fs-2 opacity-50" style="color: #6366f1;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-12 col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 bg-white h-100">
+            <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold text-dark mb-0"><i class="bi bi-bar-chart-line text-primary me-2"></i>Financial Overview Trend</h5>
+            </div>
+            <div class="card-body p-4">
+                <div style="position: relative; height:300px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-white h-100">
+            <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0">
+                <h5 class="fw-bold text-dark mb-0"><i class="bi bi-exclamation-triangle text-danger me-2"></i>Stock Security Alerts</h5>
+            </div>
+            <div class="card-body p-4 d-flex flex-column justify-content-center align-items-center text-center">
+                <div class="row w-100 mb-3">
+                    <div class="col-6 border-end">
+                        <h2 class="fw-bold text-warning mb-0">@Model.Statistics.LowStockProducts</h2>
+                        <span class="text-muted small fw-medium">Low Stock</span>
                     </div>
-                    <div>
-                        <h5 class="mb-0 fw-bold text-dark">Management Reports & Exports</h5>
-                        <p class="text-muted mb-0 small">Generate, audit and export system financial, workforce, and inventory records.</p>
+                    <div class="col-6">
+                        <h2 class="fw-bold text-danger mb-0">@Model.Statistics.OutOfStockProducts</h2>
+                        <span class="text-muted small fw-medium">Out Of Stock</span>
                     </div>
                 </div>
-                <a asp-area="Admin" asp-controller="Reports" asp-action="Index" class="btn btn-primary shadow-sm d-flex align-items-center gap-2">
-                    <i class="bi bi-gear-fill"></i> Open Reports Center
+                <p class="text-muted small px-2">Critical inventory threshold reached. Please check the security levels immediately to secure corporate sales cycles.</p>
+                <a asp-area="" asp-controller="Products" asp-action="Index" class="btn btn-outline-danger btn-sm rounded-pill px-4 mt-2">
+                    Review Inventory
                 </a>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row g-4 mt-2">
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-body d-flex align-items-center p-4">
-                <div class="bg-success-subtle text-success p-3 rounded-3 me-3">
-                    <i class="bi bi-currency-dollar fs-3"></i>
-                </div>
-                <div>
-                    <h6 class="text-muted mb-1 fw-medium">Total Revenue</h6>
-                    <h4 class="fw-bold mb-0 text-dark">@Model.Statistics.TotalRevenue.ToString("C")</h4>
-                </div>
+<div class="row g-4">
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm p-4 bg-success text-white h-100 rounded-3">
+            <h6 class="text-white-50 fw-medium text-uppercase small mb-2">Collected Liquid Capital</h6>
+            <h2 class="fw-bold mb-0 font-monospace">@Model.Statistics.TotalPaidRevenue.ToString("C2", culture)</h2>
+            <div class="text-white-50 small mt-3">
+                <i class="bi bi-check-circle-fill me-1"></i> Confirmed in corporate cash accounts
             </div>
         </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100 bg-white">
-            <div class="card-body d-flex align-items-center p-4">
-                <div class="bg-primary-subtle text-primary p-3 rounded-3 me-3">
-                    <i class="bi bi-people-fill fs-3"></i>
-                </div>
-                <div>
-                    <h6 class="text-muted mb-1 fw-medium">Active Personnel</h6>
-                    <h4 class="fw-bold mb-0 text-dark">@Model.Statistics.TotalEmployees Employees</h4>
-                </div>
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm p-4 bg-danger text-white h-100 rounded-3">
+            <h6 class="text-white-50 fw-medium text-uppercase small mb-2">Outstanding Receivables</h6>
+            <h2 class="fw-bold mb-0 font-monospace">@Model.Statistics.OutstandingBalance.ToString("C2", culture)</h2>
+            <div class="text-white-50 small mt-3">
+                <i class="bi bi-exclamation-octagon-fill me-1"></i> Total active market debt exposure
             </div>
         </div>
     </div>
 
-    <div class="col-12 mt-4">
-        <h4 class="fw-bold text-dark mb-3">Financial Analytics Framework</h4>
-        <div class="row g-3">
-            <div class="col-md-4">
-                <div class="card bg-success border-0 text-white shadow-sm p-3">
-                    <h6 class="text-white-50">Collected Cash Revenue</h6>
-                    <h3 class="fw-bold">@Model.Analytics.TotalPaidRevenue.ToString("C")</h3>
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm p-4 bg-dark text-white h-100 rounded-3 d-flex flex-column justify-content-between">
+            <div>
+                <h6 class="text-white-50 fw-medium text-uppercase small mb-3">Order Pipeline Metrics</h6>
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary border-opacity-30">
+                    <span class="text-success"><i class="bi bi-circle-fill me-2 fs-6"></i>Fully Paid</span>
+                    <span class="fw-bold font-monospace">@Model.Statistics.PaidOrders Orders</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary border-opacity-30">
+                    <span class="text-warning"><i class="bi bi-circle-fill me-2 fs-6"></i>Partially Paid</span>
+                    <span class="fw-bold font-monospace">@Model.Statistics.PartialPaidOrders Orders</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="text-danger"><i class="bi bi-circle-fill me-2 fs-6"></i>Unpaid</span>
+                    <span class="fw-bold font-monospace">@Model.Statistics.UnpaidOrders Orders</span>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card bg-danger border-0 text-white shadow-sm p-3">
-                    <h6 class="text-white-50">Outstanding Receivables Balance</h6>
-                    <h3 class="fw-bold">@Model.Analytics.OutstandingBalance.ToString("C")</h3>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card bg-dark border-0 text-white shadow-sm p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span>Paid Invoices: <strong>@Model.Analytics.PaidOrders</strong></span>
-                        <span>Open Invoices: <strong>@Model.Analytics.UnpaidOrders</strong></span>
-                    </div>
-                    <hr class="my-2 border-white-50" />
-                    <span class="small text-white-50">Total Document Pools: @Model.Analytics.TotalOrders</span>
-                </div>
+            <div class="pt-3 border-top border-secondary border-opacity-40 d-flex justify-content-between align-items-center text-muted small font-monospace">
+                <span>Total Managed Orders:</span>
+                <span class="text-white fw-bold">@Model.Statistics.TotalOrders</span>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Gross Revenue', 'Liquidity Collected', 'Market Debt Balance'],
+                    datasets: [{
+                        label: 'USD Currency Balance Pool',
+                        data: [
+                            @Model.Statistics.TotalRevenue,
+                            @Model.Statistics.TotalPaidRevenue,
+                            @Model.Statistics.OutstandingBalance
+                        ],
+                        backgroundColor: ['#0284c7', '#059669', '#dc2626'],
+                        borderRadius: 8,
+                        barThickness: 45
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        });
+    </script>
+}

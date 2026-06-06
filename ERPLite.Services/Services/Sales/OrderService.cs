@@ -15,12 +15,14 @@ namespace ERPLite.Services.Services.Sales
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
+        private readonly INotificationService _notificationService;
 
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService)
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
+            _notificationService = notificationService;
         }
 
         public async Task<ServiceResult<OrderDto>> GetOrderDetailsAsync(int id)
@@ -137,6 +139,14 @@ namespace ERPLite.Services.Services.Sales
 
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
+
+                await _notificationService.CreateSystemNotificationAsync(
+                    userId: currentUserId,
+                    title: "Corporate Sales Commitment Placed",
+                    message: $"New order #{order.Id} finalized for Customer ID {dto.CustomerId}. Ledger revenue valuation: {order.TotalPrice}.",
+                    type: "Sales",
+                    priority: "Medium"
+                );
 
                 await _activityLogService.LogAsync(
                     userId: currentUserId,

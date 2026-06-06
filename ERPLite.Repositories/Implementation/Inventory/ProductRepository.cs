@@ -59,6 +59,8 @@ namespace ERPLite.Repositories.Implementation.Inventory
         {
             return await _dbSet
                 .AsNoTracking()
+                .Include(p => p.Category) 
+                .Include(p => p.Supplier) 
                 .Where(p => p.CategoryId == categoryId)
                 .ToListAsync();
         }

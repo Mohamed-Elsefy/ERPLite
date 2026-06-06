@@ -1,0 +1,91 @@
+﻿@model IEnumerable<OrderDto>
+
+@{
+    ViewData["Title"] = "Ledger of Sales Orders";
+}
+
+<div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-receipt-cutoff text-primary me-2"></i>Sales Orders Ledger</h4>
+            <p class="text-muted small mb-0">Monitor pipeline conversions, order transactional value, and stock adjustments.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+            <i class="bi bi-plus-circle-fill me-1"></i> Place New Order
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 mb-3" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-secondary small fw-bold">
+                <tr>
+                    <th scope="col" class="ps-3">Order Node</th>
+                    <th scope="col">Commercial Client</th>
+                    <th scope="col">Execution Date</th>
+                    <th scope="col">Total Value</th>
+                    <th scope="col">Pipeline Status</th>
+                    <th scope="col">Payment Status</th>
+                    <th scope="col" class="text-end pe-3">Actions Mapping</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">
+                            <i class="bi bi-box-seam fs-1 d-block mb-2 text-secondary"></i>No commercial orders captured within the current scope.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-3 font-monospace fw-bold text-secondary">
+                                ORD-#@item.Id.ToString("D5")
+                            </td>
+                            <td class="fw-semibold text-dark">@item.CustomerName</td>
+                            <td class="text-muted small">@item.OrderDate.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td class="fw-bold text-success font-monospace">@item.TotalPrice.ToString("C2")</td>
+                            <td>
+                                @if (item.Status == OrderStatus.Completed)
+                                {
+                                    <span class="badge bg-success-subtle text-success border rounded-pill px-2.5 py-1 small">Fulfilled</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning-subtle text-warning border rounded-pill px-2.5 py-1 small">@item.Status.ToString()</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge bg-@ERPLite.Web.Helpers.PaymentStatusHelper.GetBadgeClass(item.PaymentStatus) rounded-pill px-2.5 py-1 small">
+                                    @item.PaymentStatus.ToString()
+                                </span>
+                            </td>
+                            <td class="text-end pe-3">
+                                <div class="btn-group gap-2">
+                                    <a asp-controller="Payments" asp-action="OrderPayments" asp-route-orderId="@item.Id" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold">
+                                        <i class="bi bi-cash-coin me-1"></i> Payments
+                                    </a>
+
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
+                                        <i class="bi bi-eye me-1"></i> Audit Details
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

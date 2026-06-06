@@ -1,0 +1,139 @@
+﻿@model DepartmentIndexViewModel
+
+@{
+    ViewData["Title"] = User.IsInRole(Roles.Admin) ? "System Structure Control" : "My Department Overview";
+}
+
+<div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-building text-primary me-2"></i>Department Architecture Management</h4>
+            <p class="text-muted small mb-0">
+                @(User.IsInRole(Roles.Admin)
+                    ? "Monitor corporate business units, modify structural roles, and enforce human resource allocations."
+                    : "Overview and monitoring parameters for your assigned business unit.")
+            </p>
+        </div>
+        @if (User.IsInRole(Roles.Admin))
+        {
+            <div class="d-flex gap-2">
+                <a asp-action="Create" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                    <i class="bi bi-plus-circle-fill me-1"></i> Provision New Department
+                </a>
+            </div>
+        }
+    </div>
+
+    @if (User.IsInRole(Roles.Admin))
+    {
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show border-0 rounded-3" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <form asp-action="Index" method="get" class="row g-2 mb-4">
+            <div class="col-12 col-md-5 col-lg-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" value="@Model.SearchTerm" class="form-control border-start-0 rounded-end-3" placeholder="Filter by department name or description..." />
+                </div>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-light border fw-semibold rounded-3 px-3">Filter</button>
+                @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+                {
+                    <a asp-action="Index" class="btn btn-link text-decoration-none text-muted small">Clear Criteria</a>
+                }
+            </div>
+        </form>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-secondary small fw-bold">
+                <tr>
+                    <th scope="col" class="ps-3">Department Unit</th>
+                    <th scope="col">Functional Description</th>
+                    <th scope="col">Personnel Density</th>
+                    <th scope="col" class="text-end pe-3">@(User.IsInRole(Roles.Admin) ? "Structure Control" : "Actions")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Departments.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-5">
+                            <i class="bi bi-building-dash fs-1 d-block mb-2 text-secondary"></i>No organizational units found matching the criteria.
+                        </td>
+                    </tr>
+                }
+                @foreach (var item in Model.Departments)
+                {
+                    <tr>
+                        <td class="ps-3">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle bg-light text-primary fw-bold me-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    @item.Name.Substring(0, Math.Min(2, item.Name.Length)).ToUpper()
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-dark">@item.Name</h6>
+                                    <small class="text-muted font-monospace small">DEPT-CODE: #@item.Id.ToString("D3")</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="text-muted small text-truncate d-inline-block" style="max-width: 280px;" title="@item.Description">
+                                @(string.IsNullOrEmpty(item.Description) ? "No description documented for this unit." : item.Description)
+                            </span>
+                        </td>
+                        <td>
+                            @if (item.EmployeesCount > 0)
+                            {
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-bold small">
+                                    <i class="bi bi-people-fill me-1"></i>@item.EmployeesCount Active Staff
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-3 py-2 small">
+                                    <i class="bi bi-person-dash me-1"></i>Vacant Core Unit
+                                </span>
+                            }
+                        </td>
+                        <td class="text-end pe-3">
+                            <div class="d-inline-flex gap-2 align-items-center">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-light border rounded-circle d-flex align-items-center justify-content-center" style="width:32px; height:32px; padding:0;" title="View Integrated Profile">
+                                    <i class="bi bi-eye-fill text-muted fs-6"></i>
+                                </a>
+
+                                @if (User.IsInRole(Roles.Admin))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold" title="Modify Unit Metadata">
+                                        <i class="bi bi-pencil-fill me-1" style="font-size: 0.75rem;"></i>Edit Unit
+                                    </a>
+
+                                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Are you sure you want to completely purge this department structure? (Only vacant departments can be deleted)');" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold">
+                                            <i class="bi bi-trash3-fill me-1"></i>Purge Unit
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

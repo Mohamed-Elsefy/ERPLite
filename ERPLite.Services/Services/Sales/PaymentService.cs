@@ -15,12 +15,14 @@ namespace ERPLite.Services.Services.Sales
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
+        private readonly INotificationService _notificationService;
 
-        public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService)
+        public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
+            _notificationService = notificationService;
         }
 
         public async Task<ServiceResult<IEnumerable<PaymentDto>>> GetPaymentsByOrderAsync(int orderId)
@@ -110,6 +112,14 @@ namespace ERPLite.Services.Services.Sales
 
                 await _unitOfWork.CommitTransactionAsync();
 
+                await _notificationService.CreateSystemNotificationAsync(
+                    userId: currentUserId,
+                    title: "Financial Sinking Fund Credit",
+                    message: $"Remittance allocation of {dto.Amount} committed for Order #{order.Id} via {dto.PaymentMethod}.",
+                    type: "Finance",
+                    priority: "High"
+                );
+
                 await _activityLogService.LogAsync(
                     userId: currentUserId,
                     action: "Create",
@@ -124,6 +134,41 @@ namespace ERPLite.Services.Services.Sales
             {
                 await _unitOfWork.RollbackTransactionAsync();
                 return ServiceResult<int>.Failed("An unexpected technical error occurred while recording the payment.");
+            }
+        }
+
+        public async Task<ServiceResult<IEnumerable<PaymentDto>>> GetRecentPaymentsAsync(int count)
+        {
+            try
+            {
+                var payments = await _unitOfWork.Payments.GetRecentPaymentsAsync(count);
+
+                var dto = _mapper.Map<IEnumerable<PaymentDto>>(payments);
+
+                return ServiceResult<IEnumerable<PaymentDto>>.Successful(dto, "Recent payments retrieved successfully.");
+            }
+            catch (Exception)
+            {
+                return ServiceResult<IEnumerable<PaymentDto>>.Failed("An unexpected error occurred while retrieving the overall financial collections record.");
+            }
+        }
+
+        public async Task<ServiceResult<decimal>> GetRemainingBalanceAsync(int orderId)
+        {
+            try
+            {
+                var order = await _unitOfWork.Orders.GetByIdAsync(orderId);
+                if (order == null)
+                    return ServiceResult<decimal>.Failed("Order context not found.");
+
+                var totalPaid = await _unitOfWork.Payments.GetTotalPaidAmountAsync(orderId);
+                var remaining = order.TotalPrice - totalPaid;
+
+                return ServiceResult<decimal>.Successful(remaining < 0 ? 0 : remaining);
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<decimal>.Failed($"Failed to calculate balance: {ex.Message}");
             }
         }
     }

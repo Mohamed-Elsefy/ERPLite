@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Configurations\Identity\**" />
     <Compile Remove="Enums\**" />
+    <EmbeddedResource Remove="Configurations\Identity\**" />
     <EmbeddedResource Remove="Enums\**" />
+    <None Remove="Configurations\Identity\**" />
     <None Remove="Enums\**" />
   </ItemGroup>
 
@@ -19,10 +22,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Configurations\Identity\" />
   </ItemGroup>
 
   <ItemGroup>

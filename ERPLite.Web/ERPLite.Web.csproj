@@ -10,15 +10,59 @@
     <Compile Remove="Areas\Admin\Data\**" />
     <Compile Remove="Areas\Employee\Data\**" />
     <Compile Remove="Areas\Manager\Data\**" />
+    <Compile Remove="Controllers\AI\**" />
+    <Compile Remove="Filters\**" />
+    <Compile Remove="Models\AI\**" />
+    <Compile Remove="Models\HR\**" />
+    <Compile Remove="Models\Inventory\**" />
+    <Compile Remove="Models\Reports\**" />
+    <Compile Remove="Models\Sales\**" />
+    <Compile Remove="Views\AI\**" />
+    <Compile Remove="Views\HR\**" />
+    <Compile Remove="Views\Inventory\**" />
+    <Compile Remove="Views\Sales\**" />
     <Content Remove="Areas\Admin\Data\**" />
     <Content Remove="Areas\Employee\Data\**" />
     <Content Remove="Areas\Manager\Data\**" />
+    <Content Remove="Controllers\AI\**" />
+    <Content Remove="Filters\**" />
+    <Content Remove="Models\AI\**" />
+    <Content Remove="Models\HR\**" />
+    <Content Remove="Models\Inventory\**" />
+    <Content Remove="Models\Reports\**" />
+    <Content Remove="Models\Sales\**" />
+    <Content Remove="Views\AI\**" />
+    <Content Remove="Views\HR\**" />
+    <Content Remove="Views\Inventory\**" />
+    <Content Remove="Views\Sales\**" />
     <EmbeddedResource Remove="Areas\Admin\Data\**" />
     <EmbeddedResource Remove="Areas\Employee\Data\**" />
     <EmbeddedResource Remove="Areas\Manager\Data\**" />
+    <EmbeddedResource Remove="Controllers\AI\**" />
+    <EmbeddedResource Remove="Filters\**" />
+    <EmbeddedResource Remove="Models\AI\**" />
+    <EmbeddedResource Remove="Models\HR\**" />
+    <EmbeddedResource Remove="Models\Inventory\**" />
+    <EmbeddedResource Remove="Models\Reports\**" />
+    <EmbeddedResource Remove="Models\Sales\**" />
+    <EmbeddedResource Remove="Views\AI\**" />
+    <EmbeddedResource Remove="Views\HR\**" />
+    <EmbeddedResource Remove="Views\Inventory\**" />
+    <EmbeddedResource Remove="Views\Sales\**" />
     <None Remove="Areas\Admin\Data\**" />
     <None Remove="Areas\Employee\Data\**" />
     <None Remove="Areas\Manager\Data\**" />
+    <None Remove="Controllers\AI\**" />
+    <None Remove="Filters\**" />
+    <None Remove="Models\AI\**" />
+    <None Remove="Models\HR\**" />
+    <None Remove="Models\Inventory\**" />
+    <None Remove="Models\Reports\**" />
+    <None Remove="Models\Sales\**" />
+    <None Remove="Views\AI\**" />
+    <None Remove="Views\HR\**" />
+    <None Remove="Views\Inventory\**" />
+    <None Remove="Views\Sales\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,23 +72,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\HR\" />
-    <Folder Include="Controllers\Inventory\" />
-    <Folder Include="Controllers\AI\" />
-    <Folder Include="Controllers\Notifications\" />
-    <Folder Include="Controllers\Reports\" />
-    <Folder Include="Controllers\Sales\" />
-    <Folder Include="Filters\" />
-    <Folder Include="Models\AI\" />
-    <Folder Include="Models\HR\" />
-    <Folder Include="Models\Inventory\" />
-    <Folder Include="Models\Sales\" />
-    <Folder Include="Models\Reports\" />
-    <Folder Include="Views\AI\" />
-    <Folder Include="Views\Inventory\" />
-    <Folder Include="Views\HR\" />
-    <Folder Include="Views\Sales\" />
-    <Folder Include="Views\Reports\" />
+    <Folder Include="Areas\Manager\Models\" />
   </ItemGroup>
 
   <ItemGroup>

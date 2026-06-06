@@ -24,7 +24,7 @@ namespace ERPLite.Services.Services.HR
 
         public async Task<ServiceResult<IEnumerable<DepartmentDto>>> GetAllAsync()
         {
-            var departments = await _unitOfWork.Departments.GetAllAsync();
+            var departments = await _unitOfWork.Departments.GetAllWithEmployeesAsync();
             var result = _mapper.Map<IEnumerable<DepartmentDto>>(departments);
 
             return ServiceResult<IEnumerable<DepartmentDto>>.Successful(result);

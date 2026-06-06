@@ -1,0 +1,88 @@
+﻿@model ActivityLogsIndexViewModel
+
+@{
+    ViewData["Title"] = "System Audit Trail Logs";
+}
+
+<div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-shield-shaded text-danger me-2"></i>System Security Audit Trail</h4>
+            <p class="text-muted small mb-0">Real-time tracking of corporate state mutations, user sessions, and database commitments.</p>
+        </div>
+        <span class="badge bg-danger-subtle text-danger border rounded-pill px-3 py-2 font-monospace">SECURE ADMIN AREA</span>
+    </div>
+
+    <form method="get" asp-area="Admin" asp-controller="ActivityLogs" asp-action="Index" class="row g-3 mb-4 p-3 bg-light rounded-3 border">
+        <div class="col-12 col-md-5">
+            <label class="form-label text-secondary small fw-bold">Operator (User Full Name / ID)</label>
+            <input type="text" name="selectedUser" value="@Model.SelectedUser" class="form-control bg-white rounded-3" placeholder="Search by accountant, manager..." />
+        </div>
+        <div class="col-12 col-md-5">
+            <label class="form-label text-secondary small fw-bold">Target Structural Module Entity</label>
+            <input type="text" name="selectedModule" value="@Model.SelectedModule" class="form-control bg-white rounded-3" placeholder="Payments, Orders, Products..." />
+        </div>
+        <div class="col-12 col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-dark w-100 rounded-pill fw-semibold shadow-sm">
+                <i class="bi bi-filter-square me-1"></i> Filter Node
+            </button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-secondary small fw-bold">
+                <tr>
+                    <th scope="col" class="ps-3">Log Anchor</th>
+                    <th scope="col">Operator Agent</th>
+                    <th scope="col">Module Area</th>
+                    <th scope="col">Committed Action</th>
+                    <th scope="col">Chronology Timestamp</th>
+                    <th scope="col" class="text-end pe-3">Actions Mapping</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Logs == null || !Model.Logs.Any())
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">
+                            <i class="bi bi-folder-x fs-1 d-block mb-2 text-secondary"></i>No infrastructure log instances captured within selected vector constraints.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var log in Model.Logs)
+                    {
+                        <tr>
+                            <td class="ps-3 font-monospace fw-bold text-muted small">
+                                TRACE-#@log.Id.ToString("D6")
+                            </td>
+                            <td class="fw-semibold text-dark">
+                                <i class="bi bi-person-circle me-1 text-primary"></i> @log.UserFullName
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary-subtle text-dark font-monospace text-uppercase small px-2 py-1 border">
+                                    @log.EntityName
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge @(log.Action.ToLower() == "create" ? "bg-success-subtle text-success" : log.Action.ToLower() == "delete" ? "bg-danger-subtle text-danger" : "bg-warning-subtle text-warning") rounded-pill px-2.5 py-1 text-uppercase small">
+                                    @log.Action
+                                </span>
+                            </td>
+                            <td class="text-muted font-monospace small">
+                                @log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss") UTC
+                            </td>
+                            <td class="text-end pe-3">
+                                <a asp-area="Admin" asp-action="Details" asp-route-id="@log.Id" class="btn btn-sm btn-outline-dark rounded-pill px-3 fw-semibold">
+                                    <i class="bi bi-file-earmark-medical me-1"></i> Audit Details
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

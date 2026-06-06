@@ -30,6 +30,13 @@ namespace ERPLite.Repositories.Implementation.HR
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<IEnumerable<Department>> GetAllWithEmployeesAsync()
+        {
+            return await _dbSet
+                .Include(x => x.Employees)
+                .ToListAsync();
+        }
+
         public async Task<int> GetCountAsync()
         {
             return await _dbSet.CountAsync();
