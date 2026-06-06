@@ -1,0 +1,75 @@
+@import url('./dashboard.css');
+
+/* Admin specific layout overrides */
+#sidebar {
+    width: var(--erp-sidebar-width);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    background-color: var(--erp-bg-sidebar);
+    transition: var(--erp-transition);
+    color: var(--erp-text-sidebar);
+}
+
+#sidebar .sidebar-header {
+    height: var(--erp-topbar-height);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+#sidebar .nav-link {
+    color: var(--erp-text-sidebar);
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: var(--erp-transition);
+}
+
+#sidebar .nav-link:hover, #sidebar .nav-link.active {
+    color: var(--erp-text-sidebar-hover);
+    background-color: rgba(255,255,255,0.05);
+    border-left: 4px solid var(--erp-primary);
+}
+
+#main-content {
+    margin-left: var(--erp-sidebar-width);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: var(--erp-transition);
+}
+
+#topbar {
+    height: var(--erp-topbar-height);
+    background-color: var(--erp-bg-card);
+    border-bottom: 1px solid var(--erp-border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    box-shadow: var(--erp-shadow-sm);
+    z-index: 90;
+}
+
+.content-wrapper {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+/* Responsive Sidebar Toggle */
+@media (max-width: 768px) {
+    #sidebar {
+        margin-left: calc(-1 * var(--erp-sidebar-width));
+    }
+    #sidebar.active {
+        margin-left: 0;
+    }
+    #main-content {
+        margin-left: 0;
+    }
+}

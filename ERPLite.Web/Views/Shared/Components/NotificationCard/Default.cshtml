@@ -1,0 +1,11 @@
+@model dynamic
+@* Expected model properties: Title, Priority, CreatedDate, Message *@
+<div class="card mb-3 border-start border-4 @(Model.Priority == "High" ? "border-danger" : Model.Priority == "Medium" ? "border-warning" : "border-info") shadow-sm">
+    <div class="card-body py-2">
+        <div class="d-flex justify-content-between">
+            <h6 class="mb-1 fw-bold">@Model.Title</h6>
+            <small class="text-muted">@Model.CreatedDate.ToString("g")</small>
+        </div>
+        <p class="mb-0 text-muted small">@Model.Message</p>
+    </div>
+</div>

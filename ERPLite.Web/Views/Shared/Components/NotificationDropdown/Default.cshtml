@@ -1,0 +1,41 @@
+@model int
+
+<div class="dropdown me-3">
+    <a href="#" class="text-dark position-relative" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fa-solid fa-bell fs-5 text-muted"></i>
+        @if (Model > 0)
+        {
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                @Model
+                <span class="visually-hidden">unread messages</span>
+            </span>
+        }
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="width: 300px; max-height: 400px; overflow-y: auto;">
+        <li><h6 class="dropdown-header d-flex justify-content-between align-items-center">Notifications <span class="badge bg-primary rounded-pill">@Model</span></h6></li>
+        <li><hr class="dropdown-divider"></li>
+        @if (Model > 0)
+        {
+            <li>
+                <a class="dropdown-item py-2" href="#">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-danger bg-opacity-10 text-danger rounded-circle p-2 me-3">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div>
+                            <div class="small fw-bold">Stock Alert</div>
+                            <div class="small text-muted">Product 'Laptop Pro' is low on stock.</div>
+                            <div class="small text-muted" style="font-size: 0.7rem;">1 hour ago</div>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-center small text-primary" href="#">Mark all as read</a></li>
+        }
+        else
+        {
+            <li><a class="dropdown-item text-muted small text-center" href="#">No new notifications</a></li>
+        }
+    </ul>
+</div>

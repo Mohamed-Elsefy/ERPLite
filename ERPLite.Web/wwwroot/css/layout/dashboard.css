@@ -1,0 +1,79 @@
+:root {
+    /* Color Palette - Deep Blue Enterprise Theme */
+    --erp-primary: #1e3a8a; /* Deep blue */
+    --erp-primary-hover: #172554;
+    --erp-secondary: #475569;
+    --erp-success: #10b981;
+    --erp-info: #3b82f6;
+    --erp-warning: #f59e0b;
+    --erp-danger: #ef4444;
+    --erp-light: #f8fafc;
+    --erp-dark: #0f172a;
+    
+    /* Layout Dimensions */
+    --erp-sidebar-width: 260px;
+    --erp-sidebar-width-collapsed: 70px;
+    --erp-topbar-height: 65px;
+    
+    /* Backgrounds */
+    --erp-bg-body: #f1f5f9;
+    --erp-bg-card: #ffffff;
+    --erp-bg-sidebar: #0f172a; /* Dark sidebar */
+    
+    /* Text Colors */
+    --erp-text-main: #334155;
+    --erp-text-muted: #64748b;
+    --erp-text-sidebar: #cbd5e1;
+    --erp-text-sidebar-hover: #ffffff;
+    
+    /* Shadows & Borders */
+    --erp-border-color: #e2e8f0;
+    --erp-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --erp-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    
+    /* Transitions */
+    --erp-transition: all 0.3s ease;
+}
+
+body {
+    background-color: var(--erp-bg-body);
+    color: var(--erp-text-main);
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+}
+
+/* Card Styling */
+.card {
+    background-color: var(--erp-bg-card);
+    border: 1px solid var(--erp-border-color);
+    border-radius: 0.5rem;
+    box-shadow: var(--erp-shadow-sm);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--erp-border-color);
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Global Utility Classes */
+.text-primary-erp { color: var(--erp-primary) !important; }
+.bg-primary-erp { background-color: var(--erp-primary) !important; color: white; }
+
+/* Buttons */
+.btn-primary-erp {
+    background-color: var(--erp-primary);
+    border-color: var(--erp-primary);
+    color: white;
+}
+.btn-primary-erp:hover {
+    background-color: var(--erp-primary-hover);
+    border-color: var(--erp-primary-hover);
+    color: white;
+}

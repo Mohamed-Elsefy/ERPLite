@@ -1,0 +1,22 @@
+@model dynamic
+@* Expected model properties: Title, Value, Icon, ColorClass, Trend (optional) *@
+<div class="card h-100 border-0 shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="text-muted mb-2">@Model.Title</h6>
+                <h3 class="mb-0 fw-bold">@Model.Value</h3>
+                @if(Model.Trend != null)
+                {
+                    <small class="@(Model.Trend > 0 ? "text-success" : "text-danger") mt-2 d-inline-block">
+                        <i class="fa-solid @(Model.Trend > 0 ? "fa-arrow-trend-up" : "fa-arrow-trend-down") me-1"></i>
+                        @Math.Abs((decimal)Model.Trend)%
+                    </small>
+                }
+            </div>
+            <div class="bg-@Model.ColorClass bg-opacity-10 text-@Model.ColorClass p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                <i class="fa-solid @Model.Icon fs-4"></i>
+            </div>
+        </div>
+    </div>
+</div>

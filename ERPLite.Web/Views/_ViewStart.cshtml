@@ -1,3 +1,18 @@
-﻿@{
-    Layout = "_Layout";
+@{
+    if (User.IsInRole(ERPLite.Shared.Constants.Roles.Admin))
+    {
+        Layout = "~/Views/Shared/Layouts/_AdminLayout.cshtml";
+    }
+    else if (User.IsInRole(ERPLite.Shared.Constants.Roles.Manager))
+    {
+        Layout = "~/Views/Shared/Layouts/_ManagerLayout.cshtml";
+    }
+    else if (User.IsInRole(ERPLite.Shared.Constants.Roles.Employee))
+    {
+        Layout = "~/Views/Shared/Layouts/_EmployeeLayout.cshtml";
+    }
+    else
+    {
+        Layout = "_Layout"; // fallback
+    }
 }
