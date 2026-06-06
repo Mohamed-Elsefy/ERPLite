@@ -142,5 +142,26 @@ namespace ERPLite.Services.Services.Inventory
             await _unitOfWork.SaveChangesAsync();
             return ServiceResult.Successful($"Successfully deducted {quantity} units from {product.Name} stock.");
         }
+        public async Task<ServiceResult<IEnumerable<StockMovementDto>>> GetAllHistoryAsync()
+        {
+            var history = await _stockMoveRepo.GetAllAsync(x => x.Product);
+
+            var result = history
+                .OrderByDescending(x => x.CreatedAtUtc)
+                .Select(x => new StockMovementDto
+                {
+                    Id = x.Id,
+                    ProductId = x.ProductId,
+                    ProductName = x.Product.Name,
+                    Quantity = x.Quantity,
+                    Type = x.Type,
+                    Notes = x.Notes,
+                    CreatedAt = x.CreatedAtUtc
+                })
+                .ToList();
+
+            return ServiceResult<IEnumerable<StockMovementDto>>
+                .Successful(result);
+        }
     }
 }

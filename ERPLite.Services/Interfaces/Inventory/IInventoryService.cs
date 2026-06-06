@@ -21,5 +21,6 @@ namespace ERPLite.Services.Interfaces.Inventory
             string? notes = null);
 
         Task<ServiceResult<IEnumerable<StockMovementDto>>> GetHistoryAsync(int productId);
+        Task<ServiceResult<IEnumerable<StockMovementDto>>> GetAllHistoryAsync();
     }
 }

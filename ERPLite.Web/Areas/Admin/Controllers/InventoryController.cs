@@ -1,4 +1,5 @@
 ﻿using ERPLite.Services.DTOs.Inventory;
+using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Inventory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -213,23 +214,39 @@ namespace ERPLite.Web.Areas.Admin.Controllers
         #region History
 
         [HttpGet]
-        public async Task<IActionResult> History(int productId,string? search)
+        public async Task<IActionResult> History(
+            int? productId,
+            string? search)
         {
-            if (productId <= 0)
-                return BadRequest();
+            ServiceResult<IEnumerable<StockMovementDto>> result;
 
-            var product =
-                await _productService.GetByIdAsync(productId);
-
-            if (!product.Success || product.Data is null)
+            if (productId.HasValue)
             {
-                TempData["Error"] = product.Message;
+                var product =
+                    await _productService.GetByIdAsync(productId.Value);
 
-                return RedirectToAction(nameof(LowStock));
+                if (!product.Success || product.Data is null)
+                {
+                    TempData["Error"] = product.Message;
+
+                    return RedirectToAction(nameof(LowStock));
+                }
+
+                result =
+                    await _inventoryService.GetHistoryAsync(
+                        productId.Value);
+
+                ViewBag.ProductId = productId.Value;
+                ViewBag.ProductName = product.Data.Name;
             }
+            else
+            {
+                result =
+                    await _inventoryService.GetAllHistoryAsync();
 
-            var result =
-                await _inventoryService.GetHistoryAsync(productId);
+                ViewBag.ProductId = null;
+                ViewBag.ProductName = "All Products";
+            }
 
             if (!result.Success)
             {
@@ -237,31 +254,36 @@ namespace ERPLite.Web.Areas.Admin.Controllers
 
                 return View(new List<StockMovementDto>());
             }
+
             var history = result.Data;
+
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search
-                        .Trim()
-                        .ToLower()
-                        .Replace(" ", "");
-                foreach (var item in history)
-                {
-                    Console.WriteLine(item.Type.ToString().Trim().ToLower());
-                }
+                    .Trim()
+                    .ToLower()
+                    .Replace(" ", "");
+
                 history = history.Where(x =>
-                    x.Type.ToString().Trim().ToLower().Contains(search)
+                    x.Type.ToString()
+                        .ToLower()
+                        .Replace(" ", "")
+                        .Contains(search)
+
+                    || x.ProductName
+                        .ToLower()
+                        .Contains(search)
 
                     || (!string.IsNullOrWhiteSpace(x.Notes)
-                        && x.Notes.ToLower().Contains(search)));
+                        && x.Notes
+                            .ToLower()
+                            .Contains(search)));
             }
 
             ViewBag.Search = search;
-            ViewBag.ProductId = productId;
-            ViewBag.ProductName = product.Data.Name;
 
             return View(history);
         }
-
         #endregion
     }
 }

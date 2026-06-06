@@ -119,5 +119,16 @@ namespace ERPLite.Repositories.Implementation.Common
             throw new InvalidOperationException(
                 $"{typeof(T).Name} does not support restore operation.");
         }
+        public async Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.ToListAsync();
+        }
     }
 }
