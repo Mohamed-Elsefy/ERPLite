@@ -1,0 +1,20 @@
+@model ERPLite.Services.DTOs.Dashboard.SalesAnalyticsDto
+@{
+    ViewData["Title"] = "Analytics Dashboard";
+}
+<div class="container-fluid pt-4">
+    <h3>Analytics Dashboard</h3>
+    <div class="row">
+        <div class="col-sm-3 card p-3">Total Revenue<br /><strong>@Model.TotalRevenue</strong></div>
+        <div class="col-sm-3 card p-3">Paid Revenue<br /><strong>@Model.TotalPaidRevenue</strong></div>
+        <div class="col-sm-3 card p-3">Outstanding<br /><strong>@Model.OutstandingBalance</strong></div>
+        <div class="col-sm-3 card p-3">Orders<br /><strong>@Model.TotalOrders</strong></div>
+    </div>
+
+    <div class="mt-4">
+        <canvas id="salesChart" width="600" height="200"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/reports/sales-report-chart.js"></script>
+</div>

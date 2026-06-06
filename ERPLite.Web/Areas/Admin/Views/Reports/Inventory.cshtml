@@ -1,0 +1,38 @@
+@model ERPLite.Services.DTOs.Reports.InventoryReportDto
+@{
+    ViewData["Title"] = "Inventory Report";
+}
+<div class="container-fluid pt-4">
+    <h3>Inventory Report</h3>
+    <div class="row">
+        <div class="col-sm-3 card p-3">Total Products<br /><strong>@Model.TotalProducts</strong></div>
+        <div class="col-sm-3 card p-3">Low Stock<br /><strong>@Model.LowStockProducts</strong></div>
+        <div class="col-sm-3 card p-3">Out Of Stock<br /><strong>@Model.OutOfStockProducts</strong></div>
+        <div class="col-sm-3 card p-3">Inventory Value<br /><strong>@Model.InventoryValue</strong></div>
+    </div>
+    <a asp-area="Admin" asp-controller="Reports" asp-action="InventoryPdf" class="btn btn-success btn-sm mt-2">Export PDF</a>
+
+    <div class="table-responsive mt-3">
+        <table class="table table-striped">
+            <thead><tr><th>Product</th><th>Category</th><th>Stock</th><th>Min Stock</th><th>Status</th></tr></thead>
+            <tbody>
+                @foreach (var p in Model.Products ?? new List<ERPLite.Services.DTOs.Inventory.ProductDto>())
+                {
+                    <tr>
+                        <td>@p.Name</td>
+                        <td>@p.CategoryName</td>
+                        <td>@p.QuantityInStock</td>
+                        <td>@p.MinStockLevel</td>
+                        <td>@(p.QuantityInStock == 0 ? "Out of Stock" : (p.QuantityInStock <= p.MinStockLevel ? "Low Stock" : "Normal"))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-4">
+        <canvas id="inventoryChart" width="400" height="160"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/reports/inventory-chart.js"></script>
+</div>

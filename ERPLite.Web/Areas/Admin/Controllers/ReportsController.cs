@@ -1,6 +1,9 @@
 ﻿using ERPLite.Services.Interfaces.Reports;
+using ERPLite.Services.Interfaces.Dashboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using System;
 
 namespace ERPLite.Web.Areas.Admin.Controllers
 {
@@ -10,16 +13,58 @@ namespace ERPLite.Web.Areas.Admin.Controllers
     {
         private readonly IReportService _reportService;
         private readonly IExportService _exportService;
+        private readonly IAnalyticsService _analyticsService;
 
-        public ReportsController(IReportService reportService, IExportService exportService)
+        public ReportsController(IReportService reportService, IExportService exportService, IAnalyticsService analyticsService)
         {
             _reportService = reportService;
             _exportService = exportService;
+            _analyticsService = analyticsService;
         }
 
         public IActionResult Index()
         {
             return View();
+        }
+
+        public async Task<IActionResult> Employees()
+        {
+            var report = await _reportService.GenerateEmployeesReportAsync();
+            return View(report.Data);
+        }
+
+        public async Task<IActionResult> Attendance(DateTime? from, DateTime? to)
+        {
+            var start = from ?? DateTime.Today.AddDays(-7);
+            var end = to ?? DateTime.Today;
+            var report = await _reportService.GenerateAttendanceReportAsync(start, end);
+            return View(report.Data);
+        }
+
+        public async Task<IActionResult> Inventory()
+        {
+            var report = await _reportService.GenerateInventoryReportAsync();
+            return View(report.Data);
+        }
+
+        public async Task<IActionResult> Sales(DateTime? from, DateTime? to)
+        {
+            var start = from ?? DateTime.Today.AddDays(-30);
+            var end = to ?? DateTime.Today;
+            var report = await _reportService.GenerateSalesReportAsync(start, end);
+            return View(report.Data);
+        }
+
+        public async Task<IActionResult> Financial()
+        {
+            var report = await _reportService.GenerateFinancialReportAsync();
+            return View(report.Data);
+        }
+
+        public async Task<IActionResult> Analytics()
+        {
+            var analytics = await _analyticsService.GetSalesAnalyticsAsync();
+            return View(analytics);
         }
 
         public async Task<IActionResult> EmployeesPdf()
