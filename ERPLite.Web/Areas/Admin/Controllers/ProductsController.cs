@@ -1,5 +1,6 @@
 ﻿using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.Interfaces.Inventory;
+using ERPLite.Shared.Constants;
 using ERPLite.Web.Areas.Admin.Models.Products;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
             _categoryService = categoryService;
             _supplierService = supplierService;
         }
-        [Authorize(Roles = "Admin,Employee")]
+        [Authorize(Roles = "Admin,Manager,Employee")]
         public async Task<IActionResult> Index(string? search)
         {
             var result = await _productService.GetAllAsync();
@@ -59,7 +60,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
 
             return View(products);
         }
-        [Authorize(Roles = "Admin,Employee")]
+        [Authorize(Roles = "Admin,Manager,Employee")]
         public async Task<IActionResult> Details(int id)
         {
             if (id <= 0)
@@ -78,7 +79,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Manager")]
 
         public async Task<IActionResult> Create()
         {
@@ -89,7 +90,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Manager")]
 
         public async Task<IActionResult> Create(
             ProductFormViewModel vm)
@@ -126,7 +127,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Manager")]
 
         public async Task<IActionResult> Edit(int id)
         {
@@ -168,7 +169,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Manager")]
 
         public async Task<IActionResult> Edit(
             UpdateProducFormVm vm)
@@ -210,7 +211,6 @@ namespace ERPLite.Web.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-
         public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0)
@@ -232,7 +232,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
         [HttpGet]
-        [Authorize(Roles = "Admin,Employee")]
+        [Authorize(Roles = "Admin,Manager,Employee")]
 
         public async Task<IActionResult> LowStock()
         {

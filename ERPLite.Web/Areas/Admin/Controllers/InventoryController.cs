@@ -3,10 +3,10 @@ using ERPLite.Services.Interfaces.Inventory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ERPLite.Web.Areas.Employee.Controllers
+namespace ERPLite.Web.Areas.Admin.Controllers
 {
-    [Area("Employee")]
-    [Authorize(Roles = "Admin,Employee")]
+    [Area("Admin")]
+    [Authorize(Roles = "Admin,Manager,Employee")]
     public class InventoryController : Controller
     {
         private readonly IInventoryService _inventoryService;
@@ -154,6 +154,7 @@ namespace ERPLite.Web.Areas.Employee.Controllers
         #region Adjust
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Adjust(int productId)
         {
             if (productId <= 0)
@@ -178,6 +179,7 @@ namespace ERPLite.Web.Areas.Employee.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Adjust(
             StockOperationDto model)
         {
@@ -211,7 +213,7 @@ namespace ERPLite.Web.Areas.Employee.Controllers
         #region History
 
         [HttpGet]
-        public async Task<IActionResult> History(int productId)
+        public async Task<IActionResult> History(int productId,string? search)
         {
             if (productId <= 0)
                 return BadRequest();
@@ -235,11 +237,29 @@ namespace ERPLite.Web.Areas.Employee.Controllers
 
                 return View(new List<StockMovementDto>());
             }
+            var history = result.Data;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search
+                        .Trim()
+                        .ToLower()
+                        .Replace(" ", "");
+                foreach (var item in history)
+                {
+                    Console.WriteLine(item.Type.ToString().Trim().ToLower());
+                }
+                history = history.Where(x =>
+                    x.Type.ToString().Trim().ToLower().Contains(search)
 
+                    || (!string.IsNullOrWhiteSpace(x.Notes)
+                        && x.Notes.ToLower().Contains(search)));
+            }
+
+            ViewBag.Search = search;
             ViewBag.ProductId = productId;
             ViewBag.ProductName = product.Data.Name;
 
-            return View(result.Data);
+            return View(history);
         }
 
         #endregion

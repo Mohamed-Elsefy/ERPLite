@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ERPLite.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Manager")]
     public class CategoriesController : Controller
     {
         private readonly ICategoryService _categoryService;
@@ -93,6 +93,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _categoryService.DeleteAsync(id);

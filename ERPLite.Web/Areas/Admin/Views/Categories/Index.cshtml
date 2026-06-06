@@ -11,9 +11,7 @@
     var sortDir = ViewContext.HttpContext.Request.Query["sortDir"].ToString();
 }
 
-<!-- ============================================================ -->
 <!-- PAGE HEADER – Title, Breadcrumb & Action Button               -->
-<!-- ============================================================ -->
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
     <div>
         <nav aria-label="breadcrumb">
@@ -92,7 +90,6 @@
                 <tbody>
                     @if (!items.Any())
                     {
-                        <!-- Empty State -->
                         <tr>
                             <td colspan="3" class="text-center py-5">
                                 <div class="py-4">
@@ -132,15 +129,18 @@
                                             <i class="bi bi-pencil-square"></i><span class="d-none d-lg-inline">Edit</span>
                                         </a>
                                         <!-- Delete -->
-                                        <form asp-action="Delete" asp-route-id="@category.Id" method="post" class="m-0 delete-form">
-                                            @Html.AntiForgeryToken()
-                                            <button type="button"
-                                                    class="btn btn-outline-danger btn-sm fw-semibold d-flex align-items-center gap-1 px-2 btn-delete"
-                                                    data-name="@category.Name"
-                                                    title="Delete Category">
-                                                <i class="bi bi-trash3"></i><span class="d-none d-lg-inline">Delete</span>
-                                            </button>
-                                        </form>
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <form asp-action="Delete" asp-route-id="@category.Id" method="post" class="m-0 delete-form">
+                                                @Html.AntiForgeryToken()
+                                                <button type="button"
+                                                        class="btn btn-outline-danger btn-sm fw-semibold d-flex align-items-center gap-1 px-2 btn-delete"
+                                                        data-name="@category.Name"
+                                                        title="Delete Category">
+                                                    <i class="bi bi-trash3"></i><span class="d-none d-lg-inline">Delete</span>
+                                                </button>
+                                            </form>
+                                        }
                                     </div>
                                 </td>
                             </tr>

@@ -25,12 +25,16 @@
         </h3>
         <p class="text-muted small mb-0 mt-1">Manage your suppliers, contact information, and addresses.</p>
     </div>
-    <div class="d-flex gap-2 mt-3 mt-md-0">
-        <a asp-action="Create" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2">
-            <i class="bi bi-plus-circle-fill"></i>
-            <span>New Supplier</span>
-        </a>
-    </div>
+    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+    {
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a asp-action="Create" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2">
+                <i class="bi bi-plus-circle-fill"></i>
+                <span>New Supplier</span>
+            </a>
+        </div>
+    }
+    
 </div>
 
 <!-- MAIN CARD – Search + Table -->
@@ -130,14 +134,21 @@
                                            class="btn btn-outline-info btn-sm px-2 fw-semibold" title="View Details">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a asp-action="Edit" asp-route-id="@supplier.Id"
-                                           class="btn btn-outline-warning btn-sm px-2 fw-semibold" title="Edit Supplier">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-outline-danger btn-sm px-2 fw-semibold btn-delete"
-                                           data-id="@supplier.Id" data-name="@supplier.Name" title="Delete Supplier">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
+                                        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@supplier.Id"
+                                               class="btn btn-outline-warning btn-sm px-2 fw-semibold" title="Edit Supplier">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                        }
+                                        @if (User.IsInRole("Admin") )
+                                        {
+                                            <a href="#" class="btn btn-outline-danger btn-sm px-2 fw-semibold btn-delete"
+                                               data-id="@supplier.Id" data-name="@supplier.Name" title="Delete Supplier">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        }
+                                        
                                     </div>
                                 </td>
                             </tr>

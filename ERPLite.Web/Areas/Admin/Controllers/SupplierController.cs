@@ -3,10 +3,9 @@ using ERPLite.Services.Interfaces.Inventory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ERPLite.Web.Areas.Employee.Controllers
+namespace ERPLite.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
     public class SuppliersController : Controller
     {
         private readonly ISupplierService _supplierService;
@@ -18,6 +17,7 @@ namespace ERPLite.Web.Areas.Employee.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Manager,Employee")]
         public async Task<IActionResult> Index(string? search)
         {
             var result = await _supplierService.GetAllAsync();
@@ -56,6 +56,7 @@ namespace ERPLite.Web.Areas.Employee.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Manager,Employee")]
         public async Task<IActionResult> Details(int id)
         {
             if (id <= 0)
@@ -161,6 +162,8 @@ namespace ERPLite.Web.Areas.Employee.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0)
