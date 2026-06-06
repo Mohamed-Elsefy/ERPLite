@@ -39,6 +39,9 @@ namespace ERPLite.Services.Services.Inventory
 
         public async Task<ServiceResult<SupplierDto>> GetByIdAsync(int id)
         {
+            if (id <= 0)
+                return ServiceResult<SupplierDto>
+                    .Failed("Invalid supplier id.");
             var supplier = await _unitOfWork.Suppliers.GetByIdAsync(id);
             if (supplier == null)
                 return ServiceResult<SupplierDto>.Failed("Supplier not found.");
@@ -49,10 +52,15 @@ namespace ERPLite.Services.Services.Inventory
 
         public async Task<ServiceResult> CreateAsync(CreateSupplierDto dto)
         {
+           dto.Name = dto.Name.Trim();
+
+            if (string.IsNullOrWhiteSpace(dto.Name))
+                return ServiceResult.Failed("Supplier name is required.");
+
             var exists = await _unitOfWork.Suppliers.SupplierExistsAsync(dto.Name);
             if (exists)
                 return ServiceResult.Failed("Supplier already exists.");
-            var user = _currentUser.UserId;
+            var user = _currentUser.UserId ?? "System";
 
             var supplier = _mapper.Map<Supplier>(dto);
 
@@ -72,6 +80,7 @@ namespace ERPLite.Services.Services.Inventory
 
         public async Task<ServiceResult> UpdateAsync(UpdateSupplierDto dto)
         {
+            dto.Name = dto.Name.Trim();
             var supplier = await _unitOfWork.Suppliers.GetByIdAsync(dto.Id);
             if (supplier == null)
                 return ServiceResult.Failed("Supplier not found.");
@@ -81,7 +90,7 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Supplier name already exists.");
 
             _mapper.Map(dto, supplier);
-            var user = _currentUser.UserId;
+            var user = _currentUser.UserId ?? "System";
 
             _unitOfWork.Suppliers.Update(supplier);
             await _unitOfWork.SaveChangesAsync();
@@ -99,6 +108,9 @@ namespace ERPLite.Services.Services.Inventory
 
         public async Task<ServiceResult> DeleteAsync(int id)
         {
+            if (id <= 0)
+                return ServiceResult<SupplierDto>
+                    .Failed("Invalid supplier id.");
             var supplier = await _unitOfWork.Suppliers.GetByIdAsync(id);
             if (supplier == null)
                 return ServiceResult.Failed("Supplier not found.");
@@ -108,7 +120,7 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Cannot delete supplier with products.");
 
             var supplierName = supplier.Name;
-            var user = _currentUser.UserId;
+            var user = _currentUser.UserId ?? "System";
             _unitOfWork.Suppliers.SoftDelete(supplier);
             await _unitOfWork.SaveChangesAsync();
 

@@ -1,0 +1,302 @@
+@using ERPLite.Services.DTOs.Inventory
+@using ERPLite.Data.Entities.Inventory
+@model IEnumerable<StockMovementDto>
+
+@{
+    ViewData["Title"] = "Stock Movement History";
+    var items = Model?.ToList() ?? new List<StockMovementDto>();
+    var productName = ViewBag.ProductName as string ?? "Unknown Product";
+    var productId = (int)(ViewBag.ProductId ?? 0);
+    var searchTerm = ViewContext.HttpContext.Request.Query["search"].ToString();
+}
+
+<!-- PAGE HEADER – Title, Breadcrumb & Action Buttons              -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item">
+                    <a asp-area="Employee" asp-controller="Dashboard" asp-action="Index" class="text-decoration-none">
+                        <i class="bi bi-house-door-fill me-1"></i>Workspace
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="text-decoration-none">Products</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">History</li>
+            </ol>
+        </nav>
+        <h3 class="fw-bold text-dark mb-0">
+            <i class="bi bi-clock-history text-secondary me-2"></i>Stock Movement History
+        </h3>
+        <p class="text-muted small mb-0 mt-1">
+            Viewing all inventory movements for <strong class="text-dark">@productName</strong>.
+        </p>
+    </div>
+    <div class="d-flex gap-2 mt-3 mt-md-0">
+        <a asp-area="Employee" asp-controller="Inventory" asp-action="StockIn" asp-route-productId="@productId"
+           class="btn btn-success px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2">
+            <i class="bi bi-box-arrow-in-down"></i><span>Stock In</span>
+        </a>
+        <a asp-area="Employee" asp-controller="Inventory" asp-action="StockOut" asp-route-productId="@productId"
+           class="btn btn-outline-warning px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2">
+            <i class="bi bi-box-arrow-up"></i><span>Stock Out</span>
+        </a>
+        <a asp-area="Admin" asp-controller="Products" asp-action="Index"
+           class="btn btn-outline-secondary px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2">
+            <i class="bi bi-arrow-left"></i><span>Products</span>
+        </a>
+    </div>
+</div>
+
+<!-- MAIN CARD – Search + Table                                    -->
+<div class="card border-0 shadow-sm rounded-3">
+
+    <!-- Search Bar -->
+    <div class="card-header bg-white border-0 pt-4 pb-3">
+        <form method="get" asp-action="History" asp-route-productId="@productId">
+            <div class="row g-2">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control border-start-0 bg-light"
+                               placeholder="Search by notes or movement type..." value="@searchTerm" />
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-dark px-4 fw-semibold shadow-sm">
+                        <i class="bi bi-search me-1"></i>Search
+                    </button>
+                    @if (!string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        <a asp-action="History" asp-route-productId="@productId"
+                           class="btn btn-outline-secondary px-3 d-flex align-items-center shadow-sm" title="Clear Search">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Body -->
+    <div class="card-body p-4 pt-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle border-0" id="historyTable">
+                <thead class="table-light text-secondary border-bottom border-2">
+                    <tr>
+                        <th class="ps-3 py-3 fw-bold" style="cursor:pointer;" onclick="sortTable(0)">
+                            Date <i class="bi bi-arrow-down-up ms-1 small text-muted"></i>
+                        </th>
+                        <th class="py-3 fw-bold">Product Name</th>
+                        <th class="py-3 fw-bold text-center" style="cursor:pointer;" onclick="sortTable(2)">
+                            Type <i class="bi bi-arrow-down-up ms-1 small text-muted"></i>
+                        </th>
+                        <th class="py-3 fw-bold text-center" style="cursor:pointer;" onclick="sortTable(3)">
+                            Quantity <i class="bi bi-arrow-down-up ms-1 small text-muted"></i>
+                        </th>
+                        <th class="pe-3 py-3 fw-bold">Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!items.Any())
+                    {
+                        <!-- Empty State -->
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="py-4">
+                                    <i class="bi bi-clock-history fs-1 text-muted d-block mb-3"></i>
+                                    <h5 class="text-muted fw-semibold">No Movement History</h5>
+                                    <p class="text-muted small mb-3">
+                                        No stock movements have been recorded for <strong>@productName</strong> yet.
+                                    </p>
+                                    <a asp-area="Employee" asp-controller="Inventory" asp-action="StockIn" asp-route-productId="@productId"
+                                       class="btn btn-success btn-sm px-4 fw-semibold">
+                                        <i class="bi bi-box-arrow-in-down me-1"></i>Add First Stock In
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var movement in items)
+                        {
+                            <tr class="border-bottom">
+                                <!-- Date -->
+                                <td class="ps-3">
+                                    <div>
+                                        <span class="fw-semibold text-dark">@movement.CreatedAt.ToString("MMM dd, yyyy")</span>
+                                        <br />
+                                        <small class="text-muted">@movement.CreatedAt.ToString("hh:mm tt")</small>
+                                    </div>
+                                </td>
+                                <!-- Product Name -->
+                                <td class="fw-semibold text-dark">
+                                    <i class="bi bi-box-fill text-primary me-1"></i>@movement.ProductName
+                                </td>
+                                <!-- Type Badge -->
+                                <td class="text-center">
+                                    @switch (movement.Type)
+                                    {
+                                        case StockMovementType.StockIn:
+                                            <span class="badge bg-success px-3 py-2 rounded-pill">
+                                                <i class="bi bi-box-arrow-in-down me-1"></i>Stock In
+                                            </span>
+                                            break;
+                                        case StockMovementType.StockOut:
+                                            <span class="badge bg-danger px-3 py-2 rounded-pill">
+                                                <i class="bi bi-box-arrow-up me-1"></i>Stock Out
+                                            </span>
+                                            break;
+                                        case StockMovementType.Adjustment:
+                                            <span class="badge bg-primary px-3 py-2 rounded-pill">
+                                                <i class="bi bi-sliders me-1"></i>Adjustment
+                                            </span>
+                                            break;
+                                    }
+                                </td>
+                                <!-- Quantity -->
+                                <td class="text-center">
+                                    @if (movement.Type == StockMovementType.StockIn)
+                                    {
+                                        <span class="fw-bold text-success fs-6">+@movement.Quantity</span>
+                                    }
+                                    else if (movement.Type == StockMovementType.StockOut)
+                                    {
+                                        <span class="fw-bold text-danger fs-6">-@movement.Quantity</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="fw-bold text-primary fs-6">@movement.Quantity</span>
+                                    }
+                                </td>
+                                <!-- Notes -->
+                                <td class="pe-3 text-muted">
+                                    @(string.IsNullOrWhiteSpace(movement.Notes) ? "—" : movement.Notes)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination UI -->
+        @if (items.Count > 0)
+        {
+            <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                <span class="text-muted small">
+                    Showing <strong>@items.Count</strong> movement@(items.Count == 1 ? "" : "s")
+                </span>
+                <nav aria-label="History pagination">
+                    <ul class="pagination pagination-sm mb-0" id="paginationContainer"></ul>
+                </nav>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- SCRIPTS – SweetAlert2, Sorting, Pagination                    -->
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // ── SweetAlert2: TempData Messages ──
+        @if (TempData["Success"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '@TempData["Success"]',
+                confirmButtonColor: '#0d6efd',
+                timer: 3000,
+                timerProgressBar: true
+            });
+            </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '@TempData["Error"]',
+                confirmButtonColor: '#dc3545'
+            });
+            </text>
+        }
+
+        // ── Client-Side Table Sorting ──
+        function sortTable(colIndex) {
+            var table = document.getElementById('historyTable');
+            var tbody = table.querySelector('tbody');
+            var rows = Array.from(tbody.querySelectorAll('tr'));
+            var key = 'sort-dir-' + colIndex;
+            var ascending = table.getAttribute(key) !== 'asc';
+
+            rows.sort(function (a, b) {
+                var cellA = a.cells[colIndex]?.textContent.trim().toLowerCase() || '';
+                var cellB = b.cells[colIndex]?.textContent.trim().toLowerCase() || '';
+                var numA = parseFloat(cellA.replace(/[^0-9.\-]/g, ''));
+                var numB = parseFloat(cellB.replace(/[^0-9.\-]/g, ''));
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return ascending ? numA - numB : numB - numA;
+                }
+                return ascending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+            });
+
+            table.setAttribute(key, ascending ? 'asc' : 'desc');
+            rows.forEach(function (row) { tbody.appendChild(row); });
+        }
+
+        // ── Client-Side Pagination ──
+        (function () {
+            var pageSize = 15;
+            var table = document.getElementById('historyTable');
+            if (!table) return;
+            var tbody = table.querySelector('tbody');
+            var rows = Array.from(tbody.querySelectorAll('tr'));
+            if (rows.length <= pageSize) return;
+
+            var totalPages = Math.ceil(rows.length / pageSize);
+            var currentPage = 1;
+
+            function showPage(page) {
+                currentPage = page;
+                rows.forEach(function (row, i) {
+                    row.style.display = (i >= (page - 1) * pageSize && i < page * pageSize) ? '' : 'none';
+                });
+                renderPagination();
+            }
+
+            function renderPagination() {
+                var container = document.getElementById('paginationContainer');
+                container.innerHTML = '';
+                var prevLi = document.createElement('li');
+                prevLi.className = 'page-item' + (currentPage === 1 ? ' disabled' : '');
+                prevLi.innerHTML = '<a class="page-link" href="#">&laquo;</a>';
+                prevLi.addEventListener('click', function (e) { e.preventDefault(); if (currentPage > 1) showPage(currentPage - 1); });
+                container.appendChild(prevLi);
+                for (var i = 1; i <= totalPages; i++) {
+                    (function (p) {
+                        var li = document.createElement('li');
+                        li.className = 'page-item' + (p === currentPage ? ' active' : '');
+                        li.innerHTML = '<a class="page-link" href="#">' + p + '</a>';
+                        li.addEventListener('click', function (e) { e.preventDefault(); showPage(p); });
+                        container.appendChild(li);
+                    })(i);
+                }
+                var nextLi = document.createElement('li');
+                nextLi.className = 'page-item' + (currentPage === totalPages ? ' disabled' : '');
+                nextLi.innerHTML = '<a class="page-link" href="#">&raquo;</a>';
+                nextLi.addEventListener('click', function (e) { e.preventDefault(); if (currentPage < totalPages) showPage(currentPage + 1); });
+                container.appendChild(nextLi);
+            }
+
+            showPage(1);
+        })();
+    </script>
+}

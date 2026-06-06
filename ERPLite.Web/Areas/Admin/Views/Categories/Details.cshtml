@@ -1,0 +1,149 @@
+@using ERPLite.Services.DTOs.Inventory
+@model CategoryDto
+
+@{
+    ViewData["Title"] = "Category Details";
+}
+
+<!-- ============================================================ -->
+<!-- PAGE HEADER – Title & Breadcrumb                              -->
+<!-- ============================================================ -->
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-1">
+            <li class="breadcrumb-item">
+                <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="text-decoration-none">
+                    <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a asp-action="Index" class="text-decoration-none">Categories</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Details</li>
+        </ol>
+    </nav>
+    <h3 class="fw-bold text-dark mb-0">
+        <i class="bi bi-eye-fill text-info me-2"></i>Category Details
+    </h3>
+    <p class="text-muted small mb-0 mt-1">Viewing detailed information for this category.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- DETAILS CARD                                                  -->
+<!-- ============================================================ -->
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-6">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-info text-white py-3">
+                <h5 class="mb-0 fw-semibold">
+                    <i class="bi bi-tag-fill me-2"></i>@Model.Name
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <!-- Category ID -->
+                <div class="row mb-3 pb-3 border-bottom">
+                    <div class="col-sm-4">
+                        <span class="fw-semibold text-muted">
+                            <i class="bi bi-hash me-1"></i>Category ID
+                        </span>
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="badge bg-light text-dark border px-3 py-2 fs-6">@Model.Id</span>
+                    </div>
+                </div>
+
+                <!-- Name -->
+                <div class="row mb-3 pb-3 border-bottom">
+                    <div class="col-sm-4">
+                        <span class="fw-semibold text-muted">
+                            <i class="bi bi-type me-1"></i>Name
+                        </span>
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="fw-bold text-dark fs-5">@Model.Name</span>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <span class="fw-semibold text-muted">
+                            <i class="bi bi-card-text me-1"></i>Description
+                        </span>
+                    </div>
+                    <div class="col-sm-8">
+                        @if (string.IsNullOrWhiteSpace(Model.Description))
+                        {
+                            <span class="text-muted fst-italic">No description provided.</span>
+                        }
+                        else
+                        {
+                            <p class="mb-0 text-dark">@Model.Description</p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="card-footer bg-light d-flex justify-content-between align-items-center py-3">
+                <a asp-action="Index" class="btn btn-outline-secondary px-4 fw-semibold">
+                    <i class="bi bi-arrow-left me-1"></i>Back to List
+                </a>
+                <div class="d-flex gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning px-4 fw-semibold shadow-sm">
+                        <i class="bi bi-pencil-square me-1"></i>Edit
+                    </a>
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="m-0 delete-form">
+                        @Html.AntiForgeryToken()
+                        <button type="button" class="btn btn-outline-danger px-4 fw-semibold btn-delete" data-name="@Model.Name">
+                            <i class="bi bi-trash3 me-1"></i>Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCRIPTS – SweetAlert2 Delete Confirmation                     -->
+<!-- ============================================================ -->
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (TempData["Success"] != null)
+        {
+            <text>
+            Swal.fire({ icon: 'success', title: 'Success', text: '@TempData["Success"]', confirmButtonColor: '#0d6efd', timer: 3000, timerProgressBar: true });
+            </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>
+            Swal.fire({ icon: 'error', title: 'Error', text: '@TempData["Error"]', confirmButtonColor: '#dc3545' });
+            </text>
+        }
+
+        // Delete Confirmation
+        document.querySelectorAll('.btn-delete').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var name = this.getAttribute('data-name');
+                var form = this.closest('.delete-form');
+                Swal.fire({
+                    title: 'Delete Category?',
+                    html: 'Are you sure you want to delete <strong>' + name + '</strong>?<br/>This action cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="bi bi-trash3 me-1"></i>Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+}

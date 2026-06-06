@@ -17,7 +17,9 @@ namespace ERPLite.Repositories.DependencyInjection
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            services.AddScoped(
+                typeof(IGenericRepository<,>),
+                typeof(GenericRepository<,>));
             // Inventory
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();

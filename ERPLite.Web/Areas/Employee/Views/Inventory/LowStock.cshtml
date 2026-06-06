@@ -1,0 +1,156 @@
+@using ERPLite.Services.DTOs.Inventory
+@model IEnumerable<ProductDto>
+
+@{
+    ViewData["Title"] = "Low Stock Products";
+    var items = Model?.ToList() ?? new List<ProductDto>();
+}
+
+<!-- PAGE HEADER – Title, Breadcrumb & Action Buttons              -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item">
+                    <a asp-area="Employee" asp-controller="Dashboard" asp-action="Index" class="text-decoration-none">
+                        <i class="bi bi-house-door-fill me-1"></i>Workspace
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Low Stock</li>
+            </ol>
+        </nav>
+        <h3 class="fw-bold text-dark mb-0">
+            <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Low Stock Alert
+        </h3>
+        <p class="text-muted small mb-0 mt-1">Products that need restocking — quantity is at or below the minimum level.</p>
+    </div>
+    <a asp-area="Admin" asp-controller="Products" asp-action="Index"
+       class="btn btn-outline-primary px-4 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2 mt-3 mt-md-0">
+        <i class="bi bi-arrow-left"></i>
+        <span>All Products</span>
+    </a>
+</div>
+
+<!-- WARNING BANNER                                                -->
+@if (items.Any())
+{
+    <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+        <div>
+            <strong>Attention:</strong> <span class="fw-semibold">@items.Count</span> product@(items.Count == 1 ? " is" : "s are") below the minimum stock threshold.
+            Please restock at your earliest convenience.
+        </div>
+    </div>
+}
+
+<!-- MAIN CARD – Low Stock Table                                   -->
+<div class="card border-0 shadow-sm rounded-3 border-start border-warning border-3">
+    <div class="card-body p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle border-0">
+                <thead class="table-light text-secondary border-bottom border-2">
+                    <tr>
+                        <th class="ps-3 py-3 fw-bold">SKU</th>
+                        <th class="py-3 fw-bold">Product Name</th>
+                        <th class="py-3 fw-bold">Category</th>
+                        <th class="py-3 fw-bold text-center">Current Stock</th>
+                        <th class="py-3 fw-bold text-center">Min Stock</th>
+                        <th class="py-3 fw-bold text-center">Deficit</th>
+                        <th class="text-end pe-3 py-3 fw-bold">Quick Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!items.Any())
+                    {
+                        <!-- Empty State -->
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <div class="py-4">
+                                    <i class="bi bi-check-circle fs-1 text-success d-block mb-3"></i>
+                                    <h5 class="text-success fw-semibold">All Stock Levels Are Healthy</h5>
+                                    <p class="text-muted small mb-3">No products are currently below their minimum stock level.</p>
+                                    <a asp-area="Admin" asp-controller="Products" asp-action="Index"
+                                       class="btn btn-outline-primary btn-sm px-4 fw-semibold">
+                                        <i class="bi bi-box-seam me-1"></i>View All Products
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var product in items)
+                        {
+                            var deficit = product.MinStockLevel - product.QuantityInStock;
+                            var isZero = product.QuantityInStock == 0;
+                            <tr class="border-bottom @(isZero ? "table-danger" : "table-warning")">
+                                <td class="ps-3">
+                                    <span class="badge bg-dark-subtle text-dark px-2 py-1 font-monospace">@product.SKU</span>
+                                </td>
+                                <td class="fw-semibold text-dark">
+                                    <i class="bi bi-box-fill text-warning me-1"></i>@product.Name
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary px-2 py-1 rounded-pill">
+                                        @product.CategoryName
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    @if (isZero)
+                                    {
+                                        <span class="badge bg-danger px-3 py-2 rounded-pill fw-bold">
+                                            <i class="bi bi-x-circle-fill me-1"></i>OUT OF STOCK
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">
+                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>@product.QuantityInStock
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-center text-muted fw-semibold">@product.MinStockLevel</td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill fw-bold">
+                                        -@deficit
+                                    </span>
+                                </td>
+                                <td class="text-end pe-3">
+                                    <div class="d-inline-flex gap-1">
+                                        <a asp-area="Employee" asp-controller="Inventory" asp-action="StockIn" asp-route-productId="@product.Id"
+                                           class="btn btn-success btn-sm px-2 fw-semibold" title="Stock In">
+                                            <i class="bi bi-box-arrow-in-down me-1"></i>Restock
+                                        </a>
+                                        <a asp-area="Employee" asp-controller="Inventory" asp-action="History" asp-route-productId="@product.Id"
+                                           class="btn btn-outline-secondary btn-sm px-2 fw-semibold" title="View History">
+                                            <i class="bi bi-clock-history"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPTS – SweetAlert2                                         -->
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (TempData["Success"] != null)
+        {
+            <text>
+            Swal.fire({ icon: 'success', title: 'Success', text: '@TempData["Success"]', confirmButtonColor: '#198754', timer: 3000, timerProgressBar: true });
+            </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>
+            Swal.fire({ icon: 'error', title: 'Error', text: '@TempData["Error"]', confirmButtonColor: '#dc3545' });
+            </text>
+        }
+    </script>
+}

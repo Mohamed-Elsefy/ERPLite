@@ -1,0 +1,209 @@
+@using ERPLite.Services.DTOs.Inventory
+@model SupplierDto
+
+@{
+    ViewData["Title"] = "Supplier Details";
+}
+
+<!-- ============================================================ -->
+<!-- PAGE HEADER – Title & Breadcrumb                              -->
+<!-- ============================================================ -->
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-1">
+            <li class="breadcrumb-item">
+                <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="text-decoration-none">
+                    <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a asp-action="Index" class="text-decoration-none">Suppliers</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Details</li>
+        </ol>
+    </nav>
+    <h3 class="fw-bold text-dark mb-0">
+        <i class="bi bi-eye-fill text-info me-2"></i>Supplier Details
+    </h3>
+    <p class="text-muted small mb-0 mt-1">Viewing detailed information for <strong>@Model.Name</strong>.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- SUMMARY CARDS ROW                                             -->
+<!-- ============================================================ -->
+<div class="row g-3 mb-4">
+    <!-- Supplier Name Card -->
+    <div class="col-sm-6 col-lg-4">
+        <div class="card border-0 shadow-sm h-100 bg-white">
+            <div class="card-body d-flex align-items-center p-3">
+                <div class="bg-primary-subtle text-primary p-3 rounded-3 me-3">
+                    <i class="bi bi-building-fill fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 small fw-medium">Supplier</h6>
+                    <h5 class="fw-bold mb-0 text-dark">@Model.Name</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Phone Card -->
+    <div class="col-sm-6 col-lg-4">
+        <div class="card border-0 shadow-sm h-100 bg-white">
+            <div class="card-body d-flex align-items-center p-3">
+                <div class="bg-success-subtle text-success p-3 rounded-3 me-3">
+                    <i class="bi bi-telephone-fill fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 small fw-medium">Phone</h6>
+                    <h5 class="fw-bold mb-0 text-dark">@Model.Phone</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Email Card -->
+    <div class="col-sm-6 col-lg-4">
+        <div class="card border-0 shadow-sm h-100 bg-white">
+            <div class="card-body d-flex align-items-center p-3">
+                <div class="bg-info-subtle text-info p-3 rounded-3 me-3">
+                    <i class="bi bi-envelope-fill fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 small fw-medium">Email</h6>
+                    <h5 class="fw-bold mb-0 text-dark">
+                        @if (!string.IsNullOrWhiteSpace(Model.Email))
+                        {
+                            @Model.Email
+                        }
+                        else
+                        {
+                            <span class="text-muted fw-normal fs-6">Not provided</span>
+                        }
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- DETAILS CARD                                                  -->
+<!-- ============================================================ -->
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-8">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-info text-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-semibold">
+                    <i class="bi bi-building-fill me-2"></i>@Model.Name
+                </h5>
+                <span class="badge bg-light text-dark font-monospace px-3 py-2">ID: @Model.Id</span>
+            </div>
+            <div class="card-body p-4">
+
+                <!-- Supplier Name -->
+                <div class="row mb-3 pb-3 border-bottom">
+                    <div class="col-sm-4">
+                        <span class="fw-semibold text-muted">
+                            <i class="bi bi-building me-1"></i>Supplier Name
+                        </span>
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="fw-bold text-dark fs-5">@Model.Name</span>
+                    </div>
+                </div>
+
+                <!-- Phone -->
+                <div class="row mb-3 pb-3 border-bottom">
+                    <div class="col-sm-4">
+                        <span class="fw-semibold text-muted">
+                            <i class="bi bi-telephone me-1"></i>Phone Number
+                        </span>
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="text-dark fw-semibold">
+                            <i class="bi bi-telephone-fill text-success me-1"></i>@Model.Phone
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="row mb-3 pb-3 border-bottom">
+                    <div class="col-sm-4">
+                        <span class="fw-semibold text-muted">
+                            <i class="bi bi-envelope me-1"></i>Email Address
+                        </span>
+                    </div>
+                    <div class="col-sm-8">
+                        @if (!string.IsNullOrWhiteSpace(Model.Email))
+                        {
+                            <span class="text-dark fw-semibold">
+                                <i class="bi bi-envelope-fill text-info me-1"></i>@Model.Email
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill">
+                                <i class="bi bi-dash me-1"></i>Not provided
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <span class="fw-semibold text-muted">
+                            <i class="bi bi-geo-alt me-1"></i>Address
+                        </span>
+                    </div>
+                    <div class="col-sm-8">
+                        @if (!string.IsNullOrWhiteSpace(Model.Address))
+                        {
+                            <span class="text-dark fw-semibold">
+                                <i class="bi bi-geo-alt-fill text-danger me-1"></i>@Model.Address
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill">
+                                <i class="bi bi-dash me-1"></i>Not provided
+                            </span>
+                        }
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="card-footer bg-light d-flex justify-content-between align-items-center py-3 flex-wrap gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary px-4 fw-semibold">
+                    <i class="bi bi-arrow-left me-1"></i>Back to List
+                </a>
+                <a asp-action="Edit" asp-route-id="@Model.Id"
+                   class="btn btn-warning px-4 fw-semibold shadow-sm">
+                    <i class="bi bi-pencil-square me-1"></i>Edit Supplier
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCRIPTS – SweetAlert2                                         -->
+<!-- ============================================================ -->
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (TempData["Success"] != null)
+        {
+            <text>
+            Swal.fire({ icon: 'success', title: 'Success', text: '@TempData["Success"]', confirmButtonColor: '#0d6efd', timer: 3000, timerProgressBar: true });
+            </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>
+            Swal.fire({ icon: 'error', title: 'Error', text: '@TempData["Error"]', confirmButtonColor: '#dc3545' });
+            </text>
+        }
+    </script>
+}

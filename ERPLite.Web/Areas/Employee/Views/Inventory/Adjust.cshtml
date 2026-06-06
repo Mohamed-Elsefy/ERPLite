@@ -1,0 +1,150 @@
+@using ERPLite.Services.DTOs.Inventory
+@model StockOperationDto
+
+@{
+    ViewData["Title"] = "Adjust Stock";
+}
+
+<!-- PAGE HEADER – Title & Breadcrumb                              -->
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-1">
+            <li class="breadcrumb-item">
+                <a asp-area="Employee" asp-controller="Dashboard" asp-action="Index" class="text-decoration-none">
+                    <i class="bi bi-house-door-fill me-1"></i>Workspace
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="text-decoration-none">Products</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Adjust Stock</li>
+        </ol>
+    </nav>
+    <h3 class="fw-bold text-dark mb-0">
+        <i class="bi bi-sliders text-primary me-2"></i>Stock Adjustment
+    </h3>
+    <p class="text-muted small mb-0 mt-1">Set the actual inventory count for this product.</p>
+</div>
+
+<!-- IMPORTANT INFO ALERT                                          -->
+<div class="row justify-content-center mb-3">
+    <div class="col-lg-8 col-xl-6">
+        <div class="alert alert-info border-0 shadow-sm" role="alert">
+            <div class="d-flex align-items-start">
+                <i class="bi bi-info-circle-fill fs-4 me-3 mt-1"></i>
+                <div>
+                    <h6 class="alert-heading fw-bold mb-1">How Stock Adjustment Works</h6>
+                    <p class="mb-2">
+                        The <strong>Quantity</strong> field below represents the <strong>actual number of units currently in stock</strong>
+                        — <em>not</em> the difference or the amount to add/remove.
+                    </p>
+                    <hr class="my-2" />
+                    <p class="mb-0 small">
+                        <i class="bi bi-lightbulb me-1"></i>
+                        <strong>Example:</strong> If the system shows 50 units but you physically count 42,
+                        enter <strong>42</strong> as the quantity. The system will calculate and log the adjustment automatically.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FORM CARD                                                     -->
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-6">
+        <div class="card border-0 shadow-sm rounded-3 border-start border-primary border-3">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="mb-0 fw-semibold">
+                    <i class="bi bi-sliders me-2"></i>Adjustment Details
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Adjust" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="ProductId" type="hidden" />
+
+                    <!-- Validation Summary -->
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <!-- Product Name Display -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-muted small text-uppercase">
+                            <i class="bi bi-box-seam me-1"></i>Product
+                        </label>
+                        <div class="bg-primary-subtle border border-primary-subtle rounded-3 p-3 d-flex align-items-center">
+                            <div class="bg-primary text-white p-2 rounded-3 me-3">
+                                <i class="bi bi-box-seam-fill fs-4"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-0 text-dark">@Model.ProductName</h5>
+                                <small class="text-muted">Adjusting stock count for this product</small>
+                            </div>
+                        </div>
+                        <input asp-for="ProductName" type="hidden" />
+                    </div>
+
+                    <!-- Quantity Field -->
+                    <div class="mb-4">
+                        <label asp-for="Quantity" class="form-label fw-semibold">
+                            <i class="bi bi-boxes me-1 text-primary"></i>Actual Quantity In Stock <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Quantity" class="form-control form-control-lg" type="number" min="0"
+                               placeholder="Enter the actual physical count..." />
+                        <span asp-validation-for="Quantity" class="text-danger small"></span>
+                        <div class="form-text">
+                            <span class="badge bg-info-subtle text-info me-1">
+                                <i class="bi bi-info-circle me-1"></i>Important
+                            </span>
+                            Enter the <strong>total actual quantity</strong> on hand, not the difference.
+                        </div>
+                    </div>
+
+                    <!-- Notes Field -->
+                    <div class="mb-4">
+                        <label asp-for="Notes" class="form-label fw-semibold">
+                            <i class="bi bi-sticky me-1 text-primary"></i>Reason for Adjustment
+                        </label>
+                        <textarea asp-for="Notes" class="form-control" rows="3"
+                                  placeholder="Provide a reason for this adjustment (e.g., physical count, inventory audit, damaged goods)..."></textarea>
+                        <span asp-validation-for="Notes" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <a asp-area="Admin" asp-controller="Products" asp-action="Index"
+                           class="btn btn-outline-secondary px-4 fw-semibold">
+                            <i class="bi bi-arrow-left me-1"></i>Back to Products
+                        </a>
+                        <button type="submit" class="btn btn-primary px-5 fw-semibold shadow-sm">
+                            <i class="bi bi-check-circle me-1"></i>Apply Adjustment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPTS – Validation & SweetAlert2                            -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (TempData["Success"] != null)
+        {
+            <text>
+            Swal.fire({ icon: 'success', title: 'Success', text: '@TempData["Success"]', confirmButtonColor: '#0d6efd', timer: 3000, timerProgressBar: true });
+            </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>
+            Swal.fire({ icon: 'error', title: 'Error', text: '@TempData["Error"]', confirmButtonColor: '#dc3545' });
+            </text>
+        }
+    </script>
+}

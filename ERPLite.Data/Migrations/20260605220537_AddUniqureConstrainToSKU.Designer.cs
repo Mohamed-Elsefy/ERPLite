@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERPLite.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260605220537_AddUniqureConstrainToSKU")]
+    partial class AddUniqureConstrainToSKU
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -327,98 +330,6 @@ namespace ERPLite.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Description = "Electronic Devices",
-                            IsActive = true,
-                            Name = "Electronics"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Description = "Computers & Laptops",
-                            IsActive = true,
-                            Name = "Computers"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Description = "Accessories",
-                            IsActive = true,
-                            Name = "Accessories"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Description = "Networking Devices",
-                            IsActive = true,
-                            Name = "Networking"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Description = "Storage Devices",
-                            IsActive = true,
-                            Name = "Storage"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Description = "Printers & Scanners",
-                            IsActive = true,
-                            Name = "Printers"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Description = "Office Equipment",
-                            IsActive = true,
-                            Name = "Office Supplies"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Description = "Cables & Connectors",
-                            IsActive = true,
-                            Name = "Cables"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Description = "Displays & Monitors",
-                            IsActive = true,
-                            Name = "Monitors"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Description = "Security Systems",
-                            IsActive = true,
-                            Name = "Security"
-                        });
                 });
 
             modelBuilder.Entity("ERPLite.Data.Entities.Inventory.Product", b =>
@@ -494,198 +405,6 @@ namespace ERPLite.Data.Migrations
                     b.HasIndex("SupplierId");
 
                     b.ToTable("Products", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CategoryId = 2,
-                            CostPrice = 25000m,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            IsActive = true,
-                            MinStockLevel = 5,
-                            Name = "Dell Latitude 5540",
-                            QuantityInStock = 15,
-                            SKU = "PRD001",
-                            SellingPrice = 29000m,
-                            SupplierId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryId = 2,
-                            CostPrice = 22000m,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            IsActive = true,
-                            MinStockLevel = 5,
-                            Name = "HP ProBook 450",
-                            QuantityInStock = 20,
-                            SKU = "PRD002",
-                            SellingPrice = 26000m,
-                            SupplierId = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CategoryId = 9,
-                            CostPrice = 3500m,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            IsActive = true,
-                            MinStockLevel = 10,
-                            Name = "Samsung 24 Monitor",
-                            QuantityInStock = 25,
-                            SKU = "PRD003",
-                            SellingPrice = 4500m,
-                            SupplierId = 3
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CategoryId = 3,
-                            CostPrice = 250m,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            IsActive = true,
-                            MinStockLevel = 20,
-                            Name = "Logitech Mouse",
-                            QuantityInStock = 100,
-                            SKU = "PRD004",
-                            SellingPrice = 400m,
-                            SupplierId = 4
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CategoryId = 3,
-                            CostPrice = 450m,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            IsActive = true,
-                            MinStockLevel = 20,
-                            Name = "Logitech Keyboard",
-                            QuantityInStock = 80,
-                            SKU = "PRD005",
-                            SellingPrice = 650m,
-                            SupplierId = 4
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CategoryId = 4,
-                            CostPrice = 900m,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            IsActive = true,
-                            MinStockLevel = 10,
-                            Name = "TP-Link Router",
-                            QuantityInStock = 30,
-                            SKU = "PRD006",
-                            SellingPrice = 1300m,
-                            SupplierId = 5
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CategoryId = 5,
-                            CostPrice = 2200m,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            IsActive = true,
-                            MinStockLevel = 10,
-                            Name = "Kingston SSD 1TB",
-                            QuantityInStock = 40,
-                            SKU = "PRD007",
-                            SellingPrice = 2900m,
-                            SupplierId = 6
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CategoryId = 6,
-                            CostPrice = 4500m,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            IsActive = true,
-                            MinStockLevel = 3,
-                            Name = "Canon Printer",
-                            QuantityInStock = 12,
-                            SKU = "PRD008",
-                            SellingPrice = 5800m,
-                            SupplierId = 7
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CategoryId = 8,
-                            CostPrice = 70m,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            IsActive = true,
-                            MinStockLevel = 30,
-                            Name = "HDMI Cable",
-                            QuantityInStock = 150,
-                            SKU = "PRD009",
-                            SellingPrice = 150m,
-                            SupplierId = 8
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CategoryId = 10,
-                            CostPrice = 1800m,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            IsActive = true,
-                            MinStockLevel = 5,
-                            Name = "CCTV Camera",
-                            QuantityInStock = 18,
-                            SKU = "PRD010",
-                            SellingPrice = 2500m,
-                            SupplierId = 9
-                        });
-                });
-
-            modelBuilder.Entity("ERPLite.Data.Entities.Inventory.StockMovement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("LastModifiedUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("stockMovements");
                 });
 
             modelBuilder.Entity("ERPLite.Data.Entities.Inventory.Supplier", b =>
@@ -734,118 +453,6 @@ namespace ERPLite.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Suppliers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Address = "Cairo",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Email = "[info@techsource.com](mailto:info@techsource.com)",
-                            IsActive = true,
-                            Name = "TechSource",
-                            Phone = "01010000001"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Address = "Alexandria",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Email = "[sales@deltait.com](mailto:sales@deltait.com)",
-                            IsActive = true,
-                            Name = "Delta IT",
-                            Phone = "01010000002"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Address = "Giza",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Email = "[contact@future.com](mailto:contact@future.com)",
-                            IsActive = true,
-                            Name = "Future Electronics",
-                            Phone = "01010000003"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Address = "Mansoura",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Email = "[info@smart.com](mailto:info@smart.com)",
-                            IsActive = true,
-                            Name = "Smart Solutions",
-                            Phone = "01010000004"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Address = "Tanta",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Email = "[sales@mega.com](mailto:sales@mega.com)",
-                            IsActive = true,
-                            Name = "Mega Store",
-                            Phone = "01010000005"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Address = "Cairo",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Email = "[info@digital.com](mailto:info@digital.com)",
-                            IsActive = true,
-                            Name = "Digital World",
-                            Phone = "01010000006"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Address = "Alexandria",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Email = "[support@primetech.com](mailto:support@primetech.com)",
-                            IsActive = true,
-                            Name = "Prime Tech",
-                            Phone = "01010000007"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Address = "Ismailia",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Email = "[info@elite.com](mailto:info@elite.com)",
-                            IsActive = true,
-                            Name = "Elite Supplies",
-                            Phone = "01010000008"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Address = "Port Said",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Email = "[sales@prodevices.com](mailto:sales@prodevices.com)",
-                            IsActive = true,
-                            Name = "Pro Devices",
-                            Phone = "01010000009"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Address = "Cairo",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedBy = "System",
-                            Email = "[contact@globalit.com](mailto:contact@globalit.com)",
-                            IsActive = true,
-                            Name = "Global IT",
-                            Phone = "01010000010"
-                        });
                 });
 
             modelBuilder.Entity("ERPLite.Data.Entities.Sales.Customer", b =>
@@ -1237,17 +844,6 @@ namespace ERPLite.Data.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Supplier");
-                });
-
-            modelBuilder.Entity("ERPLite.Data.Entities.Inventory.StockMovement", b =>
-                {
-                    b.HasOne("ERPLite.Data.Entities.Inventory.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("ERPLite.Data.Entities.Sales.Order", b =>

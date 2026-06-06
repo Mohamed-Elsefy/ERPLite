@@ -39,5 +39,11 @@ namespace ERPLite.Repositories.Implementation.Inventory
                 c.Name == cleanName &&
                 (!excludedCategoryId.HasValue || c.Id != excludedCategoryId.Value));
         }
+        public async Task<IEnumerable<Category>> SearchAsync(string search)
+        {
+            return await _context.Categories
+                .Where(x => x.Name.Contains(search))
+                .ToListAsync();
+        }
     }
 }

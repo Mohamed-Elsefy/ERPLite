@@ -10,6 +10,7 @@ namespace ERPLite.Services.Mapping
         {
             CreateMap<Category, CategoryDto>();
             CreateMap<CreateCategoryDto, Category>();
+            CreateMap<UpdateCategoryDto, Category>();
 
             CreateMap<Supplier, SupplierDto>();
             CreateMap<CreateSupplierDto, Supplier>();
@@ -20,9 +21,15 @@ namespace ERPLite.Services.Mapping
                     o => o.MapFrom(s => s.Category.Name))
                 .ForMember(
                     d => d.SupplierName,
-                    o => o.MapFrom(s => s.Supplier.Name));
+                    o => o.MapFrom(s => s.Supplier.Name)).ReverseMap();
 
-            CreateMap<CreateProductDto, Product>();
+            CreateMap<Product, UpdateProductDto>().ReverseMap();
+            CreateMap<CreateProductDto, Product>().ReverseMap();
+
+            CreateMap<UpdateSupplierDto, Supplier>().ReverseMap();
+            CreateMap<SupplierDto, Supplier>();
+
+
         }
     }
 }

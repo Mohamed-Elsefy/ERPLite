@@ -16,16 +16,20 @@ namespace ERPLite.Services.Services.Inventory
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
         private readonly ICurrentUserService _currentUser;
+        private readonly IGenericRepository<StockMovement, int> _stockMoveRepo;
 
         public ProductService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            IActivityLogService activityLogService, ICurrentUserService currentUser)
+            IActivityLogService activityLogService,
+            ICurrentUserService currentUser,
+            IGenericRepository<StockMovement,int> stockMoveRepo)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
             _currentUser = currentUser;
+            _stockMoveRepo = stockMoveRepo;
         }
 
         public async Task<ServiceResult<IEnumerable<ProductDto>>> GetAllAsync()
@@ -56,6 +60,7 @@ namespace ERPLite.Services.Services.Inventory
 
         public async Task<ServiceResult> CreateAsync(CreateProductDto dto)
         {
+            dto.Name = dto.Name.Trim();
             if (await _unitOfWork.Products.ExistsByNameAsync(dto.Name))
                 return ServiceResult.Failed("Product already exists.");
 
@@ -68,10 +73,23 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Supplier not found.");
 
             var product = _mapper.Map<Product>(dto);
-            var user = _currentUser.UserId;
+            product.SKU = await GenerateSkuAsync();
+
+            var user = _currentUser.UserId ?? "System";
             await _unitOfWork.Products.AddAsync(product);
             await _unitOfWork.SaveChangesAsync();
-
+            if (product.QuantityInStock > 0)
+            {
+                await _stockMoveRepo.AddAsync(
+                    new StockMovement
+                    {
+                        ProductId = product.Id,
+                        Quantity = product.QuantityInStock,
+                        Type = StockMovementType.StockIn,
+                        Notes = "Initial Stock"
+                    });
+            }
+            await _unitOfWork.SaveChangesAsync();
             await _activityLogService.LogAsync(
                 userId: user,
                 action: "Create",
@@ -85,6 +103,7 @@ namespace ERPLite.Services.Services.Inventory
 
         public async Task<ServiceResult> UpdateAsync(UpdateProductDto dto)
         {
+            dto.Name = dto.Name.Trim();
             var product = await _unitOfWork.Products.GetByIdAsync(dto.Id);
             if (product == null)
                 return ServiceResult.Failed("Product not found.");
@@ -101,7 +120,7 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Product name already exists.");
 
             _mapper.Map(dto, product);
-            var user = _currentUser.UserId;
+            var user = _currentUser.UserId ?? "System";
 
             _unitOfWork.Products.Update(product);
             await _unitOfWork.SaveChangesAsync();
@@ -128,7 +147,7 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Cannot delete product used in orders.");
 
             var productName = product.Name;
-            var user = _currentUser.UserId;
+            var user = _currentUser.UserId ?? "System";
 
             _unitOfWork.Products.SoftDelete(product);
             await _unitOfWork.SaveChangesAsync();
@@ -142,6 +161,18 @@ namespace ERPLite.Services.Services.Inventory
             );
 
             return ServiceResult.Successful("Product deleted successfully.");
+        }
+
+        private async Task<string> GenerateSkuAsync()
+        {
+            var lastProduct =
+                await _unitOfWork.Products
+                    .GetLastCreatedProductAsync();
+
+            var nextNumber =
+                (lastProduct?.Id ?? 0) + 1;
+
+            return $"PRD-{nextNumber:D5}";
         }
     }
 }

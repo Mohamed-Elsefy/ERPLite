@@ -103,5 +103,33 @@ namespace ERPLite.Repositories.Implementation.Inventory
                 .AsNoTracking() 
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+        public async Task<bool> ExistsBySkuAsync(string sku)
+        {
+            sku = sku.Trim().ToUpper();
+
+            return await _context.Products
+                .AnyAsync(p =>
+                    p.SKU.ToUpper() == sku);
+        }
+
+        public async Task<bool> ExistsBySkuAsync(
+            string sku,
+            int excludedId)
+        {
+            sku = sku.Trim().ToUpper();
+
+            return await _context.Products
+                .AnyAsync(p =>
+                    p.SKU.ToUpper() == sku &&
+                    p.Id != excludedId);
+        }
+
+        public async Task<Product?> GetLastCreatedProductAsync()
+        {
+            return await _context.Products
+                .IgnoreQueryFilters()
+                .OrderByDescending(p => p.Id)
+                .FirstOrDefaultAsync();
+        }
     }
 }

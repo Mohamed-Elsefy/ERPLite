@@ -23,6 +23,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<Category> Categories { get; set; }
     public DbSet<Supplier> Suppliers { get; set; }
     public DbSet<Product> Products { get; set; }
+    public DbSet<StockMovement> stockMovements { get; set; }
 
     // Sales
     public DbSet<Customer> Customers { get; set; }
@@ -42,9 +43,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
         ModelBuilderExtensions.ApplySoftDeleteQueryFilters(modelBuilder);
     }
+
+
 }

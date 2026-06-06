@@ -1,0 +1,223 @@
+@using ERPLite.Services.DTOs.Inventory
+@model IEnumerable<SupplierDto>
+
+@{
+    ViewData["Title"] = "Suppliers";
+    var items = Model?.ToList() ?? new List<SupplierDto>();
+    var searchTerm = ViewBag.Search as string ?? string.Empty;
+}
+
+<!-- PAGE HEADER – Title, Breadcrumb & Action Buttons -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item">
+                    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="text-decoration-none">
+                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Suppliers</li>
+            </ol>
+        </nav>
+        <h3 class="fw-bold text-dark mb-0">
+            <i class="bi bi-building-fill text-primary me-2"></i>Supplier Management
+        </h3>
+        <p class="text-muted small mb-0 mt-1">Manage your suppliers, contact information, and addresses.</p>
+    </div>
+    <div class="d-flex gap-2 mt-3 mt-md-0">
+        <a asp-action="Create" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2">
+            <i class="bi bi-plus-circle-fill"></i>
+            <span>New Supplier</span>
+        </a>
+    </div>
+</div>
+
+<!-- MAIN CARD – Search + Table -->
+<div class="card border-0 shadow-sm rounded-3">
+
+    <!-- Search Bar -->
+    <div class="card-header bg-white border-0 pt-4 pb-3">
+        <form method="get" asp-action="Index">
+            <div class="row g-2">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control border-start-0 bg-light"
+                               placeholder="Search by name, phone, or address..." value="@searchTerm" />
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-dark px-4 fw-semibold shadow-sm">
+                        <i class="bi bi-search me-1"></i>Search
+                    </button>
+                    @if (!string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        <a asp-action="Index" class="btn btn-outline-secondary px-3 d-flex align-items-center shadow-sm" title="Clear Search">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Body -->
+    <div class="card-body p-4 pt-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle border-0" id="suppliersTable">
+                <thead class="table-light text-secondary border-bottom border-2">
+                    <tr>
+                        <th class="ps-3 py-3 fw-bold">Supplier Name</th>
+                        <th class="py-3 fw-bold">Phone</th>
+                        <th class="py-3 fw-bold">Address</th>
+                        <th class="text-end pe-3 py-3 fw-bold">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!items.Any())
+                    {
+                        <!-- Empty State -->
+                        <tr>
+                            <td colspan="4" class="text-center py-5">
+                                <div class="py-4">
+                                    <i class="bi bi-building-x fs-1 text-muted d-block mb-3"></i>
+                                    <h5 class="text-muted fw-semibold">No suppliers found.</h5>
+                                    <p class="text-muted small mb-3">Get started by adding your first supplier to the system.</p>
+                                    <a asp-action="Create" class="btn btn-primary btn-sm px-4 fw-semibold">
+                                        <i class="bi bi-plus-circle me-1"></i>Create First Supplier
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var supplier in items)
+                        {
+                            <tr class="border-bottom">
+                                <!-- Supplier Name -->
+                                <td class="ps-3 fw-semibold text-dark">
+                                    <i class="bi bi-building text-primary me-1"></i>@supplier.Name
+                                </td>
+                                <!-- Phone -->
+                                <td>
+                                    <span class="text-muted">
+                                        <i class="bi bi-telephone me-1"></i>@supplier.Phone
+                                    </span>
+                                </td>
+                                <!-- Address -->
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(supplier.Address))
+                                    {
+                                        <span class="text-muted">
+                                            <i class="bi bi-geo-alt me-1"></i>@supplier.Address
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill">
+                                            <i class="bi bi-dash me-1"></i>N/A
+                                        </span>
+                                    }
+                                </td>
+                                <!-- Actions -->
+                                <td class="text-end pe-3">
+                                    <div class="d-inline-flex gap-1">
+                                        <a asp-action="Details" asp-route-id="@supplier.Id"
+                                           class="btn btn-outline-info btn-sm px-2 fw-semibold" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@supplier.Id"
+                                           class="btn btn-outline-warning btn-sm px-2 fw-semibold" title="Edit Supplier">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-outline-danger btn-sm px-2 fw-semibold btn-delete"
+                                           data-id="@supplier.Id" data-name="@supplier.Name" title="Delete Supplier">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Record Count -->
+        @if (items.Count > 0)
+        {
+            <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                <span class="text-muted small">
+                    Showing <strong>@items.Count</strong> supplier@(items.Count == 1 ? "" : "s")
+                </span>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Hidden Delete Forms -->
+@foreach (var supplier in items)
+{
+    <form id="delete-form-@supplier.Id" asp-action="Delete" asp-route-id="@supplier.Id" method="post" class="d-none">
+        @Html.AntiForgeryToken()
+    </form>
+}
+
+<!-- SCRIPTS – SweetAlert2 & Delete Confirmation                   -->
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // ── SweetAlert2: TempData Messages ──
+        @if (TempData["Success"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '@TempData["Success"]',
+                confirmButtonColor: '#0d6efd',
+                timer: 3000,
+                timerProgressBar: true
+            });
+            </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '@TempData["Error"]',
+                confirmButtonColor: '#dc3545'
+            });
+            </text>
+        }
+
+        // ── SweetAlert2: Delete Confirmation ──
+        document.querySelectorAll('.btn-delete').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var id = this.getAttribute('data-id');
+                var name = this.getAttribute('data-name');
+                Swal.fire({
+                    title: 'Delete Supplier?',
+                    html: 'Are you sure you want to delete <strong>' + name + '</strong>?<br/>This action cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="bi bi-trash me-1"></i>Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        document.getElementById('delete-form-' + id).submit();
+                    }
+                });
+            });
+        });
+    </script>
+}

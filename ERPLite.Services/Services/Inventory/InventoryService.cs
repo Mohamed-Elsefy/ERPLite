@@ -11,48 +11,52 @@ namespace ERPLite.Services.Services.Inventory
     public class InventoryService : IInventoryService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        private readonly ICurrentUserService _currentUser;
         private readonly IGenericRepository<StockMovement,int> _stockMoveRepo;
 
         public InventoryService(
             IUnitOfWork unitOfWork,
-            IMapper mapper,
-            ICurrentUserService currentUser,
             IGenericRepository<StockMovement,int> stockmoveRepo)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
-            _currentUser = currentUser;
             _stockMoveRepo = stockmoveRepo;
         }
-        public async Task<ServiceResult> AdjustStockAsync(int productId, int quantity, string? notes = null)
+        public async Task<ServiceResult> AdjustStockAsync(int productId, int actualQuantity, string? notes = null)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(productId);
 
             if (product == null)
                 return ServiceResult.Failed("Product not found");
 
-            var difference = quantity - product.QuantityInStock;
+            var difference = actualQuantity - product.QuantityInStock;
 
-            product.QuantityInStock = quantity;
+            if (difference == 0)
+            {
+                return ServiceResult.Failed(
+                    "No stock change detected");
+            }
+            product.QuantityInStock = actualQuantity;
 
             await _stockMoveRepo.AddAsync(
                             new StockMovement
                             {
                                 ProductId = productId,
-                                Quantity = quantity,
+                                Quantity = Math.Abs(difference),
                                 Type = StockMovementType.Adjustment,
                                 Notes = notes,
-                            }); await _unitOfWork.SaveChangesAsync();
+                            });
+            await _unitOfWork.SaveChangesAsync();
 
             return ServiceResult.Successful($"Product {product.Name} stock adjusted Successfully");
         }
 
         public async Task<ServiceResult<IEnumerable<StockMovementDto>>> GetHistoryAsync(int productId)
         {
-           var history = await _stockMoveRepo.FindAsync(p=>p.Id == productId);
-            if(history == null)
+                var product = await _unitOfWork.Products.GetByIdAsync(productId);
+                 if (product is null)
+                    return ServiceResult<IEnumerable<StockMovementDto>>.Failed("Product not found");
+
+            var history = await _stockMoveRepo.FindAsync(p=>p.ProductId == productId);
+            if(!history.Any())
                 return ServiceResult<IEnumerable<StockMovementDto>>.Failed("there is no history for this product");
 
 
@@ -63,7 +67,7 @@ namespace ERPLite.Services.Services.Inventory
                     ProductId = x.ProductId,
                     CreatedAt =  x.CreatedAtUtc,
                     Notes = x.Notes,
-                    ProductName =  _unitOfWork.Products.GetByIdAsync(x.ProductId).Result.Name,
+                    ProductName =  product!.Name,
                     Quantity = x.Quantity,
                     Type = x.Type
 
@@ -85,6 +89,11 @@ namespace ERPLite.Services.Services.Inventory
             if (product == null)
                 return ServiceResult.Failed("Product not found");
 
+            if (!product.IsActive)
+            {
+                return ServiceResult.Failed(
+                    "Product is inactive");
+            }
             product.QuantityInStock += quantity;
 
             await _stockMoveRepo.AddAsync(
@@ -97,7 +106,7 @@ namespace ERPLite.Services.Services.Inventory
             });
 
             await _unitOfWork.SaveChangesAsync();
-            return ServiceResult.Successful($"Product {product.Name} StockIn Successfully");
+            return ServiceResult.Successful($"Successfully added {quantity} units to {product.Name} stock.");
 
         }
 
@@ -110,6 +119,11 @@ namespace ERPLite.Services.Services.Inventory
             if(product == null)
                 return ServiceResult.Failed("Product not found");
 
+            if (!product.IsActive)
+            {
+                return ServiceResult.Failed(
+                    "Product is inactive");
+            }
 
             if (quantity > product.QuantityInStock)
                 return ServiceResult.Failed("Insufficient stock");
@@ -126,7 +140,7 @@ namespace ERPLite.Services.Services.Inventory
                 });
 
             await _unitOfWork.SaveChangesAsync();
-            return ServiceResult.Successful($"Product {product.Name} StockOut Successfully");
+            return ServiceResult.Successful($"Successfully deducted {quantity} units from {product.Name} stock.");
         }
     }
 }

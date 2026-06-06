@@ -1,4 +1,5 @@
 ﻿using ERPLite.Data.Interceptors;
+using ERPLite.Repositories.Interfaces.Common;
 using ERPLite.Services.Interfaces.Auth;
 using ERPLite.Services.Interfaces.Dashboard;
 using ERPLite.Services.Interfaces.HR;
@@ -46,6 +47,7 @@ namespace ERPLite.Services.DependencyInjection
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ISupplierService, SupplierService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IInventoryService, InventoryService>();
 
             // Sales
             services.AddScoped<ICustomerService, CustomerService>();
@@ -68,6 +70,7 @@ namespace ERPLite.Services.DependencyInjection
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddHttpContextAccessor();
             services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
+
 
             return services;
         }

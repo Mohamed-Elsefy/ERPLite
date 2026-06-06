@@ -12,10 +12,12 @@ namespace ERPLite.Services.Validators.Inventory
                 .MaximumLength(150);
 
             RuleFor(x => x.SellingPrice)
-                .GreaterThan(0);
+                .GreaterThan(0)
+                .WithMessage("Selling price cannot be negative.");
 
             RuleFor(x => x.CostPrice)
-             .GreaterThan(0);
+             .GreaterThan(0)
+             .WithMessage("Cost price cannot be negative.");
 
             RuleFor(x => x.QuantityInStock)
                 .GreaterThanOrEqualTo(0);

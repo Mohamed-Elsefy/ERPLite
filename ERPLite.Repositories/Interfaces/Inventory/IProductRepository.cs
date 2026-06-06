@@ -26,5 +26,13 @@ namespace ERPLite.Repositories.Interfaces.Inventory
         Task<decimal> GetInventoryValueAsync();
 
         Task<Product?> GetForOrderAsync(int id);
+
+        Task<bool> ExistsBySkuAsync(string sku);
+
+        Task<bool> ExistsBySkuAsync(
+            string sku,
+            int excludedId);
+
+        Task<Product?> GetLastCreatedProductAsync();
     }
 }

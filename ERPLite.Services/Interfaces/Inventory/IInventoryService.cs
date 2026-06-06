@@ -17,7 +17,7 @@ namespace ERPLite.Services.Interfaces.Inventory
 
         Task<ServiceResult> AdjustStockAsync(
             int productId,
-            int quantity,
+            int actualQuantity,
             string? notes = null);
 
         Task<ServiceResult<IEnumerable<StockMovementDto>>> GetHistoryAsync(int productId);

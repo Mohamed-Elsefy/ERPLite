@@ -1,0 +1,373 @@
+@using ERPLite.Services.DTOs.Inventory
+@model IEnumerable<ProductDto>
+
+@{
+    ViewData["Title"] = "Products";
+    var items = Model?.ToList() ?? new List<ProductDto>();
+    var searchTerm = ViewContext.HttpContext.Request.Query["search"].ToString();
+}
+
+<!-- ============================================================ -->
+<!-- PAGE HEADER – Title, Breadcrumb & Action Buttons              -->
+<!-- ============================================================ -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item">
+                    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="text-decoration-none">
+                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Products</li>
+            </ol>
+        </nav>
+        <h3 class="fw-bold text-dark mb-0">
+            <i class="bi bi-box-seam-fill text-primary me-2"></i>Product Management
+        </h3>
+        <p class="text-muted small mb-0 mt-1">Manage your product catalog, pricing, and inventory levels.</p>
+    </div>
+    <div class="d-flex gap-2 mt-3 mt-md-0">
+        <a asp-action="LowStock" class="btn btn-outline-warning px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>Low Stock</span>
+        </a>
+        <a asp-action="Create" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2">
+            <i class="bi bi-plus-circle-fill"></i>
+            <span>New Product</span>
+        </a>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MAIN CARD – Search + Table                                    -->
+<!-- ============================================================ -->
+<div class="card border-0 shadow-sm rounded-3">
+
+    <!-- Search Bar -->
+    <div class="card-header bg-white border-0 pt-4 pb-3">
+        <form method="get" asp-action="Index">
+            <div class="row g-2">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control border-start-0 bg-light"
+                               placeholder="Search by product name, SKU, or category..." value="@searchTerm" />
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-dark px-4 fw-semibold shadow-sm">
+                        <i class="bi bi-search me-1"></i>Search
+                    </button>
+                    @if (!string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        <a asp-action="Index" class="btn btn-outline-secondary px-3 d-flex align-items-center shadow-sm" title="Clear Search">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Body -->
+    <div class="card-body p-4 pt-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle border-0" id="productsTable">
+                <thead class="table-light text-secondary border-bottom border-2">
+                    <tr>
+                        <th class="ps-3 py-3 fw-bold" style="cursor:pointer;" onclick="sortTable(0)">
+                            SKU <i class="bi bi-arrow-down-up ms-1 small text-muted"></i>
+                        </th>
+                        <th class="py-3 fw-bold" style="cursor:pointer;" onclick="sortTable(1)">
+                            Product Name <i class="bi bi-arrow-down-up ms-1 small text-muted"></i>
+                        </th>
+                        <th class="py-3 fw-bold" style="cursor:pointer;" onclick="sortTable(2)">
+                            Category <i class="bi bi-arrow-down-up ms-1 small text-muted"></i>
+                        </th>
+                        <th class="py-3 fw-bold" style="cursor:pointer;" onclick="sortTable(3)">
+                            Supplier <i class="bi bi-arrow-down-up ms-1 small text-muted"></i>
+                        </th>
+                        <th class="py-3 fw-bold text-end" style="cursor:pointer;" onclick="sortTable(4)">
+                            Cost Price <i class="bi bi-arrow-down-up ms-1 small text-muted"></i>
+                        </th>
+                        <th class="py-3 fw-bold text-end" style="cursor:pointer;" onclick="sortTable(5)">
+                            Selling Price <i class="bi bi-arrow-down-up ms-1 small text-muted"></i>
+                        </th>
+                        <th class="py-3 fw-bold text-center" style="cursor:pointer;" onclick="sortTable(6)">
+                            Current Stock <i class="bi bi-arrow-down-up ms-1 small text-muted"></i>
+                        </th>
+                        <th class="py-3 fw-bold text-center">Min Stock</th>
+                        <th class="text-end pe-3 py-3 fw-bold">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!items.Any())
+                    {
+                        <!-- Empty State -->
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <div class="py-4">
+                                    <i class="bi bi-box-seam fs-1 text-muted d-block mb-3"></i>
+                                    <h5 class="text-muted fw-semibold">No Products Found</h5>
+                                    <p class="text-muted small mb-3">Start building your inventory by adding a product.</p>
+                                    <a asp-action="Create" class="btn btn-primary btn-sm px-4 fw-semibold">
+                                        <i class="bi bi-plus-circle me-1"></i>Add Product
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var product in items)
+                        {
+                            var isLowStock = product.QuantityInStock <= product.MinStockLevel;
+                            <tr class="border-bottom @(isLowStock ? "table-warning" : "")">
+                                <!-- SKU -->
+                                <td class="ps-3">
+                                    <span class="badge bg-dark-subtle text-dark px-2 py-1 font-monospace">@product.SKU</span>
+                                </td>
+                                <!-- Product Name -->
+                                <td class="fw-semibold text-dark">
+                                    <i class="bi bi-box-fill text-primary me-1"></i>@product.Name
+                                </td>
+                                <!-- Category -->
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary px-2 py-1 rounded-pill">
+                                        <i class="bi bi-tag me-1"></i>@product.CategoryName
+                                    </span>
+                                </td>
+                                <!-- Supplier -->
+                                <td class="text-muted">@product.SupplierName</td>
+                                <!-- Cost Price -->
+                                <td class="text-end font-monospace">@product.CostPrice.ToString("C")</td>
+                                <!-- Selling Price -->
+                                <td class="text-end font-monospace fw-semibold text-success">@product.SellingPrice.ToString("C")</td>
+                                <!-- Current Stock -->
+                                <td class="text-center">
+                                    @if (isLowStock)
+                                    {
+                                        <span class="badge bg-danger px-3 py-2 rounded-pill">
+                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>@product.QuantityInStock
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">
+                                            <i class="bi bi-check-circle-fill me-1"></i>@product.QuantityInStock
+                                        </span>
+                                    }
+                                </td>
+                                <!-- Min Stock -->
+                                <td class="text-center text-muted">@product.MinStockLevel</td>
+                                <!-- Actions -->
+                                <td class="text-end pe-3">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle fw-semibold" type="button"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-gear me-1"></i>Actions
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li>
+                                                <a asp-action="Details" asp-route-id="@product.Id" class="dropdown-item">
+                                                    <i class="bi bi-eye text-info me-2"></i>Details
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a asp-action="Edit" asp-route-id="@product.Id" class="dropdown-item">
+                                                    <i class="bi bi-pencil-square text-warning me-2"></i>Edit
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider" /></li>
+                                            <li class="dropdown-header text-muted small">Inventory Operations</li>
+                                            <li>
+                                                <a asp-area="Employee" asp-controller="Inventory" asp-action="StockIn" asp-route-productId="@product.Id" class="dropdown-item">
+                                                    <i class="bi bi-box-arrow-in-down text-success me-2"></i>Stock In
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a asp-area="Employee" asp-controller="Inventory" asp-action="StockOut" asp-route-productId="@product.Id" class="dropdown-item">
+                                                    <i class="bi bi-box-arrow-up text-danger me-2"></i>Stock Out
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a asp-area="Employee" asp-controller="Inventory" asp-action="Adjust" asp-route-productId="@product.Id" class="dropdown-item">
+                                                    <i class="bi bi-sliders text-primary me-2"></i>Adjust Stock
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider" /></li>
+                                            <li>
+                                                <a asp-area="Employee" asp-controller="Inventory" asp-action="History" asp-route-productId="@product.Id" class="dropdown-item">
+                                                    <i class="bi bi-clock-history text-secondary me-2"></i>History
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider" /></li>
+                                            <li>
+                                                <a href="#" class="dropdown-item text-danger btn-delete"
+                                                   data-id="@product.Id" data-name="@product.Name">
+                                                    <i class="bi bi-trash3 me-2"></i>Delete
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination UI -->
+        @if (items.Count > 0)
+        {
+            <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                <span class="text-muted small">
+                    Showing <strong>@items.Count</strong> product@(items.Count == 1 ? "" : "s")
+                </span>
+                <nav aria-label="Product pagination">
+                    <ul class="pagination pagination-sm mb-0" id="paginationContainer"></ul>
+                </nav>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Hidden Delete Forms -->
+@foreach (var product in items)
+{
+    <form id="delete-form-@product.Id" asp-action="Delete" asp-route-id="@product.Id" method="post" class="d-none">
+        @Html.AntiForgeryToken()
+    </form>
+}
+
+<!-- ============================================================ -->
+<!-- SCRIPTS – SweetAlert2, Delete, Sorting, Pagination            -->
+<!-- ============================================================ -->
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // ── SweetAlert2: TempData Messages ──
+        @if (TempData["Success"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '@TempData["Success"]',
+                confirmButtonColor: '#0d6efd',
+                timer: 3000,
+                timerProgressBar: true
+            });
+            </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '@TempData["Error"]',
+                confirmButtonColor: '#dc3545'
+            });
+            </text>
+        }
+
+        // ── SweetAlert2: Delete Confirmation ──
+        document.querySelectorAll('.btn-delete').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var id = this.getAttribute('data-id');
+                var name = this.getAttribute('data-name');
+                Swal.fire({
+                    title: 'Delete Product?',
+                    html: 'Are you sure you want to delete <strong>' + name + '</strong>?<br/>This action cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="bi bi-trash3 me-1"></i>Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        document.getElementById('delete-form-' + id).submit();
+                    }
+                });
+            });
+        });
+
+        // ── Client-Side Table Sorting ──
+        function sortTable(colIndex) {
+            var table = document.getElementById('productsTable');
+            var tbody = table.querySelector('tbody');
+            var rows = Array.from(tbody.querySelectorAll('tr'));
+            var key = 'sort-dir-' + colIndex;
+            var ascending = table.getAttribute(key) !== 'asc';
+
+            rows.sort(function (a, b) {
+                var cellA = a.cells[colIndex]?.textContent.trim().toLowerCase() || '';
+                var cellB = b.cells[colIndex]?.textContent.trim().toLowerCase() || '';
+                // Try numeric sort for price & stock columns
+                var numA = parseFloat(cellA.replace(/[^0-9.\-]/g, ''));
+                var numB = parseFloat(cellB.replace(/[^0-9.\-]/g, ''));
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return ascending ? numA - numB : numB - numA;
+                }
+                return ascending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+            });
+
+            table.setAttribute(key, ascending ? 'asc' : 'desc');
+            rows.forEach(function (row) { tbody.appendChild(row); });
+        }
+
+        // ── Client-Side Pagination ──
+        (function () {
+            var pageSize = 10;
+            var table = document.getElementById('productsTable');
+            if (!table) return;
+            var tbody = table.querySelector('tbody');
+            var rows = Array.from(tbody.querySelectorAll('tr'));
+            if (rows.length <= pageSize) return;
+
+            var totalPages = Math.ceil(rows.length / pageSize);
+            var currentPage = 1;
+
+            function showPage(page) {
+                currentPage = page;
+                rows.forEach(function (row, i) {
+                    row.style.display = (i >= (page - 1) * pageSize && i < page * pageSize) ? '' : 'none';
+                });
+                renderPagination();
+            }
+
+            function renderPagination() {
+                var container = document.getElementById('paginationContainer');
+                container.innerHTML = '';
+                var prevLi = document.createElement('li');
+                prevLi.className = 'page-item' + (currentPage === 1 ? ' disabled' : '');
+                prevLi.innerHTML = '<a class="page-link" href="#">&laquo;</a>';
+                prevLi.addEventListener('click', function (e) { e.preventDefault(); if (currentPage > 1) showPage(currentPage - 1); });
+                container.appendChild(prevLi);
+                for (var i = 1; i <= totalPages; i++) {
+                    (function (p) {
+                        var li = document.createElement('li');
+                        li.className = 'page-item' + (p === currentPage ? ' active' : '');
+                        li.innerHTML = '<a class="page-link" href="#">' + p + '</a>';
+                        li.addEventListener('click', function (e) { e.preventDefault(); showPage(p); });
+                        container.appendChild(li);
+                    })(i);
+                }
+                var nextLi = document.createElement('li');
+                nextLi.className = 'page-item' + (currentPage === totalPages ? ' disabled' : '');
+                nextLi.innerHTML = '<a class="page-link" href="#">&raquo;</a>';
+                nextLi.addEventListener('click', function (e) { e.preventDefault(); if (currentPage < totalPages) showPage(currentPage + 1); });
+                container.appendChild(nextLi);
+            }
+
+            showPage(1);
+        })();
+    </script>
+}

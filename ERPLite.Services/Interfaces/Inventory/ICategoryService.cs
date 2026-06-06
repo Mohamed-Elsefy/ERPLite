@@ -14,5 +14,8 @@ namespace ERPLite.Services.Interfaces.Inventory
         Task<ServiceResult> UpdateAsync(UpdateCategoryDto dto);
 
         Task<ServiceResult> DeleteAsync(int id);
+
+        Task<ServiceResult<IEnumerable<CategoryDto>>> SearchAsync(
+            string search);
     }
 }

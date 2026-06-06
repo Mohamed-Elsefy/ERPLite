@@ -1,5 +1,6 @@
 ﻿using ERPLite.Data.Entities.Inventory;
 using ERPLite.Repositories.Interfaces.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace ERPLite.Repositories.Interfaces.Inventory
 {
@@ -10,5 +11,7 @@ namespace ERPLite.Repositories.Interfaces.Inventory
         Task<Category?> GetCategoryWithProductsAsync(int id);
 
         Task<bool> CategoryExistsAsync(string name, int? excludedCategoryId = null);
+        Task<IEnumerable<Category>> SearchAsync(string search);
+
     }
 }

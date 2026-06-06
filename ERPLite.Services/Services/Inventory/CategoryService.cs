@@ -7,6 +7,7 @@ using ERPLite.Services.Interfaces.Inventory;
 using ERPLite.Services.Interfaces.System;
 using ERPLite.Shared;
 using ERPLite.Shared.Constants;
+using Microsoft.EntityFrameworkCore;
 
 namespace ERPLite.Services.Services.Inventory
 {
@@ -20,7 +21,8 @@ namespace ERPLite.Services.Services.Inventory
         public CategoryService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            IActivityLogService activityLogService, ICurrentUserService currentUser)
+            IActivityLogService activityLogService,
+            ICurrentUserService currentUser)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -48,11 +50,11 @@ namespace ERPLite.Services.Services.Inventory
 
         public async Task<ServiceResult> CreateAsync(CreateCategoryDto dto)
         {
-            if (await _unitOfWork.Categories.CategoryExistsAsync(dto.Name))
+            if (await _unitOfWork.Categories.CategoryExistsAsync(dto.Name.Trim()))
                 return ServiceResult.Failed("Category already exists.");
 
             var category = _mapper.Map<Category>(dto);
-            var user = _currentUser.UserId;
+            var user = _currentUser.UserId ?? "System";
             await _unitOfWork.Categories.AddAsync(category);
             await _unitOfWork.SaveChangesAsync();
 
@@ -73,12 +75,12 @@ namespace ERPLite.Services.Services.Inventory
             if (category == null)
                 return ServiceResult.Failed("Category not found.");
 
-            var exists = await _unitOfWork.Categories.CategoryExistsAsync(dto.Name, dto.Id);
+            var exists = await _unitOfWork.Categories.CategoryExistsAsync(dto.Name.Trim(), dto.Id);
             if (exists)
                 return ServiceResult.Failed("Category name already exists.");
 
             _mapper.Map(dto, category);
-            var user = _currentUser.UserId;
+            var user = _currentUser.UserId ?? "System";
 
             _unitOfWork.Categories.Update(category);
             await _unitOfWork.SaveChangesAsync();
@@ -104,7 +106,7 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Cannot delete category with products.");
 
             var categoryName = category.Name;
-            var user = _currentUser.UserId;
+            var user = _currentUser.UserId ?? "System";
 
             _unitOfWork.Categories.SoftDelete(category);
             await _unitOfWork.SaveChangesAsync();
@@ -118,6 +120,15 @@ namespace ERPLite.Services.Services.Inventory
             );
 
             return ServiceResult.Successful("Category deleted successfully.");
+        }
+
+        public async Task<ServiceResult<IEnumerable<CategoryDto>>> SearchAsync(string search)
+        {
+            var categories =await _unitOfWork.Categories.SearchAsync(search);
+            if(!categories.Any())
+                return ServiceResult<IEnumerable<CategoryDto>>.Failed("No categories found matching the search criteria.");
+
+            return ServiceResult<IEnumerable<CategoryDto>>.Successful(_mapper.Map<IEnumerable<CategoryDto>>(categories));
         }
     }
 }
