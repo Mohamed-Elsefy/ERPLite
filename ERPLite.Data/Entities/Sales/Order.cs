@@ -26,5 +26,9 @@ namespace ERPLite.Data.Entities.Sales
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
+        public decimal PaidAmount => Payments?.Sum(p => p.Amount) ?? 0;
+
+        public decimal RemainingAmount => TotalPrice - PaidAmount;
     }
 }

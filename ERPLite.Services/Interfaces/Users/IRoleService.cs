@@ -1,6 +1,6 @@
 ﻿using ERPLite.Services.Helpers;
 
-namespace ERPLite.Services.Interfaces.Auth
+namespace ERPLite.Services.Interfaces.Users
 {
     public interface IRoleService
     {

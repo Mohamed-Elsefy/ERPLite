@@ -26,5 +26,7 @@ namespace ERPLite.Repositories.Interfaces.Inventory
         Task<decimal> GetInventoryValueAsync();
 
         Task<Product?> GetForOrderAsync(int id);
+
+        Task<IEnumerable<Product>> GetProductsByIdsAsync(IEnumerable<int> ids);
     }
 }

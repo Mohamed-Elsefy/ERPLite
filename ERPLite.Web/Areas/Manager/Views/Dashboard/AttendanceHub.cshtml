@@ -4,104 +4,75 @@
     ViewData["Title"] = ViewData["PageTitle"] ?? "Attendance Control Hub";
 }
 
-<div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
+<div class="card border-0 shadow-sm rounded-3 bg-white p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center">
         <div>
-            <h4 class="fw-bold text-dark mb-1">
-                <i class="bi bi-speedometer2 text-primary me-2"></i>
-                @ViewData["Title"]
-            </h4>
+            <h5 class="fw-bold text-dark mb-1">
+                <i class="bi bi-shield-check text-secondary me-2"></i>@ViewData["Title"]
+            </h5>
             <p class="text-muted small mb-0">
-                Scope: <span class="badge bg-primary-subtle text-primary fw-bold">@Model.DepartmentName</span>
-                | Real-time workspace presence and workforce compliance monitoring.
+                Scope: <span class="badge bg-light text-secondary border font-monospace px-2" style="font-size: 0.7rem; border-color: #e2e8f0 !important;">@Model.DepartmentName</span>
+                | Real-time workspace attendance monitoring and structural compliance tracking.
             </p>
         </div>
         <div>
-            <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill small fw-semibold">
-                <i class="bi bi-clock me-1"></i> Today: @DateTime.Today.ToString("yyyy-MM-dd")
+            <span class="badge bg-light text-secondary border px-3 py-1.5 rounded-pill font-monospace small" style="font-size: 0.75rem; border-color: #e2e8f0 !important;">
+                <i class="bi bi-calendar3 me-1"></i> @DateTime.Today.ToString("yyyy-MM-dd")
             </span>
         </div>
     </div>
 </div>
 
-<div class="row g-4 mb-4">
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <h6 class="text-muted small fw-bold text-uppercase mb-1">Total Headcount</h6>
-                    <h3 class="fw-bold text-dark mb-0">@Model.TotalEmployees</h3>
-                </div>
-                <div class="avatar-circle bg-light text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                    <i class="bi bi-people fs-4"></i>
-                </div>
-            </div>
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm bg-white p-3 rounded-3 h-100">
+            <h6 class="text-muted small fw-semibold text-uppercase tracking-wider mb-1" style="font-size: 0.6rem;">Total Headcount</h6>
+            <h4 class="fw-bold text-dark mb-0 font-monospace">@Model.TotalEmployees</h4>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <h6 class="text-muted small fw-bold text-uppercase mb-1">Present Today</h6>
-                    <h3 class="fw-bold text-success mb-0">@Model.PresentToday</h3>
-                </div>
-                <div class="avatar-circle bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                    <i class="bi bi-person-check fs-4"></i>
-                </div>
-            </div>
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm bg-white p-3 rounded-3 h-100">
+            <h6 class="text-muted small fw-semibold text-uppercase tracking-wider mb-1" style="font-size: 0.6rem;">Present Today</h6>
+            <h4 class="fw-bold mb-0 font-monospace" style="color: #16a34a;">@Model.PresentToday</h4>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <h6 class="text-muted small fw-bold text-uppercase mb-1">Late Arrivals</h6>
-                    <h3 class="fw-bold text-warning mb-0">@Model.LateToday</h3>
-                </div>
-                <div class="avatar-circle bg-warning-subtle text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                    <i class="bi bi-alarm fs-4"></i>
-                </div>
-            </div>
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm bg-white p-3 rounded-3 h-100">
+            <h6 class="text-muted small fw-semibold text-uppercase tracking-wider mb-1" style="font-size: 0.6rem;">Late Arrivals</h6>
+            <h4 class="fw-bold mb-0 font-monospace" style="color: #b45309;">@Model.LateToday</h4>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <h6 class="text-muted small fw-bold text-uppercase mb-1">Absent</h6>
-                    <h3 class="fw-bold text-danger mb-0">@Model.AbsentToday</h3>
-                </div>
-                <div class="avatar-circle bg-danger-subtle text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                    <i class="bi bi-person-x fs-4"></i>
-                </div>
-            </div>
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm bg-white p-3 rounded-3 h-100">
+            <h6 class="text-muted small fw-semibold text-uppercase tracking-wider mb-1" style="font-size: 0.6rem;">Absent Status</h6>
+            <h4 class="fw-bold mb-0 font-monospace" style="color: #dc2626;">@Model.AbsentToday</h4>
         </div>
     </div>
 </div>
 
-<div class="card border-0 shadow-sm rounded-4 bg-white p-4">
-    <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
-        <div class="avatar-circle bg-light text-primary fw-bold me-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-            <i class="bi bi-list-check text-primary"></i>
+<div class="card border-0 shadow-sm rounded-3 bg-white p-4">
+    <div class="d-flex align-items-center mb-4 pb-3 border-bottom" style="border-color: #f1f5f9 !important;">
+        <div class="p-2 rounded-3 me-2.5" style="background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0;">
+            <i class="bi bi-collection-play fs-5"></i>
         </div>
         <div>
-            <h5 class="fw-bold text-dark mb-0">Live Workspace Shift Logs</h5>
-            <small class="text-muted">Review and audit today's operational punch activities across your delegated domain.</small>
+            <h6 class="fw-bold text-dark mb-0">Live Workspace Shift Logs</h6>
+            <small class="text-muted" style="font-size: 0.75rem;">Audit active shift log records under your management unit scope.</small>
         </div>
     </div>
 
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
-            <thead class="table-light text-secondary small fw-bold">
+            <thead class="table-light text-muted small fw-semibold" style="background-color: #f8fafc;">
                 <tr>
-                    <th scope="col" class="ps-3">Employee Details</th>
-                    <th scope="col">Department</th>
-                    <th scope="col">Punch In Time</th>
-                    <th scope="col">Punch Out Time</th>
-                    <th scope="col" class="text-end pe-3">Compliance Status</th>
+                    <th scope="col" class="ps-3 border-0 py-3">Employee File</th>
+                    <th scope="col" class="border-0 py-3">Department</th>
+                    <th scope="col" class="border-0 py-3">Punch In</th>
+                    <th scope="col" class="border-0 py-3">Punch Out</th>
+                    <th scope="col" class="text-end pe-3 border-0 py-3">Compliance Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -109,56 +80,62 @@
                 {
                     foreach (var item in Model.AttendanceRecords)
                     {
-                        <tr>
-                            <td class="ps-3">
+                        <tr style="border-color: #f8fafc;">
+                            <td class="ps-3 py-3">
                                 @if (!string.IsNullOrWhiteSpace(item.EmployeeName))
                                 {
-                                    <span class="fw-bold text-dark d-block small">@item.EmployeeName</span>
+                                    <span class="fw-medium text-dark d-block small">@item.EmployeeName</span>
                                 }
                                 else
                                 {
-                                    <span class="text-muted d-block small fst-italic">
-                                        <i class="bi bi-archive-fill text-secondary me-1"></i> Ex-Employee (Archived)
+                                    <span class="text-muted d-block small fst-italic" style="font-size: 0.8rem;">
+                                        <i class="bi bi-archive me-1"></i> Archived Employee
                                     </span>
                                 }
-                                <small class="text-muted" style="font-size: 0.75rem;">@item.Date.ToString("yyyy-MM-dd")</small>
+                                <small class="text-muted font-monospace" style="font-size: 0.7rem;">@item.Date.ToString("yyyy-MM-dd")</small>
                             </td>
                             <td>
                                 @if (!string.IsNullOrWhiteSpace(item.DepartmentName))
                                 {
-                                    <span class="badge bg-light text-secondary border rounded-pill fw-semibold">@item.DepartmentName</span>
+                                    <span class="badge bg-light text-secondary border font-monospace" style="font-size: 0.7rem; border-color: #e2e8f0 !important;">@item.DepartmentName</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-light text-muted border border-dashed rounded-pill fw-normal fst-italic">
-                                        <i class="bi bi-dash-circle me-1"></i> Historical Log
+                                    <span class="badge bg-light text-muted border border-dashed font-monospace" style="font-size: 0.7rem;">
+                                        Historical Record
                                     </span>
                                 }
                             </td>
-                            <td class="text-success fw-bold small">
-                                <i class="bi bi-box-arrow-in-right me-1"></i>@item.CheckInTime.ToString("hh:mm tt")
+                            <td>
+                                <span class="text-secondary font-monospace small" style="font-size: 0.8rem;">
+                                    @item.CheckInTime.ToString("hh:mm tt")
+                                </span>
                             </td>
                             <td>
                                 @if (item.CheckOutTime.HasValue)
                                 {
-                                    <span class="text-danger fw-bold small">
-                                        <i class="bi bi-box-arrow-left me-1"></i>@item.CheckOutTime.Value.ToString("hh:mm tt")
+                                    <span class="text-secondary font-monospace small" style="font-size: 0.8rem;">
+                                        @item.CheckOutTime.Value.ToString("hh:mm tt")
                                     </span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2 py-1 small fw-bold">
-                                        <i class="bi bi-activity me-1"></i>Active On Duty
+                                    <span class="badge bg-light text-secondary border-0 rounded-pill px-2 py-0.5 font-monospace" style="font-size: 0.7rem;">
+                                        On Duty
                                     </span>
                                 }
                             </td>
                             <td class="text-end pe-3">
                                 @{
-                                    var statusStr = item.Status?.ToString();
-                                    var isCompliant = statusStr == "OnTime" || statusStr == "Present";
+                                    var currentStatus = item.Status?.ToString();
+                                    var isCompliant = currentStatus == "OnTime" || currentStatus == "Present";
                                 }
-                                <span class="badge @(isCompliant ? "bg-success-subtle text-success border border-success-subtle" : "bg-danger-subtle text-danger border border-danger-subtle") rounded-pill px-3 py-1.5 fw-bold small">
-                                    <i class="bi @(isCompliant ? "bi-shield-check" : "bi-exclamation-triangle") me-1"></i>@statusStr
+                                <span class="badge rounded-pill px-2.5 py-1 font-monospace fw-medium"
+                                      style="font-size: 0.7rem;
+                                    background-color: @(isCompliant ? "#f0fdf4" : "#fef2f2");
+                                    color: @(isCompliant ? "#16a34a" : "#dc2626");
+                                    border: 1px solid @(isCompliant ? "#bbf7d0" : "#fecaca");">
+                                    @currentStatus
                                 </span>
                             </td>
                         </tr>
@@ -167,8 +144,8 @@
                 else
                 {
                     <tr>
-                        <td colspan="5" class="text-center text-muted py-5 small">
-                            <i class="bi bi-folder-x fs-2 d-block mb-2 text-secondary"></i>No workforce punch footprints logged for today.
+                        <td colspan="5" class="text-center text-muted py-5" style="background-color: #ffffff;">
+                            <i class="bi bi-folder-x d-block fs-3 mb-2 text-muted opacity-40"></i>No active workspace logs detected inside this unit scope.
                         </td>
                     </tr>
                 }

@@ -1,17 +1,25 @@
 ﻿using ERPLite.Services.DTOs.Reports;
 using ERPLite.Services.Interfaces.Reports;
+using ERPLite.Services.Interfaces.Infrastructure;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
-using System;
-using System.Linq;
 
 namespace ERPLite.Services.Services.Reports
 {
     public class PdfGenerator : IPdfGenerator
     {
+        private readonly IDateTimeProvider _dateTimeProvider;
+
+        public PdfGenerator(IDateTimeProvider dateTimeProvider)
+        {
+            _dateTimeProvider = dateTimeProvider;
+        }
+
         public byte[] GenerateReportPdf<T>(string title, T data)
         {
+            // 🌟 تعديل: استخدام Now بدلاً من LocalNow المتسببة في الخطأ
+            var currentGenerationTime = _dateTimeProvider.Now;
+
             return Document.Create(container =>
             {
                 container.Page(page =>
@@ -26,7 +34,7 @@ namespace ERPLite.Services.Services.Reports
                         {
                             row.RelativeItem().Text(title).FontSize(18).Bold().FontColor(Colors.Blue.Darken3);
 
-                            row.ConstantItem(150).Text($"Generated: {DateTime.Now:yyyy-MM-dd HH:mm}")
+                            row.ConstantItem(150).Text($"Generated: {currentGenerationTime:yyyy-MM-dd HH:mm}")
                                 .FontSize(8).Light();
                         });
 
@@ -71,7 +79,6 @@ namespace ERPLite.Services.Services.Reports
             }).GeneratePdf();
         }
 
-
         private void BuildEmployeesTable(ColumnDescriptor col, EmployeesReportDto report)
         {
             col.Item().PaddingBottom(10).Text($"Total Employees: {report.TotalEmployees}  |  Active: {report.ActiveEmployees}  |  Total Budget: ${report.TotalSalaries:N2}").Bold();
@@ -80,13 +87,12 @@ namespace ERPLite.Services.Services.Reports
             {
                 table.ColumnsDefinition(columns =>
                 {
-                    columns.ConstantColumn(40);  // ID
-                    columns.RelativeColumn(3);   // Full Name
-                    columns.RelativeColumn(3);   // Email
-                    columns.RelativeColumn(2);   // Salary
+                    columns.ConstantColumn(40);
+                    columns.RelativeColumn(3);
+                    columns.RelativeColumn(3);
+                    columns.RelativeColumn(2);
                 });
 
-                // Header
                 table.Header(header =>
                 {
                     header.Cell().Background(Colors.Blue.Lighten4).Padding(5).Text("#").Bold();
@@ -95,7 +101,6 @@ namespace ERPLite.Services.Services.Reports
                     header.Cell().Background(Colors.Blue.Lighten4).Padding(5).Text("Salary").Bold();
                 });
 
-                // Rows
                 foreach (var emp in report.Employees)
                 {
                     table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text(emp.Id.ToString());
@@ -114,10 +119,10 @@ namespace ERPLite.Services.Services.Reports
             {
                 table.ColumnsDefinition(columns =>
                 {
-                    columns.RelativeColumn(2);   // Date
-                    columns.RelativeColumn(3);   // Employee Name
-                    columns.RelativeColumn(2);   // Status
-                    columns.RelativeColumn(2);   // Note/Time
+                    columns.RelativeColumn(2);
+                    columns.RelativeColumn(3);
+                    columns.RelativeColumn(2);
+                    columns.RelativeColumn(2);
                 });
 
                 table.Header(header =>
@@ -132,10 +137,7 @@ namespace ERPLite.Services.Services.Reports
                 {
                     table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text(rec.Date.ToString("yyyy-MM-dd"));
                     table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text(rec.EmployeeName ?? $"ID: {rec.EmployeeId}");
-
-                    var statusCell = table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2);
-                    statusCell.Text(rec.Status.ToString());
-
+                    table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text(rec.Status.ToString());
                     table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text("-");
                 }
             });
@@ -217,7 +219,6 @@ namespace ERPLite.Services.Services.Reports
             col.Item().Background(Colors.Grey.Lighten4).Padding(15).Column(innerCol =>
             {
                 innerCol.Item().Row(r => { r.RelativeItem().Text("Total System Revenue:"); r.ConstantItem(100).Text($"${report.TotalRevenue:N2}").Bold(); });
-
                 innerCol.Item().PaddingVertical(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2);
 
                 innerCol.Item().Row(r => { r.RelativeItem().Text("Total Collected (Paid) Cash:"); r.ConstantItem(100).Text($"${report.TotalPaid:N2}").Bold().FontColor(Colors.Green.Darken2); });

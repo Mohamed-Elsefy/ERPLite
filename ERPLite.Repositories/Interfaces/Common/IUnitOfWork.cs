@@ -8,10 +8,6 @@ namespace ERPLite.Repositories.Interfaces.Common
 {
     public interface IUnitOfWork : IDisposable
     {
-
-        // =================================
-        // Registe Repositories
-        // =================================
         IProductRepository Products { get; }
 
         ICategoryRepository Categories { get; }
@@ -34,16 +30,10 @@ namespace ERPLite.Repositories.Interfaces.Common
 
         IActivityLogRepository ActivityLogs { get; }
 
+        INotificationRepository Notifications { get; }
 
-        // =================================
-        // Save Changes
-        // =================================
 
         Task<int> SaveChangesAsync();
-
-        // =================================
-        // Transactions
-        // =================================
 
         Task<IDbContextTransaction> BeginTransactionAsync();
 

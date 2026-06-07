@@ -8,6 +8,8 @@ namespace ERPLite.Services.DTOs.Sales
 
         public decimal Amount { get; set; }
 
+        public int OrderId { get; set; }
+
         public PaymentMethod PaymentMethod { get; set; }
 
         public DateTime PaymentDate { get; set; }

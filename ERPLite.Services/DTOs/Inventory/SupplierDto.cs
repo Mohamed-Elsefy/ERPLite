@@ -9,5 +9,7 @@
         public string Phone { get; set; } = string.Empty;
 
         public string? Address { get; set; }
+
+        public ICollection<ProductDto> Products { get; set; } = new List<ProductDto>();
     }
 }

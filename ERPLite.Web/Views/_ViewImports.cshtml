@@ -17,5 +17,7 @@
 @using ERPLite.Web.Models.Orders
 @using ERPLite.Web.Models.Payments
 @using ERPLite.Services.DTOs.System
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

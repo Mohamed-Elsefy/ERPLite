@@ -1,10 +1,12 @@
+using ERPLite.Data.Context;
 using ERPLite.Data.Seeders;
 using ERPLite.Repositories.DependencyInjection;
-using ERPLite.Web.Extensions;
 using ERPLite.Services.DependencyInjection;
+using ERPLite.Web.Extensions;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF;
 using QuestPDF.Infrastructure;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +30,9 @@ builder.Services.AddRepositories();
 
 // Add Service layer
 builder.Services.AddServicesLayer();
+
+// Add AutoMapper for web layer
+builder.Services.AddAutoMapper(cfg => cfg.AddMaps(Assembly.GetExecutingAssembly()));
 
 
 var app = builder.Build();

@@ -5,6 +5,7 @@ using ERPLite.Services.Interfaces.Inventory;
 using ERPLite.Services.Interfaces.Reports;
 using ERPLite.Services.Interfaces.Sales;
 using ERPLite.Services.Interfaces.System;
+using ERPLite.Services.Interfaces.Users;
 using ERPLite.Services.Reports.Services;
 using ERPLite.Services.Services.Auth;
 using ERPLite.Services.Services.Dashboard;
@@ -27,9 +28,6 @@ namespace ERPLite.Services.DependencyInjection
             // register automapper
             services.AddAutoMapper(cfg => cfg.AddMaps(Assembly.GetExecutingAssembly()));
 
-            // register validators
-            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
             // Auth
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IUserService, UserService>();
@@ -38,6 +36,7 @@ namespace ERPLite.Services.DependencyInjection
             // HR
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<IEmployeeAccountService, EmployeeAccountService>();
             services.AddScoped<IAttendanceService, AttendanceService>();
 
             // Inventory

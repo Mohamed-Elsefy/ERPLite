@@ -4,8 +4,9 @@ using ERPLite.Repositories.Interfaces.Common;
 using ERPLite.Services.DTOs.HR;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.HR;
+using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Services.Interfaces.System;
-using ERPLite.Shared.Constants;
+using ERPLite.Shared.Enums;
 
 namespace ERPLite.Services.Services.HR
 {
@@ -14,12 +15,18 @@ namespace ERPLite.Services.Services.HR
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public AttendanceService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService)
+        public AttendanceService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IActivityLogService activityLogService,
+            IDateTimeProvider dateTimeProvider)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<ServiceResult> CheckInAsync(CheckInDto dto, string currentUserId)
@@ -32,7 +39,13 @@ namespace ERPLite.Services.Services.HR
             if (exists)
                 return ServiceResult.Failed("Attendance already recorded today.");
 
-            var attendance = _mapper.Map<Attendance>(dto);
+            var attendance = new Attendance
+            {
+                EmployeeId = dto.EmployeeId,
+                Date = _dateTimeProvider.Today,
+                CheckInTime = _dateTimeProvider.Now,
+                Status = AttendanceStatus.Present,
+            };
 
             await _unitOfWork.Attendances.AddAsync(attendance);
             await _unitOfWork.SaveChangesAsync();
@@ -42,7 +55,7 @@ namespace ERPLite.Services.Services.HR
                 action: "CheckIn",
                 entityName: "Attendance",
                 entityId: attendance.Id,
-                description: $"Recorded Check-In for employee: '{employee.FullName}' at {attendance.CheckInTime}."
+                description: $"Recorded Check-In for employee: '{employee.FullName}' at {attendance.CheckInTime:hh:mm tt}."
             );
 
             return ServiceResult.Successful("Check-in recorded successfully.");
@@ -50,14 +63,14 @@ namespace ERPLite.Services.Services.HR
 
         public async Task<ServiceResult> CheckOutAsync(CheckOutDto dto, string currentUserId)
         {
-            var attendance = await _unitOfWork.Attendances.GetAttendanceByDateAsync(dto.EmployeeId, DateTime.Today);
+                var attendance = await _unitOfWork.Attendances.GetAttendanceByDateAsync(dto.EmployeeId, _dateTimeProvider.Today);
             if (attendance is null)
                 return ServiceResult.Failed("No check-in found today.");
 
             if (attendance.CheckOutTime.HasValue)
                 return ServiceResult.Failed("Employee already checked out.");
 
-            attendance.CheckOutTime = DateTime.Now;
+            attendance.CheckOutTime = _dateTimeProvider.Now;
 
             _unitOfWork.Attendances.Update(attendance);
             await _unitOfWork.SaveChangesAsync();
@@ -70,7 +83,7 @@ namespace ERPLite.Services.Services.HR
                 action: "CheckOut",
                 entityName: "Attendance",
                 entityId: attendance.Id,
-                description: $"Recorded Check-Out for employee: '{employeeName}' at {attendance.CheckOutTime}."
+                description: $"Recorded Check-Out for employee: '{employeeName}' at {attendance.CheckOutTime:hh:mm tt}."
             );
 
             return ServiceResult.Successful("Check-out recorded successfully.");

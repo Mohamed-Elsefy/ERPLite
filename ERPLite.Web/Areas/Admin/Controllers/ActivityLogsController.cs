@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ERPLite.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")] 
+    [Area("Admin")]
     [Authorize(Policy = "AdminOnly")]
     public class ActivityLogsController : Controller
     {
@@ -22,7 +22,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
             var result = await _activityLogService.GetRecentLogsAsync();
             if (!result.Success || result.Data == null)
             {
-                TempData["Error"] = "Unable to retrieve system operational log vectors.";
+                TempData["Error"] = "Unable to retrieve system audit logs.";
                 return View(new ActivityLogsIndexViewModel());
             }
 
@@ -52,17 +52,13 @@ namespace ERPLite.Web.Areas.Admin.Controllers
         // GET: /Admin/ActivityLogs/Details/{id}
         public async Task<IActionResult> Details(int id)
         {
-            var result = await _activityLogService.GetRecentLogsAsync();
+            var result = await _activityLogService.GetLogByIdAsync(id);
             if (!result.Success || result.Data == null)
-                return NotFound();
-
-            var targetLog = result.Data.FirstOrDefault(l => l.Id == id);
-            if (targetLog == null)
                 return NotFound();
 
             var vm = new ActivityLogDetailsViewModel
             {
-                Log = targetLog
+                Log = result.Data
             };
 
             return View(vm);

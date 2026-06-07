@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using ERPLite.Data.Entities.Identity;
 using ERPLite.Services.Helpers;
-using ERPLite.Services.Interfaces.Auth;
 using ERPLite.Services.Interfaces.System;
+using ERPLite.Services.Interfaces.Users;
 using ERPLite.Shared.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

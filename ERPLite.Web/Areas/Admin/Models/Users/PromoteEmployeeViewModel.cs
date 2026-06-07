@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
-namespace ERPLite.Web.Models.Users
+namespace ERPLite.Web.Areas.Admin.Models.Users
 {
     public class PromoteEmployeeViewModel
     {
-        [Required, Display(Name = "Select Unlinked Corporate Employee")]
+        [Required, Display(Name = "Select Unlinked Employee")]
         public int EmployeeId { get; set; }
 
         [Required, DataType(DataType.Password), MinLength(6)]

@@ -1,141 +1,127 @@
-﻿@model CategoryDetailsViewModel
-
+﻿@model ERPLite.Web.Models.Categories.CategoryDetailsViewModel
 @{
-    ViewData["Title"] = $"Category Profiles - {Model.Name}";
+    var isAdmin = User.IsInRole("Admin");
+    ViewData["Title"] = $"Category Audit - {Model.Name}";
 }
 
-<div class="row justify-content-center">
-    <div class="col-12 col-xl-12">
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2">
+    <div>
+        <h5 class="fw-bold text-dark mb-1"><i class="bi bi-tags text-secondary me-2"></i>Asset Stock Classification</h5>
+        <p class="text-muted small mb-0" style="font-size: 0.75rem;">Granular metadata and transactional evaluation tracking assigned inventory items.</p>
+    </div>
+    <div>
+        <a asp-action="Index" class="btn btn-sm btn-light border font-monospace text-dark px-3 py-2" style="font-size: 0.75rem; border-color: #cbd5e1 !important;">
+            <i class="bi bi-arrow-left me-1"></i> Back to Directory
+        </a>
+    </div>
+</div>
 
-        <div class="d-flex justify-content-between align-items-center mb-4 pb-2">
-            <div>
-                <h4 class="fw-bold text-dark mb-1"><i class="bi bi-tags text-primary me-2"></i>Category Hub Profiles</h4>
-                <p class="text-muted small mb-0">Structural overview of the category branch matched with live product inventory records.</p>
-            </div>
-            <a asp-action="Index" class="btn btn-light border rounded-pill px-4 fw-semibold small shadow-sm">
-                <i class="bi bi-arrow-left me-1"></i> Back to Categories
-            </a>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-12 col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 d-flex flex-column">
-                    <div class="d-flex align-items-center pb-3 border-bottom mb-4">
-                        <div class="avatar-circle bg-primary-subtle text-primary fw-bold rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 55px; height: 55px;">
-                            <i class="bi bi-tag-fill fs-4"></i>
-                        </div>
-                        <div>
-                            <h5 class="fw-bold text-dark mb-1">@Model.Name</h5>
-                            <span class="badge bg-light text-secondary border rounded-pill px-3 font-monospace small">
-                                CAT-CODE: #@Model.Id.ToString("D3")
-                            </span>
-                        </div>
-                    </div>
-
-                    <h6 class="fw-bold text-secondary mb-3 small text-uppercase tracking-wider">Catalogue Metadata</h6>
-
-                    <div class="mb-4">
-                        <label class="text-muted small d-block mb-1">Functional Description</label>
-                        <div class="p-3 bg-light rounded-3 border text-secondary small" style="white-space: pre-line;">
-                            @(string.IsNullOrWhiteSpace(Model.Description) ? "No operational description documented for this category branch." : Model.Description)
-                        </div>
-                    </div>
-
-                    <div class="mb-3 p-3 bg-primary-subtle border border-primary-subtle rounded-3">
-                        <label class="text-primary-emphasis small d-block mb-1 fw-bold text-uppercase">Tracked SKUs Density</label>
-                        <div class="d-flex align-items-baseline">
-                            <span class="fs-3 fw-bold text-primary">@Model.TotalProductsCount</span>
-                            <span class="text-muted small ms-2">/ Associated Active Products</span>
-                        </div>
-                    </div>
-
-                    <div class="mb-4 p-3 bg-success-subtle border border-success-subtle rounded-3">
-                        <label class="text-success-emphasis small d-block mb-1 fw-bold text-uppercase">Total Inventory Value</label>
-                        <div class="d-flex align-items-baseline">
-                            <span class="fs-4 fw-bold text-success">$@Model.TotalValue.ToString("N2")</span>
-                            <span class="text-muted small ms-2">/ Financial Asset Weight</span>
-                        </div>
-                    </div>
-
-                    @if (User.IsInRole(Roles.Admin))
-                    {
-                        <div class="d-flex gap-2 mt-auto pt-3 border-top">
-                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary rounded-pill px-4 fw-semibold w-100">
-                                <i class="bi bi-pencil-square me-1"></i> Modify Properties
-                            </a>
-                        </div>
-                    }
+<div class="row g-4">
+    <div class="col-12 col-md-5 col-lg-4">
+        <div class="card border-0 shadow-sm bg-white p-4 rounded-4 h-100 d-flex flex-column">
+            <div class="d-flex align-items-center pb-3 border-bottom mb-4" style="border-color: #f1f5f9 !important;">
+                <div class="d-flex align-items-center justify-content-center border rounded-3 text-secondary font-monospace me-3"
+                     style="width: 44px; height: 44px; background-color: #f8fafc; border-color: #e2e8f0 !important;">
+                    <i class="bi bi-folder-symlink"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0 small" style="font-size: 0.9rem;">@Model.Name</h6>
+                    <span class="badge bg-light text-secondary border font-monospace mt-1" style="font-size: 0.65rem; border-color: #e2e8f0 !important;">
+                        ID: #@Model.Id.ToString("D3")
+                    </span>
                 </div>
             </div>
 
-            <div class="col-12 col-lg-8">
-                <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 d-flex flex-column">
-                    <div class="d-flex align-items-center pb-3 border-bottom mb-4">
-                        <i class="bi bi-box-seam text-success fs-4 me-2"></i>
-                        <div>
-                            <h5 class="fw-bold text-dark mb-0">Assigned Product Catalogue</h5>
-                            <small class="text-muted">Real-time catalog monitoring of products tracking under this category group.</small>
-                        </div>
-                    </div>
+            <div class="mb-4">
+                <label class="text-secondary small d-block mb-1 text-uppercase fw-bold tracking-wider" style="font-size: 0.65rem;">Structural Description</label>
+                <div class="p-3 border rounded-3 text-secondary bg-light font-monospace" style="white-space: pre-line; font-size: 0.75rem; border-color: #e2e8f0 !important;">
+                    @(string.IsNullOrWhiteSpace(Model.Description) ? "No contextual breakdown declared for this category node." : Model.Description)
+                </div>
+            </div>
 
-                    <div class="table-responsive my-auto" style="max-height: 420px; overflow-y: auto;">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light text-secondary small fw-bold sticky-top">
-                                <tr>
-                                    <th scope="col" class="ps-2">Product Information</th>
-                                    <th scope="col">Price</th>
-                                    <th scope="col">Stock Integrity</th>
-                                    <th scope="col" class="text-end pe-2">Status</th>
+            <div class="mt-auto">
+                <div class="p-3 rounded-3 border mb-3" style="background-color: #f8fafc; border-color: #e2e8f0 !important;">
+                    <label class="text-muted small d-block mb-1 text-uppercase fw-medium" style="font-size: 0.65rem;">Aggregated SKU Density</label>
+                    <span class="fs-4 fw-bold font-monospace text-dark">@Model.TotalProductsCount</span> <span class="text-muted small">Items</span>
+                </div>
+
+                <div class="p-3 rounded-3 border text-success" style="background-color: #f0fdf4; border-color: #bbf7d0 !important;">
+                    <label class="text-success small d-block mb-1 text-uppercase fw-bold" style="font-size: 0.65rem;">Total Evaluated Ledger Asset Value</label>
+                    <span class="fs-4 fw-bold font-monospace">$@Model.TotalValue.ToString("N2")</span>
+                </div>
+            </div>
+
+            @if (isAdmin)
+            {
+                <div class="pt-3 border-top mt-4" style="border-color: #f1f5f9 !important;">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-light border font-monospace text-dark w-100 py-2" style="font-size: 0.75rem; border-color: #cbd5e1 !important;">
+                        <i class="bi bi-pencil small text-muted me-1"></i>Modify Parameters
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-12 col-md-7 col-lg-8">
+        <div class="card border-0 shadow-sm bg-white p-4 rounded-4 h-100">
+            <div class="d-flex align-items-center pb-3 border-bottom mb-4" style="border-color: #f1f5f9 !important;">
+                <div class="p-2 rounded-3 me-3 text-secondary border bg-light">
+                    <i class="bi bi-box-seam fs-5"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">Linked Stock Keeping Units (SKUs)</h6>
+                    <small class="text-muted" style="font-size: 0.75rem;">Real-time inventory quantities correlated inside this functional cluster.</small>
+                </div>
+            </div>
+
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-muted small fw-medium sticky-top" style="background-color: #f8fafc; font-size: 0.75rem;">
+                        <tr>
+                            <th scope="col" class="ps-2 border-0 py-2.5">SKU Name</th>
+                            <th scope="col" class="border-0 py-2.5">Unit Price</th>
+                            <th scope="col" class="border-0 py-2.5">Stock Volume</th>
+                            <th scope="col" class="text-end pe-2 border-0 py-2.5">Financial Position</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.AssociatedProducts != null && Model.AssociatedProducts.Any())
+                        {
+                            foreach (var product in Model.AssociatedProducts)
+                            {
+                                <tr style="border-color: #f8fafc;">
+                                    <td class="ps-2 py-2.5">
+                                        <div>
+                                            <h6 class="fw-medium mb-0 text-dark small" style="font-size: 0.8rem;">@product.Name</h6>
+                                            <small class="text-muted font-monospace" style="font-size: 0.65rem;">SKU: #@product.Id.ToString("D5")</small>
+                                        </div>
+                                    </td>
+                                    <td class="font-monospace small text-dark" style="font-size: 0.75rem;">
+                                        $@product.Price.ToString("N2")
+                                    </td>
+                                    <td class="py-2.5">
+                                        <span class="badge rounded-pill px-2.5 py-1 font-monospace fw-medium @(product.QuantityInStock <= 5 ? "bg-danger-subtle text-danger border border-danger-subtle" : "bg-light text-secondary border")" style="font-size: 0.7rem;">
+                                            @product.QuantityInStock Units
+                                        </span>
+                                    </td>
+                                    <td class="text-end pe-2 font-monospace fw-bold text-secondary small" style="font-size: 0.75rem;">
+                                        $@((product.Price * product.QuantityInStock).ToString("N2"))
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @if (Model.AssociatedProducts != null && Model.AssociatedProducts.Any())
-                                {
-                                    foreach (var prod in Model.AssociatedProducts)
-                                    {
-                                        <tr>
-                                            <td class="ps-2">
-                                                <div>
-                                                    <h6 class="fw-bold mb-0 text-dark small">@prod.Name</h6>
-                                                    <small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-truck me-1"></i>@prod.SupplierName</small>
-                                                </div>
-                                            </td>
-                                            <td class="fw-bold text-dark small">$@prod.Price.ToString("N2")</td>
-                                            <td class="small">
-                                                <span class="fw-semibold text-secondary">@prod.QuantityInStock units</span>
-                                                <small class="text-muted d-block" style="font-size: 0.7rem;">Min Safety Level: @prod.MinStockLevel</small>
-                                            </td>
-                                            <td class="text-end pe-2">
-                                                @if (prod.QuantityInStock <= 0)
-                                                {
-                                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.7rem;">Out Of Stock</span>
-                                                }
-                                                else if (prod.QuantityInStock <= prod.MinStockLevel)
-                                                {
-                                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.7rem;">Low Stock</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.7rem;">Available</span>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                }
-                                else
-                                {
-                                    <tr>
-                                        <td colspan="4" class="text-center text-muted py-5 small">
-                                            <i class="bi bi-box-seam-fill d-block fs-2 mb-2 text-secondary"></i>No product assets are currently registered to this category segment.
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-5" style="background-color: #ffffff;">
+                                    <i class="bi bi-inboxes d-block fs-3 mb-2 text-muted opacity-40"></i>No stock products linked to this node cluster.
+                                    room
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
-
     </div>
 </div>

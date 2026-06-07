@@ -1,4 +1,5 @@
-﻿using ERPLite.Data.Entities.Inventory;
+﻿using ERPLite.Data.Context;
+using ERPLite.Data.Entities.Inventory;
 using ERPLite.Repositories.Implementation.Common;
 using ERPLite.Repositories.Interfaces.Inventory;
 using Microsoft.EntityFrameworkCore;

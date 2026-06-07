@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ERPLite.Shared.Enums
+﻿namespace ERPLite.Shared.Enums
 {
     public enum OrderPaymentStatus
     {

@@ -4,55 +4,56 @@
     ViewData["Title"] = "My Attendance Sheets";
 }
 
-<div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
+<div class="card border-0 shadow-sm rounded-3 bg-white p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center">
         <div>
-            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-clock-history text-primary me-2"></i>Shift Attendance Hub</h4>
-            <p class="text-muted small mb-0">Manage daily punch synchronization, monitor biometric registry logs, and review monthly shift integrity stats.</p>
+            <h5 class="fw-bold text-dark mb-1">
+                <i class="bi bi-clock text-secondary me-2"></i>Attendance & Shift Logs
+            </h5>
+            <p class="text-muted small mb-0">Record your daily attendance punches, monitor active shifts, and track complete timecard history.</p>
         </div>
     </div>
 </div>
 
 @if (TempData["Error"] != null)
 {
-    <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 shadow-sm mb-4" role="alert">
-        <i class="bi bi-exclamation-octagon-fill me-2"></i> @TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert border-0 rounded-3 small d-flex align-items-center py-2.5 mb-4" role="alert" style="background-color: #fef2f2; color: #dc2626;">
+        <i class="bi bi-exclamation-circle me-2"></i> @TempData["Error"]
     </div>
 }
 
 @if (TempData["Success"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 shadow-sm mb-4" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert border-0 rounded-3 small d-flex align-items-center py-2.5 mb-4" role="alert" style="background-color: #f0fdf4; color: #16a34a;">
+        <i class="bi bi-check-circle me-2"></i> @TempData["Success"]
     </div>
 }
 
-<div class="row g-4 mb-4">
+<div class="row g-3 mb-4">
     <div class="col-md-6">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 text-center h-100 d-flex flex-column justify-content-between">
-            <div>
-                <div class="avatar-circle @(Model.HasCheckedInToday ? "bg-light text-muted" : "bg-success-subtle text-success") rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 65px; height: 65px;">
-                    <i class="bi bi-fingerprint fs-2"></i>
+        <div class="card border border-light shadow-sm rounded-3 bg-white p-4 h-100 d-flex flex-column justify-content-between" style="border-color: #e2e8f0 !important;">
+            <div class="text-center pb-3">
+                <div class="d-flex align-items-center justify-content-center border rounded-3 mx-auto mb-3 text-secondary font-monospace"
+                     style="width: 48px; height: 48px; background-color: #f8fafc; border-color: #e2e8f0 !important;">
+                    <i class="bi bi-box-arrow-in-right fs-5"></i>
                 </div>
-                <h5 class="fw-bold text-dark mb-1">Shift Entrance</h5>
-                <p class="text-muted small mb-3">Record your starting punch for today's active shift footprint.</p>
+                <h6 class="fw-bold text-dark mb-1">Shift Entrance</h6>
+                <p class="text-muted small mb-0">Register your daily opening arrival time log.</p>
             </div>
 
-            <div>
+            <div class="pt-2">
                 @if (Model.HasCheckedInToday)
                 {
-                    <div class="alert alert-success-subtle border border-success-subtle rounded-pill py-2 small fw-semibold text-success mb-0">
-                        <i class="bi bi-check-all me-1"></i> Checked In Today at @Model.TodayCheckInTime
+                    <div class="text-center p-2 rounded-3 small font-monospace fw-medium" style="background-color: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0;">
+                        <i class="bi bi-check2 me-1"></i> Checked In Today at @Model.TodayCheckInTime
                     </div>
                 }
                 else
                 {
-                    <form asp-action="CheckIn" method="post">
+                    <form asp-action="CheckIn" method="post" class="m-0">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-success rounded-pill px-5 fw-bold w-100 py-2 shadow-sm">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> Execute Check-In
+                        <button type="submit" class="btn btn-sm text-white w-100 rounded-pill py-2 fw-medium shadow-none font-monospace" style="background-color: #475569; font-size: 0.8rem;">
+                            Execute Check-In
                         </button>
                     </form>
                 }
@@ -61,34 +62,35 @@
     </div>
 
     <div class="col-md-6">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 text-center h-100 d-flex flex-column justify-content-between">
-            <div>
-                <div class="avatar-circle @(!Model.HasCheckedInToday || Model.HasCheckedOutToday ? "bg-light text-muted" : "bg-danger-subtle text-danger") rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 65px; height: 65px;">
-                    <i class="bi bi-stopwatch fs-2"></i>
+        <div class="card border border-light shadow-sm rounded-3 bg-white p-4 h-100 d-flex flex-column justify-content-between" style="border-color: #e2e8f0 !important;">
+            <div class="text-center pb-3">
+                <div class="d-flex align-items-center justify-content-center border rounded-3 mx-auto mb-3 text-secondary font-monospace"
+                     style="width: 48px; height: 48px; background-color: #f8fafc; border-color: #e2e8f0 !important;">
+                    <i class="bi bi-box-arrow-left fs-5"></i>
                 </div>
-                <h5 class="fw-bold text-dark mb-1">Shift Exit</h5>
-                <p class="text-muted small mb-3">Record your closing punch and conclude your administrative duty hours.</p>
+                <h6 class="fw-bold text-dark mb-1">Shift Exit</h6>
+                <p class="text-muted small mb-0">Register your departure punch out to conclude duty hours.</p>
             </div>
 
-            <div>
+            <div class="pt-2">
                 @if (Model.HasCheckedOutToday)
                 {
-                    <div class="alert alert-danger-subtle border border-danger-subtle rounded-pill py-2 small fw-semibold text-danger mb-0">
-                        <i class="bi bi-moon-stars-fill me-1"></i> Checked Out Today at @Model.TodayCheckOutTime
+                    <div class="text-center p-2 rounded-3 small font-monospace fw-medium" style="background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">
+                        <i class="bi bi-moon me-1"></i> Checked Out Today at @Model.TodayCheckOutTime
                     </div>
                 }
                 else if (!Model.HasCheckedInToday)
                 {
-                    <button type="button" class="btn btn-light border rounded-pill px-5 text-muted w-100 py-2 small fw-semibold" disabled>
-                        <i class="bi bi-lock-fill me-1"></i> Awaiting Check-In Punch
+                    <button type="button" class="btn btn-sm btn-light border w-100 rounded-pill py-2 font-monospace text-muted" style="font-size: 0.8rem; border-color: #cbd5e1 !important;" disabled>
+                        Awaiting Entrance Punch
                     </button>
                 }
                 else
                 {
-                    <form asp-action="CheckOut" method="post">
+                    <form asp-action="CheckOut" method="post" class="m-0">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-danger rounded-pill px-5 fw-bold w-100 py-2 shadow-sm">
-                            <i class="bi bi-box-arrow-left me-1"></i> Execute Check-Out
+                        <button type="submit" class="btn btn-sm text-white w-100 rounded-pill py-2 fw-medium shadow-none font-monospace" style="background-color: #64748b; font-size: 0.8rem;">
+                            Execute Check-Out
                         </button>
                     </form>
                 }
@@ -97,25 +99,25 @@
     </div>
 </div>
 
-<div class="card border-0 shadow-sm rounded-4 bg-white p-4">
-    <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
-        <div class="avatar-circle bg-light text-primary fw-bold me-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-            <i class="bi bi-calendar-check text-primary"></i>
+<div class="card border-0 shadow-sm rounded-3 bg-white p-4">
+    <div class="d-flex align-items-center mb-4 pb-3 border-bottom" style="border-color: #f1f5f9 !important;">
+        <div class="p-2 rounded-3 me-2.5" style="background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0;">
+            <i class="bi bi-journal-text fs-5"></i>
         </div>
         <div>
-            <h5 class="fw-bold text-dark mb-0">Historical Attendance Registry</h5>
-            <small class="text-muted">A verified timeline of your past working shifts and status audit classifications.</small>
+            <h6 class="fw-bold text-dark mb-0">Historical Attendance Registry</h6>
+            <small class="text-muted" style="font-size: 0.75rem;">Verified historical log records of your shifts.</small>
         </div>
     </div>
 
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
-            <thead class="table-light text-secondary small fw-bold">
+            <thead class="table-light text-muted small fw-semibold" style="background-color: #f8fafc;">
                 <tr>
-                    <th scope="col" class="ps-3">Shift Date</th>
-                    <th scope="col">Punch In Time</th>
-                    <th scope="col">Punch Out Time</th>
-                    <th scope="col" class="text-end pe-3">Status Badge</th>
+                    <th scope="col" class="ps-3 border-0 py-3">Shift Date</th>
+                    <th scope="col" class="border-0 py-3">Punch In</th>
+                    <th scope="col" class="border-0 py-3">Punch Out</th>
+                    <th scope="col" class="text-end pe-3 border-0 py-3">Status Badge</th>
                 </tr>
             </thead>
             <tbody>
@@ -123,39 +125,43 @@
                 {
                     foreach (var item in Model.HistoryLog)
                     {
-                        <tr>
-                            <td class="ps-3">
+                        <tr style="border-color: #f8fafc;">
+                            <td class="ps-3 py-3">
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar-circle bg-light text-secondary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
-                                        <i class="bi bi-calendar3 small"></i>
-                                    </div>
-                                    <span class="fw-bold text-dark small">@item.Date.ToString("yyyy-MM-dd")</span>
+                                    <i class="bi bi-calendar3 text-muted small me-2" style="font-size: 0.8rem;"></i>
+                                    <span class="fw-medium text-dark small">@item.Date.ToString("yyyy-MM-dd")</span>
                                 </div>
                             </td>
-                            <td class="text-success fw-bold small">
-                                <i class="bi bi-box-arrow-in-right me-1"></i>@item.CheckInTime.ToString("hh:mm tt")
+                            <td>
+                                <span class="text-secondary font-monospace small" style="font-size: 0.8rem;">
+                                    @item.CheckInTime.ToString("hh:mm tt")
+                                </span>
                             </td>
                             <td>
                                 @if (item.CheckOutTime.HasValue)
                                 {
-                                    <span class="text-danger fw-bold small">
-                                        <i class="bi bi-box-arrow-left me-1"></i>@item.CheckOutTime.Value.ToString("hh:mm tt")
+                                    <span class="text-secondary font-monospace small" style="font-size: 0.8rem;">
+                                        @item.CheckOutTime.Value.ToString("hh:mm tt")
                                     </span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-1.5 fw-bold small">
-                                        <i class="bi bi-activity me-1"></i>Active On Duty
+                                    <span class="badge bg-light text-secondary border-0 rounded-pill px-2 py-0.5 font-monospace" style="font-size: 0.7rem;">
+                                        Active On Duty
                                     </span>
                                 }
                             </td>
                             <td class="text-end pe-3">
                                 @{
                                     var currentStatus = item.Status?.ToString();
-                                    var isCompliant = currentStatus == "OnTime" || currentStatus == "Present";
+                                    var isCompliant = currentStatus == "OnTime" || currentStatus == "Present" || currentStatus == "Active";
                                 }
-                                <span class="badge @(isCompliant ? "bg-success-subtle text-success border border-success-subtle" : "bg-danger-subtle text-danger border border-danger-subtle") rounded-pill px-3 py-1.5 fw-bold small">
-                                    <i class="bi @(isCompliant ? "bi-shield-check" : "bi-exclamation-triangle") me-1"></i>@currentStatus
+                                <span class="badge rounded-pill px-2.5 py-1 font-monospace fw-medium"
+                                      style="font-size: 0.7rem;
+                                    background-color: @(isCompliant ? "#f0fdf4" : "#fef2f2");
+                                    color: @(isCompliant ? "#16a34a" : "#dc2626");
+                                    border: 1px solid @(isCompliant ? "#bbf7d0" : "#fecaca");">
+                                    @currentStatus
                                 </span>
                             </td>
                         </tr>
@@ -164,8 +170,8 @@
                 else
                 {
                     <tr>
-                        <td colspan="4" class="text-center text-muted py-5 small">
-                            <i class="bi bi-building-dash fs-2 d-block mb-2 text-secondary"></i>No system punch records found for your account ecosystem.
+                        <td colspan="4" class="text-center text-muted py-5" style="background-color: #ffffff;">
+                            <i class="bi bi-folder-x d-block fs-3 mb-2 text-muted opacity-40"></i>No attendance logs found for your profile ecosystem.
                         </td>
                     </tr>
                 }

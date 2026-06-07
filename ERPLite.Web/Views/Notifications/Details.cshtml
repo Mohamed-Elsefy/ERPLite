@@ -1,45 +1,56 @@
-﻿@model SystemNotificationDto
-
+﻿@model ERPLite.Services.DTOs.System.SystemNotificationDto
 @{
     ViewData["Title"] = "Notification Stream Frame";
 }
 
 <div class="row justify-content-center">
-    <div class="col-12 col-md-7">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 p-sm-5">
+
             <div class="d-flex align-items-center border-bottom pb-3 mb-4">
-                <div class="p-3 bg-light text-info rounded-3 me-3 border">
-                    <i class="bi bi-chat-left-dots fs-3"></i>
+                <div class="p-3 bg-light text-secondary border rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                    <i class="bi bi-envelope-paper fs-4"></i>
                 </div>
                 <div>
-                    <h5 class="fw-bold text-dark mb-1">System Internal Dispatch</h5>
-                    <p class="text-muted small mb-0">System core system state vector alteration report broadcasted.</p>
+                    <h5 class="fw-bold text-dark mb-0">System Internal Dispatch</h5>
+                    <p class="text-muted small mb-0" style="font-size: 0.75rem;">Core infrastructure status vector alteration log report.</p>
                 </div>
             </div>
 
-            <div class="p-3 bg-light rounded-3 mb-4 border">
-                <h6 class="fw-bold text-dark mb-2">@Model.Title</h6>
-                <p class="text-secondary font-monospace mb-0" style="font-size: 0.95rem; line-height: 1.6;">@Model.Message</p>
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <span class="small text-muted font-monospace">Notification ID: #NTF-@Model.Id.ToString("D5")</span>
+                <span class="badge border font-monospace text-uppercase py-1 px-2.5 rounded-pill
+                    @(Model.Priority.ToLower() == "urgent" ? "bg-danger-subtle text-danger border-danger-subtle" : "bg-light text-secondary border-secondary-subtle")" style="font-size: 0.65rem;">
+                    @Model.Priority Priority
+                </span>
             </div>
 
-            <div class="row g-3 mb-4 text-center">
+            <div class="p-3 bg-light rounded-3 mb-4 border" style="border-color: #f1f5f9 !important;">
+                <h6 class="fw-bold text-dark mb-2 small" style="font-size: 0.9rem;">@Model.Title</h6>
+                <p class="text-secondary font-monospace mb-0" style="font-size: 0.8rem; line-height: 1.6;">
+                    @Model.Message
+                </p>
+            </div>
+
+            <div class="row g-2 mb-4 text-center">
                 <div class="col-6">
-                    <div class="border rounded-3 p-2 bg-light font-monospace small text-muted">
-                        <strong>Context Node:</strong> @Model.Type
+                    <div class="border rounded-3 p-2 bg-light bg-opacity-40 font-monospace text-muted" style="font-size: 0.7rem; border-color: #e2e8f0 !important;">
+                        <strong class="text-dark d-block mb-0.5">Context Node</strong> @Model.Type
                     </div>
                 </div>
                 <div class="col-6">
-                    <div class="border rounded-3 p-2 bg-light font-monospace small text-muted">
-                        <strong>Time:</strong> @Model.CreatedAt.ToString("HH:mm:ss") UTC
+                    <div class="border rounded-3 p-2 bg-light bg-opacity-40 font-monospace text-muted" style="font-size: 0.7rem; border-color: #e2e8f0 !important;">
+                        <strong class="text-dark d-block mb-0.5">Dispatched</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")
                     </div>
                 </div>
             </div>
 
-            <div class="d-grid gap-2">
-                <a asp-action="Index" class="btn btn-dark rounded-pill py-2.5 fw-semibold">
-                    <i class="bi bi-arrow-left-circle me-1"></i> Standard Return to Inbox
+            <div class="d-grid">
+                <a asp-action="Index" class="btn btn-dark rounded-pill py-2.5 fw-medium font-monospace shadow-sm" style="background-color: #475569; font-size: 0.85rem;">
+                    <i class="bi bi-arrow-left-circle me-1"></i> Return to Notification Hub
                 </a>
             </div>
+
         </div>
     </div>
 </div>

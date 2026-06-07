@@ -1,4 +1,5 @@
-﻿using ERPLite.Repositories.Interfaces.Common;
+﻿using ERPLite.Data.Context;
+using ERPLite.Repositories.Interfaces.Common;
 using ERPLite.Repositories.Interfaces.HR;
 using ERPLite.Repositories.Interfaces.Inventory;
 using ERPLite.Repositories.Interfaces.Sales;
@@ -20,14 +21,12 @@ namespace ERPLite.Repositories.Implementation.Common
             IEmployeeRepository employeeRepo,
             IDepartmentRepository departmentRepo,
             IOrderItemRepository orderItemRepo,
-            IActivityLogRepository activityLogRepo
+            IActivityLogRepository activityLogRepo,
+            INotificationRepository notificationRepo
         ) : IUnitOfWork, IAsyncDisposable
     {
         private IDbContextTransaction? _currentTransaction;
 
-        // =================================
-        // Register Repositories
-        // =================================
         public IProductRepository Products { get; } = productRepo;
         public ICategoryRepository Categories { get; } = categoryRepo;
         public ISupplierRepository Suppliers { get; } = supplierRepo;
@@ -39,18 +38,13 @@ namespace ERPLite.Repositories.Implementation.Common
         public IDepartmentRepository Departments { get; } = departmentRepo;
         public IOrderItemRepository OrderItems { get; } = orderItemRepo;
         public IActivityLogRepository ActivityLogs { get; } = activityLogRepo;
+        public INotificationRepository Notifications { get; } = notificationRepo;
 
-        // =================================
-        // Save Changes
-        // =================================
         public async Task<int> SaveChangesAsync()
         {
             return await context.SaveChangesAsync();
         }
 
-        // =================================
-        // Transactions
-        // =================================
         public async Task<IDbContextTransaction> BeginTransactionAsync()
         {
             if (_currentTransaction != null)
@@ -96,9 +90,6 @@ namespace ERPLite.Repositories.Implementation.Common
             }
         }
 
-        // =================================
-        // Dispose Pattern
-        // =================================
         public void Dispose()
         {
             _currentTransaction?.Dispose();

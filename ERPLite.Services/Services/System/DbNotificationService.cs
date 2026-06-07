@@ -1,24 +1,31 @@
 ﻿using AutoMapper;
 using ERPLite.Data.Entities.System;
+using ERPLite.Repositories.Interfaces.Common;
 using ERPLite.Services.DTOs.System;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.System;
-using Microsoft.EntityFrameworkCore;
+using ERPLite.Services.Interfaces.Infrastructure;
 using Microsoft.Extensions.Logging;
 
 namespace ERPLite.Services.Services.System
 {
     public class DbNotificationService : INotificationService
     {
-        private readonly AppDbContext _context; 
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<DbNotificationService> _logger;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public DbNotificationService(AppDbContext context, IMapper mapper, ILogger<DbNotificationService> logger)
+        public DbNotificationService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ILogger<DbNotificationService> logger,
+            IDateTimeProvider dateTimeProvider)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task SendAsync(NotificationDto notification)
@@ -41,11 +48,11 @@ namespace ERPLite.Services.Services.System
                     Type = type,
                     Priority = priority,
                     IsRead = false,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = _dateTimeProvider.UtcNow
                 };
 
-                await _context.Notifications.AddAsync(notification);
-                await _context.SaveChangesAsync();
+                await _unitOfWork.Notifications.AddAsync(notification);
+                await _unitOfWork.SaveChangesAsync();
 
                 return ServiceResult<int>.Successful(notification.Id, "Internal notification dispatch successful.");
             }
@@ -57,37 +64,32 @@ namespace ERPLite.Services.Services.System
 
         public async Task<ServiceResult<IEnumerable<SystemNotificationDto>>> GetUserNotificationsAsync(string userId)
         {
-            var notifications = await _context.Notifications
-                .Where(n => n.UserId == userId)
-                .OrderByDescending(n => n.CreatedAt)
-                .ToListAsync();
-
+            var notifications = await _unitOfWork.Notifications.GetNotificationsByUserIdAsync(userId);
             var dto = _mapper.Map<IEnumerable<SystemNotificationDto>>(notifications);
             return ServiceResult<IEnumerable<SystemNotificationDto>>.Successful(dto);
         }
 
         public async Task<ServiceResult<int>> GetUnreadCountAsync(string userId)
         {
-            var count = await _context.Notifications
-                .CountAsync(n => n.UserId == userId && !n.IsRead);
+            var count = await _unitOfWork.Notifications.GetUnreadCountByUserIdAsync(userId);
             return ServiceResult<int>.Successful(count);
         }
 
         public async Task<ServiceResult> MarkAsReadAsync(int notificationId)
         {
-            var notification = await _context.Notifications.FindAsync(notificationId);
+            var notification = await _unitOfWork.Notifications.GetByIdAsync(notificationId);
             if (notification == null) return ServiceResult.Failed("Notification instance not found.");
 
             notification.IsRead = true;
-            _context.Notifications.Update(notification);
-            await _context.SaveChangesAsync();
+            _unitOfWork.Notifications.Update(notification);
+            await _unitOfWork.SaveChangesAsync();
 
             return ServiceResult.Successful("Notification vector state flagged as read.");
         }
 
         public async Task<ServiceResult<SystemNotificationDto>> GetByIdAsync(int id)
         {
-            var notification = await _context.Notifications.FindAsync(id);
+            var notification = await _unitOfWork.Notifications.GetByIdAsync(id);
             if (notification == null) return ServiceResult<SystemNotificationDto>.Failed("Notification record absent.");
 
             var dto = _mapper.Map<SystemNotificationDto>(notification);

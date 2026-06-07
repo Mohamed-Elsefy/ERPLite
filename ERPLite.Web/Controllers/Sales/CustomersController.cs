@@ -1,27 +1,25 @@
-﻿using ERPLite.Services.DTOs.Sales;
+﻿using AutoMapper;
+using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Interfaces.Sales;
-using ERPLite.Shared.Constants;
+using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Web.Models.Customers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace ERPLite.Web.Controllers.Sales
 {
-    [Authorize(Policy = "AllUsers")]
+    [Authorize(Policy = "RequireManagerOrAdmin")]
     public class CustomersController : Controller
     {
         private readonly ICustomerService _customerService;
+        private readonly ICurrentUserService _currentUser;
+        private readonly IMapper _mapper;
 
-        public CustomersController(ICustomerService customerService)
+        public CustomersController(ICustomerService customerService, ICurrentUserService currentUser, IMapper mapper)
         {
             _customerService = customerService;
-        }
-
-        private int? GetManagerDepartmentId()
-        {
-            var claimValue = User.FindFirst("DepartmentId")?.Value;
-            return int.TryParse(claimValue, out int id) ? id : null;
+            _currentUser = currentUser;
+            _mapper = mapper;
         }
 
         // GET: /Customers
@@ -33,10 +31,12 @@ namespace ERPLite.Web.Controllers.Sales
 
             var customersData = result.Data ?? new List<CustomerDto>();
 
-            if (User.IsInRole(Roles.Manager) && !User.IsInRole(Roles.Admin))
+            if (_currentUser.IsManager)
             {
-                var deptId = GetManagerDepartmentId();
+                var deptId = _currentUser.DepartmentId;
                 if (!deptId.HasValue) return Forbid();
+
+                customersData = customersData.Where(c => c.Orders.Any(o => o.DepartmentId == deptId.Value)).ToList();
             }
 
             var viewModel = new CustomerIndexViewModel
@@ -58,25 +58,23 @@ namespace ERPLite.Web.Controllers.Sales
                 return RedirectToAction(nameof(Index));
             }
 
-            var customer = result.Data;
-
-            var viewModel = new CustomerDetailsViewModel
+            if (_currentUser.IsManager)
             {
-                CustomerId = customer.Id,
-                FullName = customer.FullName,
-                Phone = customer.Phone,
-                OnboardedAt = customer.CreatedAt,
-                OrdersPipeline = customer.Orders ?? new List<OrderDto>()
-            };
+                var deptId = _currentUser.DepartmentId;
+                if (!deptId.HasValue || !result.Data.Orders.Any(o => o.DepartmentId == deptId.Value))
+                {
+                    return Forbid();
+                }
+            }
 
+            var viewModel = _mapper.Map<CustomerDetailsViewModel>(result.Data);
             return View(viewModel);
         }
 
         // GET: /Customers/Create
         public IActionResult Create()
         {
-            var viewModel = new CreateCustomerViewModel();
-            return View(viewModel);
+            return View(new CreateCustomerViewModel());
         }
 
         // POST: /Customers/Create
@@ -86,14 +84,8 @@ namespace ERPLite.Web.Controllers.Sales
         {
             if (!ModelState.IsValid) return View(viewModel);
 
-            var dto = new CreateCustomerDto
-            {
-                FullName = viewModel.FullName,
-                Phone = viewModel.Phone
-            };
-
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var result = await _customerService.CreateAsync(dto, currentUserId);
+            var dto = _mapper.Map<CreateCustomerDto>(viewModel);
+            var result = await _customerService.CreateAsync(dto, _currentUser.UserId!);
 
             if (!result.Success)
             {
@@ -108,39 +100,32 @@ namespace ERPLite.Web.Controllers.Sales
         #region Admin & Manager Privileged Actions
 
         // GET: /Customers/Edit/{id}
-        [Authorize(Policy = "ManagerOnly")] 
+        [Authorize(Policy = "RequireManagerOrAdmin")]
         public async Task<IActionResult> Edit(int id)
         {
             var result = await _customerService.GetByIdAsync(id);
             if (!result.Success || result.Data == null) return NotFound();
 
-            var viewModel = new EditCustomerViewModel
+            if (_currentUser.IsManager)
             {
-                Id = result.Data.Id,
-                FullName = result.Data.FullName,
-                Phone = result.Data.Phone
-            };
+                var deptId = _currentUser.DepartmentId;
+                if (!deptId.HasValue || !result.Data.Orders.Any(o => o.DepartmentId == deptId.Value)) return Forbid();
+            }
 
+            var viewModel = _mapper.Map<EditCustomerViewModel>(result.Data);
             return View(viewModel);
         }
 
         // POST: /Customers/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "ManagerOnly")] 
+        [Authorize(Policy = "RequireManagerOrAdmin")]
         public async Task<IActionResult> Edit(EditCustomerViewModel viewModel)
         {
             if (!ModelState.IsValid) return View(viewModel);
 
-            var dto = new UpdateCustomerDto
-            {
-                Id = viewModel.Id,
-                FullName = viewModel.FullName,
-                Phone = viewModel.Phone
-            };
-
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var result = await _customerService.UpdateAsync(dto, currentUserId);
+            var dto = _mapper.Map<UpdateCustomerDto>(viewModel);
+            var result = await _customerService.UpdateAsync(dto, _currentUser.UserId!);
 
             if (!result.Success)
             {
@@ -159,15 +144,11 @@ namespace ERPLite.Web.Controllers.Sales
         // POST: /Customers/Delete/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "AdminOnly")] 
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Delete(int id)
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var result = await _customerService.DeleteAsync(id, currentUserId);
-
-            if (!result.Success) TempData["Error"] = result.Message;
-            else TempData["Success"] = result.Message;
-
+            var result = await _customerService.DeleteAsync(id, _currentUser.UserId!);
+            TempData[result.Success ? "Success" : "Error"] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 

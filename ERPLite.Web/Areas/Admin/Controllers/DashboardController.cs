@@ -1,14 +1,14 @@
-﻿using ERPLite.Services.DTOs.Dashboard;
-using ERPLite.Services.Interfaces.Dashboard;
+﻿using ERPLite.Services.Interfaces.Dashboard;
 using ERPLite.Web.Areas.Admin.Models.Dashboard;
 using ERPLite.Web.Models.Dashboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace ERPLite.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = "AdminOnly")] 
     public class DashboardController : Controller
     {
         private readonly IDashboardService _dashboardService;
@@ -60,16 +60,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
                 PresentToday = attendanceDataResult.Data.PresentCount,
                 AbsentToday = attendanceDataResult.Data.AbsentCount,
                 LateToday = attendanceDataResult.Data.LateCount,
-                AttendanceRecords = attendanceDataResult.Data.Records.Select(r => new AttendanceManagementDto
-                {
-                    AttendanceId = r.AttendanceId,
-                    EmployeeName = r.EmployeeName,
-                    DepartmentName = r.DepartmentName,
-                    Date = r.Date,
-                    CheckInTime = r.CheckInTime,
-                    CheckOutTime = r.CheckOutTime,
-                    Status = r.Status
-                })
+                AttendanceRecords = attendanceDataResult.Data.Records
             };
 
             ViewData["PageTitle"] = "Enterprise Attendance Control";

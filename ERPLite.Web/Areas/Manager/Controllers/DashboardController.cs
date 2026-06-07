@@ -1,6 +1,5 @@
-﻿using ERPLite.Services.DTOs.Dashboard;
-using ERPLite.Services.Interfaces.Dashboard;
-using ERPLite.Web.Models.Dashboard; 
+﻿using ERPLite.Services.Interfaces.Dashboard;
+using ERPLite.Web.Models.Dashboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,24 +54,15 @@ namespace ERPLite.Web.Areas.Manager.Controllers
             var viewModel = new ManagementDashboardViewModel
             {
                 IsSuperAdmin = false,
-                DepartmentName = attendanceDataResult.Data.Records.FirstOrDefault()?.DepartmentName ?? "My Assigned Department",
+                DepartmentName = attendanceDataResult.Data.Records.FirstOrDefault()?.DepartmentName ?? "Assigned Department",
                 TotalEmployees = attendanceDataResult.Data.TotalEmployees,
                 PresentToday = attendanceDataResult.Data.PresentCount,
                 AbsentToday = attendanceDataResult.Data.AbsentCount,
                 LateToday = attendanceDataResult.Data.LateCount,
-                AttendanceRecords = attendanceDataResult.Data.Records.Select(r => new AttendanceManagementDto
-                {
-                    AttendanceId = r.AttendanceId,
-                    EmployeeName = r.EmployeeName,
-                    DepartmentName = r.DepartmentName,
-                    Date = r.Date,
-                    CheckInTime = r.CheckInTime,
-                    CheckOutTime = r.CheckOutTime,
-                    Status = r.Status
-                }).ToList()
+                AttendanceRecords = attendanceDataResult.Data.Records
             };
 
-            ViewData["PageTitle"] = "Departmental Attendance Hub";
+            ViewData["PageTitle"] = "Department Attendance Hub";
             return View(viewModel);
         }
     }

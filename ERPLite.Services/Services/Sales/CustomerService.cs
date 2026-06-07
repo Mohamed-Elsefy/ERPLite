@@ -5,6 +5,7 @@ using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Sales;
 using ERPLite.Services.Interfaces.System;
+using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Shared.Constants;
 
 namespace ERPLite.Services.Services.Sales
@@ -14,19 +15,24 @@ namespace ERPLite.Services.Services.Sales
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public CustomerService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService)
+        public CustomerService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IActivityLogService activityLogService,
+            IDateTimeProvider dateTimeProvider)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<ServiceResult<IEnumerable<CustomerDto>>> GetAllAsync()
         {
             var customers = await _unitOfWork.Customers.GetActiveCustomersAsync();
             var result = _mapper.Map<IEnumerable<CustomerDto>>(customers);
-
             return ServiceResult<IEnumerable<CustomerDto>>.Successful(result);
         }
 
@@ -46,7 +52,7 @@ namespace ERPLite.Services.Services.Sales
                 return ServiceResult.Failed("Phone number already exists.");
 
             var customer = _mapper.Map<Customer>(dto);
-            customer.CreatedAt = DateTime.UtcNow;
+            customer.CreatedAt = _dateTimeProvider.UtcNow;
 
             await _unitOfWork.Customers.AddAsync(customer);
             await _unitOfWork.SaveChangesAsync();
@@ -72,7 +78,6 @@ namespace ERPLite.Services.Services.Sales
                 return ServiceResult.Failed("Phone number is already registered to another customer.");
 
             _mapper.Map(dto, customer);
-
             _unitOfWork.Customers.Update(customer);
             await _unitOfWork.SaveChangesAsync();
 
@@ -97,7 +102,6 @@ namespace ERPLite.Services.Services.Sales
                 return ServiceResult.Failed("Cannot delete customer with orders.");
 
             var customerName = customer.FullName;
-
             _unitOfWork.Customers.SoftDelete(customer);
             await _unitOfWork.SaveChangesAsync();
 
@@ -119,7 +123,6 @@ namespace ERPLite.Services.Services.Sales
 
             var customers = await _unitOfWork.Customers.SearchCustomersAsync(keyword);
             var result = _mapper.Map<IEnumerable<CustomerDto>>(customers);
-
             return ServiceResult<IEnumerable<CustomerDto>>.Successful(result);
         }
     }

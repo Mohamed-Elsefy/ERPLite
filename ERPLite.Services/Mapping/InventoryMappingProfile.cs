@@ -8,22 +8,20 @@ namespace ERPLite.Services.Mapping
     {
         public InventoryMappingProfile()
         {
-            CreateMap<Category, CategoryDto>();
+            CreateMap<Category, CategoryDto>()
+                .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products));
             CreateMap<CreateCategoryDto, Category>();
+            CreateMap<UpdateCategoryDto, Category>();
 
-            CreateMap<Supplier, SupplierDto>();
+            CreateMap<Supplier, SupplierDto>()
+                .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products));
             CreateMap<CreateSupplierDto, Supplier>();
+            CreateMap<UpdateSupplierDto, Supplier>();
 
             CreateMap<Product, ProductDto>()
-                .ForMember(
-                    d => d.CategoryName,
-                    o => o.MapFrom(s => s.Category.Name))
-                .ForMember(
-                    d => d.SupplierName,
-                    o => o.MapFrom(s => s.Supplier.Name));
-
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : string.Empty))
+                .ForMember(dest => dest.SupplierName, opt => opt.MapFrom(src => src.Supplier != null ? src.Supplier.Name : string.Empty));
             CreateMap<CreateProductDto, Product>();
-
             CreateMap<UpdateProductDto, Product>();
         }
     }

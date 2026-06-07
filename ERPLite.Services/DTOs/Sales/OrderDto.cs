@@ -16,6 +16,8 @@ namespace ERPLite.Services.DTOs.Sales
 
         public OrderPaymentStatus PaymentStatus { get; set; }
 
+        public int DepartmentId { get; set; }
+
         public List<OrderItemDto> Items { get; set; } = new();
     }
 }

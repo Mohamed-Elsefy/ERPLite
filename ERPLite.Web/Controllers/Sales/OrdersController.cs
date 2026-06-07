@@ -1,8 +1,9 @@
-﻿using ERPLite.Services.DTOs.Inventory;
+﻿using AutoMapper;
+using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Interfaces.Inventory;
 using ERPLite.Services.Interfaces.Sales;
-using ERPLite.Shared.Helpers;
+using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Web.Models.Orders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,21 +11,27 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ERPLite.Web.Controllers.Sales
 {
-    [Authorize(Policy = "AllUsers")]
+    [Authorize(Policy = "RequireManagerOrAdmin")]
     public class OrdersController : Controller
     {
         private readonly IOrderService _orderService;
         private readonly ICustomerService _customerService;
         private readonly IProductService _productService;
+        private readonly ICurrentUserService _currentUser;
+        private readonly IMapper _mapper;
 
         public OrdersController(
             IOrderService orderService,
             ICustomerService customerService,
-            IProductService productService)
+            IProductService productService,
+            ICurrentUserService currentUser,
+            IMapper mapper)
         {
             _orderService = orderService;
             _customerService = customerService;
             _productService = productService;
+            _currentUser = currentUser;
+            _mapper = mapper;
         }
 
         // GET: /Orders
@@ -72,18 +79,10 @@ namespace ERPLite.Web.Controllers.Sales
                 return View(viewModel);
             }
 
-            var dto = new CreateOrderDto
-            {
-                CustomerId = viewModel.CustomerId,
-                CreatedByUserId = User.GetUserId() ?? "System",
-                Items = viewModel.Items!.Select(x => new CreateOrderItemDto
-                {
-                    ProductId = x.ProductId,
-                    Quantity = x.Quantity
-                }).ToList()
-            };
+            var dto = _mapper.Map<CreateOrderDto>(viewModel);
+            dto.CreatedByUserId = _currentUser.UserId ?? "System";
 
-            var currentUserId = User.GetUserId() ?? "System";
+            var currentUserId = _currentUser.UserId ?? "System";
             var result = await _orderService.CreateOrderAsync(dto, currentUserId);
 
             if (!result.Success)
@@ -108,7 +107,7 @@ namespace ERPLite.Web.Controllers.Sales
             viewModel.Customers = activeCustomers.Select(c => new SelectListItem
             {
                 Value = c.Id.ToString(),
-                Text = c.FullName 
+                Text = c.FullName
             }).ToList();
 
             viewModel.Products = activeProducts.Select(p => new SelectListItem

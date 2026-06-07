@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ERPLite.Web.Models.Users
+namespace ERPLite.Web.Areas.Admin.Models.Users
 {
     public class EditUserRoleViewModel
     {

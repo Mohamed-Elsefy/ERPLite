@@ -1,25 +1,26 @@
-﻿@model ProductFormViewModel
-
+﻿@model ERPLite.Web.Models.Products.ProductFormViewModel
 @{
     ViewData["Title"] = "Modify Product Parameters";
 }
 
 <div class="row justify-content-center">
     <div class="col-12 col-md-10 col-lg-8">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
-            <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
-                <div class="avatar-circle bg-warning-subtle text-warning fw-bold me-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 p-sm-5">
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-light">
+                <div class="bg-light border text-secondary fw-bold me-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; border-color: #e2e8f0 !important;">
                     <i class="bi bi-pencil-square fs-5"></i>
                 </div>
                 <div>
                     <h5 class="fw-bold text-dark mb-0">Modify Product Parameters</h5>
-                    <small class="text-muted">Adjust pricing valuations, logistics routes, or warehouse safety floors.</small>
+                    <p class="text-muted small mb-0" style="font-size: 0.75rem;">Adjust pricing valuations, logistics routes, or warehouse safety floors.</p>
                 </div>
             </div>
 
             <form asp-action="Edit" method="post" autocomplete="off">
                 @Html.AntiForgeryToken()
-                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-4 font-monospace"></div>
+
                 <partial name="_ProductForm" model="Model" />
             </form>
         </div>

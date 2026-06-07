@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
-namespace ERPLite.Web.Models.Users
+namespace ERPLite.Web.Areas.Admin.Models.Users
 {
     public class CreateUserViewModel
     {
@@ -17,10 +17,10 @@ namespace ERPLite.Web.Models.Users
         [Required]
         public string Role { get; set; } = "Manager";
 
-        [Display(Name = "Is Internal Employee Link")]
+        [Display(Name = "Link As Internal Employee")]
         public bool IsEmployee { get; set; } = true;
 
-        [Required, Range(0, 30000)]
+        [Required, Range(0, 50000)]
         public decimal Salary { get; set; }
 
         [Required, Display(Name = "Assigned Department")]

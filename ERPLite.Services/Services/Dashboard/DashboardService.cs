@@ -2,6 +2,7 @@
 using ERPLite.Services.DTOs.Dashboard;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Dashboard;
+using ERPLite.Services.Interfaces.Infrastructure; 
 using ERPLite.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,15 +11,17 @@ namespace ERPLite.Services.Services.Dashboard
     public class DashboardService : IDashboardService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public DashboardService(IUnitOfWork unitOfWork)
+        public DashboardService(IUnitOfWork unitOfWork, IDateTimeProvider dateTimeProvider)
         {
             _unitOfWork = unitOfWork;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<ServiceResult<DashboardStatisticsDto>> GetStatisticsAsync()
         {
-            var today = DateTime.Today;
+            var today = _dateTimeProvider.Now.Date;
             var startOfMonth = new DateTime(today.Year, today.Month, 1);
             var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 
@@ -39,7 +42,6 @@ namespace ERPLite.Services.Services.Dashboard
             var outstandingBalance = await _unitOfWork.Orders.GetUnpaidRevenueAsync();
             var totalPaidRevenue = await _unitOfWork.Payments.GetGlobalTotalPaidAmountAsync();
             var partialPaidOrders = await _unitOfWork.Orders.CountAsync(o => o.PaymentStatus == OrderPaymentStatus.PartiallyPaid);
-
 
             int newCustomersThisMonth = 0;
             try
@@ -82,13 +84,16 @@ namespace ERPLite.Services.Services.Dashboard
             {
                 var totalEmployees = await _unitOfWork.Employees.GetActiveCountByDepartmentAsync(filterDepartmentId);
                 var todayAttendances = await _unitOfWork.Attendances.GetTodayAttendanceManagementAsync(filterDepartmentId);
-                var presentCount = todayAttendances.Count();
-                var lateCount = todayAttendances.Count(a => a.Status.ToString() == "Late");
+                var attendanceList = todayAttendances.ToList();
+
+                var presentCount = attendanceList.Count;
+
+                var lateCount = attendanceList.Count(a => a.Status == AttendanceStatus.Late);
                 var absentCount = totalEmployees - presentCount;
 
                 if (absentCount < 0) absentCount = 0;
 
-                var recordsDto = todayAttendances.Select(a => new AttendanceManagementDto
+                var recordsDto = attendanceList.Select(a => new AttendanceManagementDto
                 {
                     AttendanceId = a.Id,
                     EmployeeName = a.Employee?.FullName ?? "Unknown Employee",

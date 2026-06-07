@@ -5,8 +5,12 @@ using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Sales;
 using ERPLite.Services.Interfaces.System;
+using ERPLite.Services.Interfaces.Infrastructure; // 🌟 للوصول لـ IDateTimeProvider
 using ERPLite.Shared.Constants;
 using ERPLite.Shared.Enums;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ERPLite.Services.Services.Sales
 {
@@ -16,13 +20,20 @@ namespace ERPLite.Services.Services.Sales
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
         private readonly INotificationService _notificationService;
+        private readonly IDateTimeProvider _dateTimeProvider; // 🌟
 
-        public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService, INotificationService notificationService)
+        public PaymentService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IActivityLogService activityLogService,
+            INotificationService notificationService,
+            IDateTimeProvider dateTimeProvider)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
             _notificationService = notificationService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<ServiceResult<IEnumerable<PaymentDto>>> GetPaymentsByOrderAsync(int orderId)
@@ -84,7 +95,7 @@ namespace ERPLite.Services.Services.Sales
                     OrderId = dto.OrderId,
                     Amount = dto.Amount,
                     PaymentMethod = dto.PaymentMethod,
-                    PaymentDate = DateTime.UtcNow,
+                    PaymentDate = _dateTimeProvider.UtcNow,
                     Status = PaymentStatus.Completed
                 };
 
@@ -142,7 +153,6 @@ namespace ERPLite.Services.Services.Sales
             try
             {
                 var payments = await _unitOfWork.Payments.GetRecentPaymentsAsync(count);
-
                 var dto = _mapper.Map<IEnumerable<PaymentDto>>(payments);
 
                 return ServiceResult<IEnumerable<PaymentDto>>.Successful(dto, "Recent payments retrieved successfully.");

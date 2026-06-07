@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using ERPLite.Services.DTOs.HR;
+﻿using ERPLite.Services.DTOs.HR;
 using ERPLite.Services.Interfaces.HR;
+using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Web.Areas.Employee.Models.Attendance;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ERPLite.Web.Areas.Employee.Controllers
 {
@@ -12,50 +12,60 @@ namespace ERPLite.Web.Areas.Employee.Controllers
     public class AttendanceController : Controller
     {
         private readonly IAttendanceService _attendanceService;
+        private readonly ICurrentUserService _currentUser;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public AttendanceController(IAttendanceService attendanceService)
+        public AttendanceController(
+            IAttendanceService attendanceService,
+            ICurrentUserService currentUser,
+            IDateTimeProvider dateTimeProvider)
         {
             _attendanceService = attendanceService;
+            _currentUser = currentUser;
+            _dateTimeProvider = dateTimeProvider;
         }
 
+        // GET: /Employee/Attendance
         public async Task<IActionResult> Index()
         {
-            var employeeIdClaim = User.FindFirst("EmployeeId")?.Value;
-            if (string.IsNullOrEmpty(employeeIdClaim) || !int.TryParse(employeeIdClaim, out int employeeId))
+            var employeeId = _currentUser.EmployeeId;
+            if (!employeeId.HasValue)
             {
                 return RedirectToAction("AccessDenied", "Auth", new { area = "" });
             }
 
-            var result = await _attendanceService.GetEmployeeAttendanceAsync(employeeId);
+            var result = await _attendanceService.GetEmployeeAttendanceAsync(employeeId.Value);
             var history = result.Data ?? new List<AttendanceDto>();
 
-            var todayLocal = DateTime.Today;
-            var todayRecord = history.FirstOrDefault(a => a.Date.Date == todayLocal);
+            var todayRecord = history.FirstOrDefault(a => a.Date.Date == _dateTimeProvider.Today);
 
             var viewModel = new AttendanceIndexViewModel
             {
                 HistoryLog = history,
                 HasCheckedInToday = todayRecord != null,
                 HasCheckedOutToday = todayRecord?.CheckOutTime != null,
-                TodayCheckInTime = todayRecord?.CheckInTime.ToString("hh:mm tt"),
-                TodayCheckOutTime = todayRecord?.CheckOutTime?.ToString("hh:mm tt")
+                TodayCheckInTime = todayRecord?.CheckInTime.ToString("hh:mm tt") ?? "--:--",
+                TodayCheckOutTime = todayRecord?.CheckOutTime?.ToString("hh:mm tt") ?? "--:--"
             };
 
             return View(viewModel);
         }
 
+        // POST: /Employee/Attendance/CheckIn
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckIn()
         {
-            var employeeIdClaim = User.FindFirst("EmployeeId")?.Value;
-            if (string.IsNullOrEmpty(employeeIdClaim) || !int.TryParse(employeeIdClaim, out int employeeId))
+            var employeeId = _currentUser.EmployeeId;
+            if (!employeeId.HasValue)
             {
                 return RedirectToAction("AccessDenied", "Auth", new { area = "" });
             }
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var result = await _attendanceService.CheckInAsync(new CheckInDto { EmployeeId = employeeId }, currentUserId);
+            var result = await _attendanceService.CheckInAsync(
+                new CheckInDto { EmployeeId = employeeId.Value },
+                _currentUser.UserId!
+            );
 
             if (!result.Success)
                 TempData["Error"] = result.Message;
@@ -65,18 +75,21 @@ namespace ERPLite.Web.Areas.Employee.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // POST: /Employee/Attendance/CheckOut
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckOut()
         {
-            var employeeIdClaim = User.FindFirst("EmployeeId")?.Value;
-            if (string.IsNullOrEmpty(employeeIdClaim) || !int.TryParse(employeeIdClaim, out int employeeId))
+            var employeeId = _currentUser.EmployeeId;
+            if (!employeeId.HasValue)
             {
                 return RedirectToAction("AccessDenied", "Auth", new { area = "" });
             }
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var result = await _attendanceService.CheckOutAsync(new CheckOutDto { EmployeeId = employeeId }, currentUserId);
+            var result = await _attendanceService.CheckOutAsync(
+                new CheckOutDto { EmployeeId = employeeId.Value },
+                _currentUser.UserId!
+            );
 
             if (!result.Success)
                 TempData["Error"] = result.Message;

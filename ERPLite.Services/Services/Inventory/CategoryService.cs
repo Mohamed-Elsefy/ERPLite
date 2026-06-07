@@ -28,13 +28,12 @@ namespace ERPLite.Services.Services.Inventory
         {
             var categories = await _unitOfWork.Categories.GetAllAsync();
             var result = _mapper.Map<IEnumerable<CategoryDto>>(categories);
-
             return ServiceResult<IEnumerable<CategoryDto>>.Successful(result);
         }
 
         public async Task<ServiceResult<CategoryDto>> GetByIdAsync(int id)
         {
-            var category = await _unitOfWork.Categories.GetByIdAsync(id);
+            var category = await _unitOfWork.Categories.GetCategoryWithProductsAsync(id);
             if (category == null)
                 return ServiceResult<CategoryDto>.Failed("Category not found.");
 
@@ -48,18 +47,18 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Category already exists.");
 
             var category = _mapper.Map<Category>(dto);
-
             await _unitOfWork.Categories.AddAsync(category);
 
-            await _notificationService.CreateSystemNotificationAsync(
-    userId: currentUserId,
-    title: "New Inventory Node Structure",
-    message: $"A new structural classification group '{category.Name}' has been introduced to the catalog matrix.",
-    type: "Catalog",
-    priority: "Low"
-);
-
+            // 🌟 تعديل الترتيب المعماري: الحفظ أولاً لضمان نجاح العملية في قاعدة البيانات وحفظ الـ Id الصحيح
             await _unitOfWork.SaveChangesAsync();
+
+            await _notificationService.CreateSystemNotificationAsync(
+                userId: currentUserId,
+                title: "New Inventory Node Structure",
+                message: $"A new structural classification group '{category.Name}' has been introduced to the catalog matrix.",
+                type: "Catalog",
+                priority: "Low"
+            );
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
@@ -78,12 +77,10 @@ namespace ERPLite.Services.Services.Inventory
             if (category == null)
                 return ServiceResult.Failed("Category not found.");
 
-            var exists = await _unitOfWork.Categories.CategoryExistsAsync(dto.Name, dto.Id);
-            if (exists)
+            if (await _unitOfWork.Categories.CategoryExistsAsync(dto.Name, dto.Id))
                 return ServiceResult.Failed("Category name already exists.");
 
             _mapper.Map(dto, category);
-
             _unitOfWork.Categories.Update(category);
             await _unitOfWork.SaveChangesAsync();
 
@@ -104,11 +101,10 @@ namespace ERPLite.Services.Services.Inventory
             if (category == null)
                 return ServiceResult.Failed("Category not found.");
 
-            if (category.Products.Any())
+            if (category.Products != null && category.Products.Any())
                 return ServiceResult.Failed("Cannot delete category with products.");
 
             var categoryName = category.Name;
-
             _unitOfWork.Categories.SoftDelete(category);
             await _unitOfWork.SaveChangesAsync();
 

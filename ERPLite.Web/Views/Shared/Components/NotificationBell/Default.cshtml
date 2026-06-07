@@ -1,45 +1,45 @@
 ﻿@model int
 
-<div class="dropdown me-3">
-    <button class="btn btn-light bg-white border position-relative rounded-circle p-2.5 d-flex align-items-center justify-content-center shadow-sm"
-            type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 42px; height: 42px;">
-        <i class="bi bi-bell text-dark fs-5"></i>
+<div class="dropdown me-2">
+    <button class="btn btn-light bg-white border position-relative rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm"
+            type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 38px; height: 38px; border-color: #e2e8f0 !important;">
+        <i class="bi bi-bell text-secondary fs-5"></i>
 
         @if (Model > 0)
         {
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white font-monospace" style="font-size: 0.65rem; padding: 0.35em 0.5em;">
-                @Model
+            <span class="position-absolute top-0 start-100 translate-middle p-1.5 bg-indigo rounded-circle border border-white" style="background-color: #6366f1;">
+                <span class="visually-hidden">New alerts</span>
             </span>
         }
     </button>
 
-    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 py-2 rounded-3" style="width: 290px;">
-        <li class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
-            <h6 class="mb-0 fw-bold text-dark">Notifications</h6>
+    <ul class="dropdown-menu dropdown-menu-end shadow-sm border border-light mt-2 py-2 rounded-3" style="width: 300px; background-color: #ffffff;">
+        <li class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center" style="border-color: #f1f5f9 !important;">
+            <h6 class="mb-0 fw-semibold text-dark small">Notifications</h6>
             @if (Model > 0)
             {
-                <span class="badge bg-danger-subtle text-danger rounded-pill font-monospace small">@Model New</span>
+                <span class="badge bg-indigo-subtle text-indigo rounded-pill font-monospace" style="font-size: 0.7rem; color: #4f46e5; background-color: #e0e7ff;">@Model Unread</span>
             }
         </li>
 
         <li>
             @if (Model > 0)
             {
-                <a asp-area="" asp-controller="Notifications" asp-action="Index" class="dropdown-item text-center text-primary small py-3 fw-semibold">
-                    <i class="bi bi-envelope-open me-1"></i> You have unread logs. Click to inspect.
+                <a asp-area="" asp-controller="Notifications" asp-action="Index" class="dropdown-item text-center text-indigo small py-3 fw-medium" style="color: #4f46e5;">
+                    <i class="bi bi-envelope-open me-1"></i> You have unread operational logs.
                 </a>
             }
             else
             {
                 <span class="dropdown-item text-center text-muted small py-3">
-                    <i class="bi bi-bell-slash me-1 text-secondary"></i> No new notifications
+                    <i class="bi bi-bell-slash me-1 text-muted"></i> Workspace is quiet
                 </span>
             }
         </li>
 
-        <li class="border-top text-center">
-            <a asp-area="" asp-controller="Notifications" asp-action="Index" class="dropdown-item small text-secondary py-2">
-                View All Notification Hub
+        <li class="border-top text-center" style="border-color: #f1f5f9 !important;">
+            <a asp-area="" asp-controller="Notifications" asp-action="Index" class="dropdown-item small text-secondary py-2" style="font-size: 0.75rem;">
+                Open Notification Hub
             </a>
         </li>
     </ul>

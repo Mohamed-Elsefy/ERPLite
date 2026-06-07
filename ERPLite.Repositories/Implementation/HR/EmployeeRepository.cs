@@ -1,4 +1,5 @@
-﻿using ERPLite.Data.Entities.HR;
+﻿using ERPLite.Data.Context;
+using ERPLite.Data.Entities.HR;
 using ERPLite.Repositories.Implementation.Common;
 using ERPLite.Repositories.Interfaces.HR;
 using Microsoft.EntityFrameworkCore;

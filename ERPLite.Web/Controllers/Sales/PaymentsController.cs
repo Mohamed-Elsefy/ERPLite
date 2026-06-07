@@ -1,47 +1,44 @@
-﻿using ERPLite.Data.Entities.Identity;
+﻿using AutoMapper;
 using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Interfaces.Sales;
+using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Web.Models.Payments;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ERPLite.Web.Controllers.Sales
 {
-    [Authorize(Policy = "AllUsers")]
+    [Authorize(Policy = "RequireManagerOrAdmin")]
     public class PaymentsController : Controller
     {
         private readonly IPaymentService _paymentService;
         private readonly IOrderService _orderService;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ICurrentUserService _currentUser;
+        private readonly IMapper _mapper;
 
-        public PaymentsController(IPaymentService paymentService, IOrderService orderService, UserManager<ApplicationUser> userManager)
+        public PaymentsController(
+            IPaymentService paymentService,
+            IOrderService orderService,
+            ICurrentUserService currentUser,
+            IMapper mapper)
         {
             _paymentService = paymentService;
             _orderService = orderService;
-            _userManager = userManager;
+            _currentUser = currentUser;
+            _mapper = mapper;
         }
 
         // GET: /Payments
-        [Authorize(Policy = "ManagerOnly")]
         public async Task<IActionResult> Index()
         {
             var result = await _paymentService.GetRecentPaymentsAsync(50);
             var data = result.Data ?? new List<PaymentDto>();
 
-            var vm = data.Select(p => new PaymentsIndexViewModel
-            {
-                Id = p.Id,
-                OrderId = 0,
-                Amount = p.Amount,
-                PaymentMethod = p.PaymentMethod,
-                PaymentDate = p.PaymentDate,
-                Status = p.Status
-            }).ToList();
-
+            var vm = _mapper.Map<List<PaymentsIndexViewModel>>(data);
             return View(vm);
         }
 
@@ -64,7 +61,6 @@ namespace ERPLite.Web.Controllers.Sales
 
             var paymentsResult = await _paymentService.GetPaymentsByOrderAsync(orderId);
             var paymentsList = paymentsResult.Data ?? new List<PaymentDto>();
-
             var summaryData = financialSummary.Data;
 
             var vm = new OrderFinancialViewModel
@@ -75,21 +71,13 @@ namespace ERPLite.Web.Controllers.Sales
                 PaidAmount = summaryData.PaidAmount,
                 RemainingAmount = summaryData.RemainingAmount,
                 PaymentStatus = summaryData.PaymentStatus,
-                Payments = paymentsList.Select(x => new PaymentItemViewModel
-                {
-                    Id = x.Id,
-                    Amount = x.Amount,
-                    PaymentMethod = x.PaymentMethod,
-                    PaymentDate = x.PaymentDate,
-                    Status = x.Status
-                }).ToList()
+                Payments = _mapper.Map<List<PaymentItemViewModel>>(paymentsList)
             };
 
             return View(vm);
         }
 
         // GET: /Payments/Create?orderId={id}
-        [Authorize(Policy = "ManagerOnly")]
         public async Task<IActionResult> Create(int orderId)
         {
             var summaryResult = await _paymentService.GetOrderFinancialSummaryAsync(orderId);
@@ -119,7 +107,6 @@ namespace ERPLite.Web.Controllers.Sales
         // POST: /Payments/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "ManagerOnly")]
         public async Task<IActionResult> Create(CreatePaymentViewModel vm)
         {
             if (!ModelState.IsValid)
@@ -129,23 +116,16 @@ namespace ERPLite.Web.Controllers.Sales
                 return View(vm);
             }
 
-            var dto = new CreatePaymentDto
-            {
-                OrderId = vm.OrderId,
-                Amount = vm.Amount,
-                PaymentMethod = vm.PaymentMethod
-            };
+            var dto = _mapper.Map<CreatePaymentDto>(vm);
+            var currentUserId = _currentUser.UserId;
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            if (string.IsNullOrEmpty(currentUserId))
             {
                 ModelState.AddModelError(string.Empty, "User session has expired. Please log in again.");
                 var balanceResult = await _paymentService.GetRemainingBalanceAsync(vm.OrderId);
                 vm.RemainingBalance = balanceResult.Success ? balanceResult.Data : 0;
                 return View(vm);
             }
-
-            var currentUserId = user.Id;
 
             var result = await _paymentService.CreatePaymentAsync(dto, currentUserId);
             if (!result.Success)

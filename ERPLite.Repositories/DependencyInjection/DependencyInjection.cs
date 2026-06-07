@@ -36,6 +36,7 @@ namespace ERPLite.Repositories.DependencyInjection
 
             // System
             services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
 
             return services;
         }

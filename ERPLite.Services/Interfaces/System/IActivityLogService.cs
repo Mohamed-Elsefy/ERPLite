@@ -10,5 +10,7 @@ namespace ERPLite.Services.Interfaces.System
         Task<ServiceResult<IEnumerable<ActivityLogDto>>> GetRecentLogsAsync();
         Task<ServiceResult<IEnumerable<ActivityLogDto>>> GetUserLogsAsync(string userId);
         Task<ServiceResult<IEnumerable<ActivityLogDto>>> GetEntityLogsAsync(string entityName, int entityId);
+
+        Task<ServiceResult<ActivityLogDto>> GetLogByIdAsync(int id);
     }
 }

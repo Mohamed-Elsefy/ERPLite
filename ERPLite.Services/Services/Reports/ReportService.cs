@@ -5,6 +5,7 @@ using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.DTOs.Reports;
 using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Interfaces.Reports;
+using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Shared.Enums;
 
 namespace ERPLite.Services.Reports.Services
@@ -13,18 +14,22 @@ namespace ERPLite.Services.Reports.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public ReportService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ReportService(IUnitOfWork unitOfWork, IMapper mapper, IDateTimeProvider dateTimeProvider)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<ReportResultDto<EmployeesReportDto>> GenerateEmployeesReportAsync()
         {
             var employees = await _unitOfWork.Employees.GetAllWithDepartmentsAsync();
             var employeeList = employees.ToList();
-            var activeEmployeesList = employeeList.Where(e => e.User == null || e.User.LockoutEnd == null || e.User.LockoutEnd < DateTimeOffset.UtcNow).ToList();
+
+            var currentOffset = _dateTimeProvider.UtcNow;
+            var activeEmployeesList = employeeList.Where(e => e.User == null || e.User.LockoutEnd == null || e.User.LockoutEnd < currentOffset).ToList();
 
             var reportData = new EmployeesReportDto
             {
@@ -37,7 +42,7 @@ namespace ERPLite.Services.Reports.Services
             return new ReportResultDto<EmployeesReportDto>
             {
                 ReportName = "Corporate Human Resources & Payroll Summary",
-                GeneratedAt = DateTime.UtcNow,
+                GeneratedAt = _dateTimeProvider.UtcNow,
                 Data = reportData
             };
         }
@@ -63,7 +68,7 @@ namespace ERPLite.Services.Reports.Services
             return new ReportResultDto<AttendanceReportDto>
             {
                 ReportName = $"Employee Attendance Sheet ({from:yyyy-MM-dd} to {to:yyyy-MM-dd})",
-                GeneratedAt = DateTime.UtcNow,
+                GeneratedAt = _dateTimeProvider.UtcNow,
                 Data = reportData
             };
         }
@@ -86,7 +91,7 @@ namespace ERPLite.Services.Reports.Services
             return new ReportResultDto<InventoryReportDto>
             {
                 ReportName = "Inventory Asset Valuation & Stock Status",
-                GeneratedAt = DateTime.UtcNow,
+                GeneratedAt = _dateTimeProvider.UtcNow,
                 Data = reportData
             };
         }
@@ -110,13 +115,12 @@ namespace ERPLite.Services.Reports.Services
                 TotalSales = totalSales,
                 AverageOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0,
                 Orders = _mapper.Map<List<OrderDto>>(orderList)
-
             };
 
             return new ReportResultDto<SalesReportDto>
             {
                 ReportName = $"Commercial Sales Performance Report ({from:yyyy-MM-dd} to {to:yyyy-MM-dd})",
-                GeneratedAt = DateTime.UtcNow,
+                GeneratedAt = _dateTimeProvider.UtcNow,
                 Data = reportData
             };
         }
@@ -141,7 +145,7 @@ namespace ERPLite.Services.Reports.Services
             return new ReportResultDto<FinancialReportDto>
             {
                 ReportName = "Executive Financial Summary Statement",
-                GeneratedAt = DateTime.UtcNow,
+                GeneratedAt = _dateTimeProvider.UtcNow,
                 Data = reportData
             };
         }

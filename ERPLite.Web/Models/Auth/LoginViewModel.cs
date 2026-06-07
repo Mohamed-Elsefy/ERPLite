@@ -4,11 +4,11 @@ namespace ERPLite.Web.Models.Auth
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Email Is Required")]
-        [EmailAddress]
+        [Required(ErrorMessage = "Email Address is required")]
+        [EmailAddress(ErrorMessage = "Invalid email address format")]
         public string Email { get; set; } = null!;
 
-        [Required(ErrorMessage = "Password Is Required")]
+        [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
         public string Password { get; set; } = null!;
 

@@ -1,7 +1,7 @@
 ﻿using ERPLite.Services.DTOs.Users;
 using ERPLite.Services.Helpers;
 
-namespace ERPLite.Services.Interfaces.Auth
+namespace ERPLite.Services.Interfaces.Users
 {
     public interface IUserService
     {
@@ -20,5 +20,7 @@ namespace ERPLite.Services.Interfaces.Auth
         Task<ServiceResult> UnlockUserAsync(string userId, string currentUserId);
 
         Task<ServiceResult<IEnumerable<UserDto>>> GetFilteredUsersAsync(string? search);
+
+        Task<ServiceResult> RemoveUserAccessAsync(string userId, string currentUserId);
     }
 }

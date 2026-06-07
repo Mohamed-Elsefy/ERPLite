@@ -4,8 +4,7 @@ using ERPLite.Shared.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Threading.Tasks;
+using ERPLite.Data.Context;
 
 namespace ERPLite.Data.Seeders
 {

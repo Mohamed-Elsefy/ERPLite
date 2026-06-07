@@ -1,29 +1,25 @@
-﻿using ERPLite.Services.DTOs.HR;
+﻿using AutoMapper;
+using ERPLite.Services.DTOs.HR;
 using ERPLite.Services.Interfaces.HR;
-using ERPLite.Shared.Constants;
+using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Web.Models.Departments;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace ERPLite.Web.Controllers.HR
 {
-    [Authorize(Policy = "ManagerOnly")]
+    [Authorize(Policy = "RequireManagerOrAdmin")]
     public class DepartmentsController : Controller
     {
         private readonly IDepartmentService _departmentService;
-        private readonly IEmployeeService _employeeService;
+        private readonly ICurrentUserService _currentUser;
+        private readonly IMapper _mapper;
 
-        public DepartmentsController(IDepartmentService departmentService, IEmployeeService employeeService)
+        public DepartmentsController(IDepartmentService departmentService, ICurrentUserService currentUser, IMapper mapper)
         {
             _departmentService = departmentService;
-            _employeeService = employeeService;
-        }
-
-        private int? GetManagerDepartmentId()
-        {
-            var claimValue = User.FindFirst("DepartmentId")?.Value;
-            return int.TryParse(claimValue, out int id) ? id : null;
+            _currentUser = currentUser;
+            _mapper = mapper;
         }
 
         // GET: /Departments
@@ -32,9 +28,9 @@ namespace ERPLite.Web.Controllers.HR
             var result = await _departmentService.GetAllAsync();
             var departments = result.Data ?? new List<DepartmentDto>();
 
-            if (User.IsInRole(Roles.Manager))
+            if (_currentUser.IsManager)
             {
-                var managerDeptId = GetManagerDepartmentId();
+                var managerDeptId = _currentUser.DepartmentId;
                 if (!managerDeptId.HasValue) return Forbid();
 
                 departments = departments.Where(d => d.Id == managerDeptId.Value).ToList();
@@ -60,12 +56,12 @@ namespace ERPLite.Web.Controllers.HR
         // GET: /Departments/Details/{id}
         public async Task<IActionResult> Details(int id)
         {
-            if (User.IsInRole(Roles.Manager))
+            if (_currentUser.IsManager)
             {
-                var managerDeptId = GetManagerDepartmentId();
+                var managerDeptId = _currentUser.DepartmentId;
                 if (!managerDeptId.HasValue || id != managerDeptId.Value)
                 {
-                    return Forbid();
+                    return Forbid(); 
                 }
             }
 
@@ -73,18 +69,7 @@ namespace ERPLite.Web.Controllers.HR
             if (!result.Success || result.Data == null)
                 return NotFound();
 
-            var empResult = await _employeeService.GetAllAsync();
-            var departmentEmployees = (empResult.Data ?? new List<EmployeeDto>())
-                .Where(e => e.DepartmentId == id).ToList();
-
-            var viewModel = new DepartmentDetailsViewModel
-            {
-                DepartmentId = result.Data.Id,
-                Name = result.Data.Name,
-                Description = result.Data.Description,
-                EmployeesCount = departmentEmployees.Count, 
-                Employees = departmentEmployees
-            };
+            var viewModel = _mapper.Map<DepartmentDetailsViewModel>(result.Data);
 
             return View(viewModel);
         }
@@ -92,7 +77,7 @@ namespace ERPLite.Web.Controllers.HR
         #region Admin Only Actions 
 
         // GET: /Departments/Create
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminOnly")] 
         public IActionResult Create()
         {
             return View(new CreateDepartmentViewModel());
@@ -101,7 +86,7 @@ namespace ERPLite.Web.Controllers.HR
         // POST: /Departments/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminOnly")] 
         public async Task<IActionResult> Create(CreateDepartmentViewModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -113,8 +98,7 @@ namespace ERPLite.Web.Controllers.HR
                 Description = viewModel.Description
             };
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var result = await _departmentService.CreateAsync(dto, currentUserId);
+            var result = await _departmentService.CreateAsync(dto, _currentUser.UserId!);
 
             if (!result.Success)
             {
@@ -147,7 +131,7 @@ namespace ERPLite.Web.Controllers.HR
         // POST: /Departments/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminOnly")] 
         public async Task<IActionResult> Edit(int id, EditDepartmentViewModel viewModel)
         {
             if (id != viewModel.Id)
@@ -163,8 +147,7 @@ namespace ERPLite.Web.Controllers.HR
                 Description = viewModel.Description
             };
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var result = await _departmentService.UpdateAsync(dto, currentUserId);
+            var result = await _departmentService.UpdateAsync(dto, _currentUser.UserId!);
 
             if (!result.Success)
             {
@@ -182,8 +165,7 @@ namespace ERPLite.Web.Controllers.HR
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Delete(int id)
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var result = await _departmentService.DeleteAsync(id, currentUserId);
+            var result = await _departmentService.DeleteAsync(id, _currentUser.UserId!);
 
             if (!result.Success)
                 TempData["Error"] = result.Message;

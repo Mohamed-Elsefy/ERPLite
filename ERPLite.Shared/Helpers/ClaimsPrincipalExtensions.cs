@@ -34,5 +34,10 @@ namespace ERPLite.Shared.Helpers
         {
             return user.IsInRole(Roles.Employee);
         }
+
+        public static bool IsManagerOrAdmin(this ClaimsPrincipal user)
+        {
+            return user.IsInRole(Roles.Admin) || user.IsInRole(Roles.Manager);
+        }
     }
 }

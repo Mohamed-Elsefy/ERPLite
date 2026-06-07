@@ -28,7 +28,6 @@ namespace ERPLite.Services.Services.Inventory
         {
             var products = await _unitOfWork.Products.GetAllWithDetailsAsync();
             var result = _mapper.Map<IEnumerable<ProductDto>>(products);
-
             return ServiceResult<IEnumerable<ProductDto>>.Successful(result);
         }
 
@@ -46,7 +45,6 @@ namespace ERPLite.Services.Services.Inventory
         {
             var products = await _unitOfWork.Products.GetLowStockProductsAsync();
             var result = _mapper.Map<IEnumerable<ProductDto>>(products);
-
             return ServiceResult<IEnumerable<ProductDto>>.Successful(result);
         }
 
@@ -64,7 +62,6 @@ namespace ERPLite.Services.Services.Inventory
                 return ServiceResult.Failed("Supplier not found.");
 
             var product = _mapper.Map<Product>(dto);
-
             await _unitOfWork.Products.AddAsync(product);
             await _unitOfWork.SaveChangesAsync();
 
@@ -85,21 +82,13 @@ namespace ERPLite.Services.Services.Inventory
             if (product == null)
                 return ServiceResult.Failed("Product not found.");
 
-            var category = await _unitOfWork.Categories.GetByIdAsync(dto.CategoryId);
-            if (category == null)
-                return ServiceResult.Failed("Category not found.");
-
-            var supplier = await _unitOfWork.Suppliers.GetByIdAsync(dto.SupplierId);
-            if (supplier == null)
-                return ServiceResult.Failed("Supplier not found.");
-
             if (await _unitOfWork.Products.ExistsByNameAsync(dto.Name, dto.Id))
                 return ServiceResult.Failed("Product name already exists.");
 
             _mapper.Map(dto, product);
-
             _unitOfWork.Products.Update(product);
 
+            // 🌟 منطق فحص تدني المخزون يوضع بشكل صحيح قبل الحفظ النهائي لضمان تزامن التحذيرات
             if (product.QuantityInStock <= product.MinStockLevel)
             {
                 await _notificationService.CreateSystemNotificationAsync(
@@ -130,12 +119,10 @@ namespace ERPLite.Services.Services.Inventory
             if (product == null)
                 return ServiceResult.Failed("Product not found.");
 
-            var usedInOrders = await _unitOfWork.Products.HasAnyOrdersAsync(id);
-            if (usedInOrders)
+            if (await _unitOfWork.Products.HasAnyOrdersAsync(id))
                 return ServiceResult.Failed("Cannot delete product used in orders.");
 
             var productName = product.Name;
-
             _unitOfWork.Products.SoftDelete(product);
             await _unitOfWork.SaveChangesAsync();
 
@@ -153,9 +140,7 @@ namespace ERPLite.Services.Services.Inventory
         public async Task<ServiceResult<IEnumerable<ProductDto>>> GetProductsByCategoryIdAsync(int categoryId)
         {
             var products = await _unitOfWork.Products.GetProductsByCategoryAsync(categoryId);
-
             var result = _mapper.Map<IEnumerable<ProductDto>>(products);
-
             return ServiceResult<IEnumerable<ProductDto>>.Successful(result);
         }
 
@@ -163,7 +148,6 @@ namespace ERPLite.Services.Services.Inventory
         {
             var products = await _unitOfWork.Products.GetAllWithDetailsAsync();
             var filtered = products.Where(p => p.SupplierId == supplierId).ToList();
-
             var result = _mapper.Map<IEnumerable<ProductDto>>(filtered);
             return ServiceResult<IEnumerable<ProductDto>>.Successful(result);
         }

@@ -1,28 +1,35 @@
-﻿using ERPLite.Services.DTOs.Inventory;
+﻿using AutoMapper;
+using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.Interfaces.Inventory;
+using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Web.Models.Products;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Security.Claims;
 
 namespace ERPLite.Web.Controllers.Inventory
 {
-    [Authorize(Policy = "ManagerOnly")] 
+    [Authorize(Policy = "RequireManagerOrAdmin")]
     public class ProductsController : Controller
     {
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly ISupplierService _supplierService;
+        private readonly ICurrentUserService _currentUser;
+        private readonly IMapper _mapper;
 
         public ProductsController(
             IProductService productService,
             ICategoryService categoryService,
-            ISupplierService supplierService)
+            ISupplierService supplierService,
+            ICurrentUserService currentUser,
+            IMapper mapper)
         {
             _productService = productService;
             _categoryService = categoryService;
             _supplierService = supplierService;
+            _currentUser = currentUser;
+            _mapper = mapper;
         }
 
         // GET: /Products
@@ -41,12 +48,7 @@ namespace ERPLite.Web.Controllers.Inventory
                 ).ToList();
             }
 
-            var viewModel = new ProductIndexViewModel
-            {
-                Products = products,
-                SearchTerm = search
-            };
-
+            var viewModel = new ProductIndexViewModel { Products = products, SearchTerm = search };
             return View(viewModel);
         }
 
@@ -59,11 +61,8 @@ namespace ERPLite.Web.Controllers.Inventory
                 TempData["Error"] = "Product could not be resolved.";
                 return RedirectToAction(nameof(Index));
             }
-
             return View(result.Data);
         }
-
-        #region Admin Only - Procurement & Structuring Control
 
         // GET: /Products/Create
         [Authorize(Policy = "AdminOnly")]
@@ -86,7 +85,6 @@ namespace ERPLite.Web.Controllers.Inventory
                 return View(viewModel);
             }
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             var dto = new CreateProductDto
             {
                 Name = viewModel.Name,
@@ -97,7 +95,7 @@ namespace ERPLite.Web.Controllers.Inventory
                 SupplierId = viewModel.SupplierId
             };
 
-            var result = await _productService.CreateAsync(dto, currentUserId);
+            var result = await _productService.CreateAsync(dto, _currentUser.UserId!);
 
             if (!result.Success)
             {
@@ -121,23 +119,12 @@ namespace ERPLite.Web.Controllers.Inventory
                 return RedirectToAction(nameof(Index));
             }
 
-            var viewModel = new ProductFormViewModel
-            {
-                Id = result.Data.Id,
-                Name = result.Data.Name,
-                Price = result.Data.Price,
-                QuantityInStock = result.Data.QuantityInStock,
-                MinStockLevel = result.Data.MinStockLevel,
-                CategoryId = result.Data.CategoryId,
-                SupplierId = result.Data.SupplierId,
-                IsEditMode = true
-            };
-
+            var viewModel = _mapper.Map<ProductFormViewModel>(result.Data);
             await PopulateDropdownsAsync(viewModel);
             return View(viewModel);
         }
 
-        // POST: /Products/Edit/{id}
+        // POST: /Products/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "AdminOnly")]
@@ -149,7 +136,6 @@ namespace ERPLite.Web.Controllers.Inventory
                 return View(viewModel);
             }
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             var dto = new UpdateProductDto
             {
                 Id = viewModel.Id,
@@ -161,7 +147,7 @@ namespace ERPLite.Web.Controllers.Inventory
                 SupplierId = viewModel.SupplierId
             };
 
-            var result = await _productService.UpdateAsync(dto, currentUserId);
+            var result = await _productService.UpdateAsync(dto, _currentUser.UserId!);
 
             if (!result.Success)
             {
@@ -180,18 +166,10 @@ namespace ERPLite.Web.Controllers.Inventory
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Delete(int id)
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var result = await _productService.DeleteAsync(id, currentUserId);
-
-            if (!result.Success)
-                TempData["Error"] = result.Message;
-            else
-                TempData["Success"] = result.Message;
-
+            var result = await _productService.DeleteAsync(id, _currentUser.UserId!);
+            TempData[result.Success ? "Success" : "Error"] = result.Message;
             return RedirectToAction(nameof(Index));
         }
-
-        #endregion
 
         private async Task PopulateDropdownsAsync(ProductFormViewModel viewModel)
         {

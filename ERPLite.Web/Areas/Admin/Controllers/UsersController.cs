@@ -1,31 +1,36 @@
-﻿using ERPLite.Services.DTOs.HR;
+﻿using AutoMapper;
+using ERPLite.Services.DTOs.HR;
 using ERPLite.Services.DTOs.Users;
-using ERPLite.Services.Interfaces.Auth;
+using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.HR;
-using ERPLite.Web.Models.Users;
+using ERPLite.Services.Interfaces.Users;
+using ERPLite.Shared.Helpers;
+using ERPLite.Web.Areas.Admin.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Security.Claims;
 
-namespace ERPLite.Web.Areas.Admin.Controllers 
+namespace ERPLite.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")] 
-    [Authorize(Policy = "AdminOnly")]
+    [Area("Admin")]
+    [Authorize(Policy = "AdminOnly")] 
     public class UsersController : Controller
     {
         private readonly IUserService _userService;
         private readonly IDepartmentService _departmentService;
         private readonly IEmployeeService _employeeService;
+        private readonly IMapper _mapper;
 
         public UsersController(
             IUserService userService,
             IDepartmentService departmentService,
-            IEmployeeService employeeService)
+            IEmployeeService employeeService,
+            IMapper mapper)
         {
             _userService = userService;
             _departmentService = departmentService;
             _employeeService = employeeService;
+            _mapper = mapper;
         }
 
         // GET: /Admin/Users
@@ -42,14 +47,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
             var viewModel = new UserIndexViewModel
             {
                 SearchTerm = search,
-                Users = (result.Data ?? Enumerable.Empty<UserDto>()).Select(user => new UserListViewModel
-                {
-                    Id = user.UserId,
-                    FullName = user.FullName,
-                    Email = user.Email,
-                    Role = user.Role,
-                    IsLocked = user.IsLocked
-                }).ToList()
+                Users = _mapper.Map<List<UserListViewModel>>(result.Data ?? Enumerable.Empty<UserDto>())
             };
 
             return View(viewModel);
@@ -78,22 +76,13 @@ namespace ERPLite.Web.Areas.Admin.Controllers
 
             if (!model.IsEmployee)
             {
-                ModelState.AddModelError(string.Empty, "External standalone users portal is under development. Please check 'Is Internal Employee'.");
+                ModelState.AddModelError(string.Empty, "External standard portals are under maintenance. Standalone users must be flagged as internal employees.");
                 model.DepartmentList = await GetDepartmentSelectListAsync();
                 return View(model);
             }
 
-            var dto = new CreateUserDto
-            {
-                FullName = model.FullName,
-                Email = model.Email,
-                Password = model.Password,
-                Role = model.Role,
-                Salary = model.Salary,
-                DepartmentId = model.DepartmentId
-            };
-
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var dto = _mapper.Map<CreateUserDto>(model);
+            var currentUserId = User.GetUserId() ?? string.Empty;
             var result = await _userService.CreateUserAsync(dto, currentUserId);
 
             if (!result.Success)
@@ -128,8 +117,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-
+            var currentUserId = User.GetUserId() ?? string.Empty;
             var result = await _userService.GrantAccessToExistingEmployeeAsync(
                 model.EmployeeId,
                 model.Password,
@@ -153,11 +141,11 @@ namespace ERPLite.Web.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Lock(string id)
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var currentUserId = User.GetUserId() ?? string.Empty;
 
             if (id == currentUserId)
             {
-                TempData["ErrorMessage"] = "Self-lockout protective block triggered. You cannot lock yourself.";
+                TempData["ErrorMessage"] = "Self-lockout protective block triggered. You cannot suspend your own admin session.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -172,7 +160,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Unlock(string id)
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var currentUserId = User.GetUserId() ?? string.Empty;
             var result = await _userService.UnlockUserAsync(id, currentUserId);
 
             if (!result.Success) TempData["ErrorMessage"] = result.Message;
@@ -207,14 +195,22 @@ namespace ERPLite.Web.Areas.Admin.Controllers
 
             if (!ModelState.IsValid) return View(model);
 
-            var dto = new UpdateUserRoleDto
-            {
-                UserId = model.UserId,
-                Role = model.Role
-            };
+            var currentUserId = User.GetUserId() ?? string.Empty;
+            ServiceResult result;
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-            var result = await _userService.UpdateUserRoleAsync(dto, currentUserId);
+            if (string.IsNullOrWhiteSpace(model.Role) || model.Role.Equals("None", StringComparison.OrdinalIgnoreCase))
+            {
+                result = await _userService.RemoveUserAccessAsync(model.UserId, currentUserId);
+            }
+            else
+            {
+                var dto = new UpdateUserRoleDto
+                {
+                    UserId = model.UserId,
+                    Role = model.Role
+                };
+                result = await _userService.UpdateUserRoleAsync(dto, currentUserId);
+            }
 
             if (!result.Success)
             {

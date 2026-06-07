@@ -1,22 +1,25 @@
-﻿using ERPLite.Services.DTOs.Inventory;
+﻿using AutoMapper;
+using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.Interfaces.Inventory;
+using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Web.Models.Suppliers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace ERPLite.Web.Controllers.Inventory
 {
-    [Authorize(Policy = "ManagerOnly")]
+    [Authorize(Policy = "RequireManagerOrAdmin")]
     public class SuppliersController : Controller
     {
         private readonly ISupplierService _supplierService;
-        private readonly IProductService _productService;
+        private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUser;
 
-        public SuppliersController(ISupplierService supplierService, IProductService productService)
+        public SuppliersController(ISupplierService supplierService, IMapper mapper, ICurrentUserService currentUser)
         {
             _supplierService = supplierService;
-            _productService = productService;
+            _mapper = mapper;
+            _currentUser = currentUser;
         }
 
         // GET: /Suppliers
@@ -35,12 +38,7 @@ namespace ERPLite.Web.Controllers.Inventory
                 ).ToList();
             }
 
-            var viewModel = new SupplierIndexViewModel
-            {
-                Suppliers = suppliers,
-                SearchTerm = search
-            };
-
+            var viewModel = new SupplierIndexViewModel { Suppliers = suppliers, SearchTerm = search };
             return View(viewModel);
         }
 
@@ -54,29 +52,15 @@ namespace ERPLite.Web.Controllers.Inventory
                 return RedirectToAction(nameof(Index));
             }
 
-            var productsResult = await _productService.GetProductsBySupplierIdAsync(id);
-            var suppliedProducts = productsResult.Data ?? new List<ProductDto>();
-
-            var viewModel = new SupplierDetailsViewModel
-            {
-                Id = result.Data.Id,
-                Name = result.Data.Name,
-                Phone = result.Data.Phone,
-                Address = result.Data.Address,
-                SuppliedProducts = suppliedProducts
-            };
-
+            var viewModel = _mapper.Map<SupplierDetailsViewModel>(result.Data);
             return View(viewModel);
         }
-
-        #region Admin Only - Supply Chain Management
 
         // GET: /Suppliers/Create
         [Authorize(Policy = "AdminOnly")]
         public IActionResult Create()
         {
-            var viewModel = new SupplierFormViewModel { IsEditMode = false };
-            return View(viewModel);
+            return View(new SupplierFormViewModel());
         }
 
         // POST: /Suppliers/Create
@@ -85,18 +69,10 @@ namespace ERPLite.Web.Controllers.Inventory
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Create(SupplierFormViewModel viewModel)
         {
-            if (!ModelState.IsValid)
-                return View(viewModel);
+            if (!ModelState.IsValid) return View(viewModel);
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var dto = new CreateSupplierDto
-            {
-                Name = viewModel.Name,
-                Phone = viewModel.Phone,
-                Address = viewModel.Address
-            };
-
-            var result = await _supplierService.CreateAsync(dto, currentUserId);
+            var dto = new CreateSupplierDto { Name = viewModel.Name, Phone = viewModel.Phone, Address = viewModel.Address };
+            var result = await _supplierService.CreateAsync(dto, _currentUser.UserId!);
 
             if (!result.Success)
             {
@@ -113,21 +89,15 @@ namespace ERPLite.Web.Controllers.Inventory
         public async Task<IActionResult> Edit(int id)
         {
             var result = await _supplierService.GetByIdAsync(id);
-            if (!result.Success || result.Data == null)
-            {
-                TempData["Error"] = "Supplier not found";
-                return RedirectToAction(nameof(Index));
-            }
+            if (!result.Success || result.Data == null) return NotFound();
 
             var viewModel = new SupplierFormViewModel
             {
                 Id = result.Data.Id,
                 Name = result.Data.Name,
                 Phone = result.Data.Phone,
-                Address = result.Data.Address,
-                IsEditMode = true
+                Address = result.Data.Address
             };
-
             return View(viewModel);
         }
 
@@ -137,19 +107,10 @@ namespace ERPLite.Web.Controllers.Inventory
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Edit(SupplierFormViewModel viewModel)
         {
-            if (!ModelState.IsValid)
-                return View(viewModel);
+            if (!ModelState.IsValid) return View(viewModel);
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var dto = new UpdateSupplierDto
-            {
-                Id = viewModel.Id,
-                Name = viewModel.Name,
-                Phone = viewModel.Phone,
-                Address = viewModel.Address
-            };
-
-            var result = await _supplierService.UpdateAsync(dto, currentUserId);
+            var dto = new UpdateSupplierDto { Id = viewModel.Id, Name = viewModel.Name, Phone = viewModel.Phone, Address = viewModel.Address };
+            var result = await _supplierService.UpdateAsync(dto, _currentUser.UserId!);
 
             if (!result.Success)
             {
@@ -167,17 +128,9 @@ namespace ERPLite.Web.Controllers.Inventory
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Delete(int id)
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var result = await _supplierService.DeleteAsync(id, currentUserId);
-
-            if (!result.Success)
-                TempData["Error"] = result.Message;
-            else
-                TempData["Success"] = result.Message;
-
+            var result = await _supplierService.DeleteAsync(id, _currentUser.UserId!);
+            TempData[result.Success ? "Success" : "Error"] = result.Message;
             return RedirectToAction(nameof(Index));
         }
-
-        #endregion
     }
 }

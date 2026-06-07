@@ -4,8 +4,8 @@ using ERPLite.Data.Entities.Identity;
 using ERPLite.Repositories.Interfaces.Common;
 using ERPLite.Services.DTOs.Users;
 using ERPLite.Services.Helpers;
-using ERPLite.Services.Interfaces.Auth;
 using ERPLite.Services.Interfaces.System;
+using ERPLite.Services.Interfaces.Users;
 using ERPLite.Shared.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -80,7 +80,7 @@ namespace ERPLite.Services.Services.Users
             if (departmentExists is null)
                 return ServiceResult.Failed("The specified department unit does not exist.");
 
-            using var transaction = await _unitOfWork.BeginTransactionAsync();
+            await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var employee = new Employee
@@ -104,7 +104,7 @@ namespace ERPLite.Services.Services.Users
 
                 if (!createResult.Succeeded)
                 {
-                    await transaction.RollbackAsync();
+                    await _unitOfWork.RollbackTransactionAsync();
                     return ServiceResult.Failed(string.Join(", ", createResult.Errors.Select(e => e.Description)));
                 }
 
@@ -114,21 +114,21 @@ namespace ERPLite.Services.Services.Users
                 _unitOfWork.Employees.Update(employee);
                 await _unitOfWork.SaveChangesAsync();
 
-                await transaction.CommitAsync();
+                await _unitOfWork.CommitTransactionAsync();
 
                 await _activityLogService.LogAsync(
                     userId: currentUserId,
                     action: "Create",
                     entityName: SystemModules.Users,
                     entityId: employee.Id,
-                    description: $"System synchronization successful: Created account and matching HR Employee profile for '{user.FullName}' within department '{departmentExists.Name}' mapped to role '{dto.Role}'."
+                    description: "Created user account and employee profile."
                 );
 
-                return ServiceResult.Successful("User account and matching Employee profile synchronized successfully with clear financial mapping.");
+                return ServiceResult.Successful("User account and matching Employee profile synchronized successfully.");
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
+                await _unitOfWork.RollbackTransactionAsync();
                 return ServiceResult.Failed($"An error occurred during synchronization: {ex.Message}");
             }
         }
@@ -146,7 +146,7 @@ namespace ERPLite.Services.Services.Users
             if (userExists != null)
                 return ServiceResult.Failed("The email of this employee record is already claimed by another system user.");
 
-            using var transaction = await _unitOfWork.BeginTransactionAsync();
+            await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var newUser = new ApplicationUser
@@ -161,7 +161,7 @@ namespace ERPLite.Services.Services.Users
                 var createResult = await _userManager.CreateAsync(newUser, password);
                 if (!createResult.Succeeded)
                 {
-                    await transaction.RollbackAsync();
+                    await _unitOfWork.RollbackTransactionAsync();
                     return ServiceResult.Failed(string.Join(", ", createResult.Errors.Select(e => e.Description)));
                 }
 
@@ -171,21 +171,21 @@ namespace ERPLite.Services.Services.Users
                 _unitOfWork.Employees.Update(employee);
                 await _unitOfWork.SaveChangesAsync();
 
-                await transaction.CommitAsync();
+                await _unitOfWork.CommitTransactionAsync();
 
                 await _activityLogService.LogAsync(
                     userId: currentUserId,
                     action: "GrantAccess",
                     entityName: SystemModules.Users,
                     entityId: employee.Id,
-                    description: $"Privilege Escalation: Granted login access and mapped system role '{role}' to the existing employee record '{employee.FullName}'."
+                    description: "Granted employee access."
                 );
 
-                return ServiceResult.Successful($"Access permission established successfully. '{employee.FullName}' can now log into the portal.");
+                return ServiceResult.Successful($"Access permission established successfully for '{employee.FullName}'.");
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
+                await _unitOfWork.RollbackTransactionAsync();
                 return ServiceResult.Failed($"An error occurred during the promotion process: {ex.Message}");
             }
         }
@@ -195,49 +195,6 @@ namespace ERPLite.Services.Services.Users
             var user = await _userManager.FindByIdAsync(dto.UserId);
             if (user is null)
                 return ServiceResult.Failed("User not found.");
-
-            if (string.IsNullOrWhiteSpace(dto.Role) || dto.Role.Equals("None", StringComparison.OrdinalIgnoreCase))
-            {
-                using var transaction = await _unitOfWork.BeginTransactionAsync();
-                try
-                {
-                    if (user.EmployeeId.HasValue)
-                    {
-                        var employee = await _unitOfWork.Employees.GetByIdAsync(user.EmployeeId.Value);
-                        if (employee != null)
-                        {
-                            employee.UserId = null; 
-                            _unitOfWork.Employees.Update(employee);
-                            await _unitOfWork.SaveChangesAsync();
-                        }
-                    }
-
-                    var deleteResult = await _userManager.DeleteAsync(user);
-                    if (!deleteResult.Succeeded)
-                    {
-                        await transaction.RollbackAsync();
-                        return ServiceResult.Failed("Failed to delete user login credentials from database.");
-                    }
-
-                    await _unitOfWork.SaveChangesAsync();
-                    await transaction.CommitAsync();
-
-                    await _activityLogService.LogAsync(
-                        userId: currentUserId,
-                        action: "DeleteUserIdentity",
-                        entityName: SystemModules.Users,
-                        entityId: 0,
-                        description: $"Permanently deleted system access account for '{user.FullName}'. Employee record preserved in HR module as offline personnel."
-                    );
-
-                    return ServiceResult.Successful("User account successfully purged. Profile reverted to standard employee.");
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync();
-                    return ServiceResult.Failed($"Error during login identity purge: {ex.Message}");
-                }
-            }
 
             var currentRoles = await _userManager.GetRolesAsync(user);
             if (currentRoles.Any())
@@ -258,10 +215,57 @@ namespace ERPLite.Services.Services.Users
                 action: "UpdateRole",
                 entityName: SystemModules.Users,
                 entityId: 0,
-                description: $"Modified application roles assignment for user '{user.FullName}'. Assigned new role: '{dto.Role}'."
+                description: "Updated user role."
             );
 
             return ServiceResult.Successful("Role updated successfully.");
+        }
+
+        public async Task<ServiceResult> RemoveUserAccessAsync(string userId, string currentUserId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is null)
+                return ServiceResult.Failed("User not found.");
+
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                if (user.EmployeeId.HasValue)
+                {
+                    var employee = await _unitOfWork.Employees.GetByIdAsync(user.EmployeeId.Value);
+                    if (employee != null)
+                    {
+                        employee.UserId = null;
+                        _unitOfWork.Employees.Update(employee);
+                        await _unitOfWork.SaveChangesAsync();
+                    }
+                }
+
+                var deleteResult = await _userManager.DeleteAsync(user);
+                if (!deleteResult.Succeeded)
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                    return ServiceResult.Failed("Failed to delete user login credentials.");
+                }
+
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
+
+                await _activityLogService.LogAsync(
+                    userId: currentUserId,
+                    action: "DeleteUserIdentity",
+                    entityName: SystemModules.Users,
+                    entityId: 0,
+                    description: "Removed user access."
+                );
+
+                return ServiceResult.Successful("User account successfully purged. Profile reverted to standard employee.");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                return ServiceResult.Failed($"Error during login identity purge: {ex.Message}");
+            }
         }
 
         public async Task<ServiceResult> LockUserAsync(string userId, string currentUserId)
@@ -270,15 +274,16 @@ namespace ERPLite.Services.Services.Users
             if (user is null)
                 return ServiceResult.Failed("User not found.");
 
-            user.LockoutEnd = DateTimeOffset.UtcNow.AddYears(100);
-            await _userManager.UpdateAsync(user);
+            var result = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+            if (!result.Succeeded)
+                return ServiceResult.Failed("Failed to lock user account.");
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
                 action: "Lock",
                 entityName: SystemModules.Users,
                 entityId: 0,
-                description: $"Administrative block activated. Locked system user account: '{user.FullName}'."
+                description: "Locked user account."
             );
 
             return ServiceResult.Successful("User locked successfully.");
@@ -290,15 +295,16 @@ namespace ERPLite.Services.Services.Users
             if (user is null)
                 return ServiceResult.Failed("User not found.");
 
-            user.LockoutEnd = null;
-            await _userManager.UpdateAsync(user);
+            var result = await _userManager.SetLockoutEndDateAsync(user, null);
+            if (!result.Succeeded)
+                return ServiceResult.Failed("Failed to unlock user account.");
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
                 action: "Unlock",
                 entityName: SystemModules.Users,
                 entityId: 0,
-                description: $"Administrative block removed. Restored system access to user account: '{user.FullName}'."
+                description: "Unlocked user account."
             );
 
             return ServiceResult.Successful("User unlocked successfully.");
@@ -317,7 +323,6 @@ namespace ERPLite.Services.Services.Users
             }
 
             var users = await query.OrderBy(x => x.FullName).ToListAsync();
-
             var result = new List<UserDto>();
 
             foreach (var user in users)

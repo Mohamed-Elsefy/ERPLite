@@ -1,4 +1,5 @@
-﻿using ERPLite.Data.Entities.Inventory;
+﻿using ERPLite.Data.Context;
+using ERPLite.Data.Entities.Inventory;
 using ERPLite.Repositories.Implementation.Common;
 using ERPLite.Repositories.Interfaces.Inventory;
 using Microsoft.EntityFrameworkCore;
@@ -104,6 +105,13 @@ namespace ERPLite.Repositories.Implementation.Inventory
             return await _dbSet
                 .AsNoTracking() 
                 .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsByIdsAsync(IEnumerable<int> ids)
+        {
+            return await _context.Products
+                .Where(p => ids.Contains(p.Id))
+                .ToListAsync();
         }
     }
 }

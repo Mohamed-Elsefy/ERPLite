@@ -5,6 +5,7 @@ using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Sales;
 using ERPLite.Services.Interfaces.System;
+using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Shared.Constants;
 using ERPLite.Shared.Enums;
 
@@ -16,13 +17,20 @@ namespace ERPLite.Services.Services.Sales
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
         private readonly INotificationService _notificationService;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService, INotificationService notificationService)
+        public OrderService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IActivityLogService activityLogService,
+            INotificationService notificationService,
+            IDateTimeProvider dateTimeProvider)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
             _notificationService = notificationService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<ServiceResult<OrderDto>> GetOrderDetailsAsync(int id)
@@ -39,7 +47,6 @@ namespace ERPLite.Services.Services.Sales
         {
             var orders = await _unitOfWork.Orders.GetRecentOrdersAsync(20);
             var dto = _mapper.Map<IEnumerable<OrderDto>>(orders);
-
             return ServiceResult<IEnumerable<OrderDto>>.Successful(dto);
         }
 
@@ -51,7 +58,6 @@ namespace ERPLite.Services.Services.Sales
 
             var orders = await _unitOfWork.Orders.GetOrdersByCustomerAsync(customerId);
             var dto = _mapper.Map<IEnumerable<OrderDto>>(orders);
-
             return ServiceResult<IEnumerable<OrderDto>>.Successful(dto);
         }
 
@@ -62,7 +68,6 @@ namespace ERPLite.Services.Services.Sales
 
             var orders = await _unitOfWork.Orders.GetOrdersByDateRangeAsync(startDate, endDate);
             var dto = _mapper.Map<IEnumerable<OrderDto>>(orders);
-
             return ServiceResult<IEnumerable<OrderDto>>.Successful(dto);
         }
 
@@ -81,16 +86,19 @@ namespace ERPLite.Services.Services.Sales
             if (dto.Items == null || !dto.Items.Any())
                 return ServiceResult<int>.Failed("Order must contain at least one item.");
 
-            await _unitOfWork.BeginTransactionAsync();
+            var productIds = dto.Items.Select(i => i.ProductId).Distinct().ToList();
+            var products = await _unitOfWork.Products.GetProductsByIdsAsync(productIds);
 
+            await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var order = new Order
                 {
                     CustomerId = dto.CustomerId,
                     CreatedByUserId = dto.CreatedByUserId,
-                    OrderDate = DateTime.UtcNow,
+                    OrderDate = _dateTimeProvider.UtcNow,
                     Status = OrderStatus.Completed,
+                    PaymentStatus = OrderPaymentStatus.Unpaid,
                     TotalPrice = 0
                 };
 
@@ -98,10 +106,11 @@ namespace ERPLite.Services.Services.Sales
                 await _unitOfWork.SaveChangesAsync();
 
                 decimal totalPrice = 0;
+                var orderItems = new List<OrderItem>();
 
                 foreach (var item in dto.Items)
                 {
-                    var product = await _unitOfWork.Products.GetForOrderAsync(item.ProductId);
+                    var product = products.FirstOrDefault(p => p.Id == item.ProductId);
                     if (product == null)
                     {
                         await _unitOfWork.RollbackTransactionAsync();
@@ -126,13 +135,15 @@ namespace ERPLite.Services.Services.Sales
                         SubTotal = subTotal
                     };
 
-                    await _unitOfWork.OrderItems.AddAsync(orderItem);
+                    orderItems.Add(orderItem);
 
                     product.QuantityInStock -= item.Quantity;
                     _unitOfWork.Products.Update(product);
 
                     totalPrice += subTotal;
                 }
+
+                await _unitOfWork.OrderItems.AddRangeAsync(orderItems);
 
                 order.TotalPrice = totalPrice;
                 _unitOfWork.Orders.Update(order);

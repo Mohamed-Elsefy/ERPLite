@@ -1,52 +1,58 @@
 ﻿@model ActivityLogsIndexViewModel
 
 @{
-    ViewData["Title"] = "System Audit Trail Logs";
+    ViewData["Title"] = "System Audit Trail";
 }
 
-<div class="card border-0 shadow-sm rounded-4 bg-white p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+<div class="card border-0 shadow-sm rounded-3 bg-white p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
         <div>
-            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-shield-shaded text-danger me-2"></i>System Security Audit Trail</h4>
-            <p class="text-muted small mb-0">Real-time tracking of corporate state mutations, user sessions, and database commitments.</p>
+            <h5 class="fw-bold text-dark mb-1">
+                <i class="bi bi-shield-shaded text-secondary me-2"></i>System Security Audit Trail
+            </h5>
+            <p class="text-muted small mb-0">Real-time tracking of workspace state mutations, user sessions, and database commitments.</p>
         </div>
-        <span class="badge bg-danger-subtle text-danger border rounded-pill px-3 py-2 font-monospace">SECURE ADMIN AREA</span>
+        <span class="badge rounded-pill px-3 py-1.5 font-monospace fw-medium" style="background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-size: 0.7rem;">
+            SECURE ADMIN AREA
+        </span>
     </div>
+</div>
 
-    <form method="get" asp-area="Admin" asp-controller="ActivityLogs" asp-action="Index" class="row g-3 mb-4 p-3 bg-light rounded-3 border">
-        <div class="col-12 col-md-5">
-            <label class="form-label text-secondary small fw-bold">Operator (User Full Name / ID)</label>
-            <input type="text" name="selectedUser" value="@Model.SelectedUser" class="form-control bg-white rounded-3" placeholder="Search by accountant, manager..." />
-        </div>
-        <div class="col-12 col-md-5">
-            <label class="form-label text-secondary small fw-bold">Target Structural Module Entity</label>
-            <input type="text" name="selectedModule" value="@Model.SelectedModule" class="form-control bg-white rounded-3" placeholder="Payments, Orders, Products..." />
-        </div>
-        <div class="col-12 col-md-2 d-flex align-items-end">
-            <button type="submit" class="btn btn-dark w-100 rounded-pill fw-semibold shadow-sm">
-                <i class="bi bi-filter-square me-1"></i> Filter Node
-            </button>
-        </div>
-    </form>
+<form method="get" asp-area="Admin" asp-controller="ActivityLogs" asp-action="Index" class="row g-3 mb-4 p-3 bg-white rounded-3 border mx-0 shadow-sm" style="border-color: #e2e8f0 !important;">
+    <div class="col-12 col-md-5">
+        <label class="form-label text-muted small fw-medium text-uppercase tracking-wider" style="font-size: 0.65rem;">Operator Identity</label>
+        <input type="text" name="selectedUser" value="@Model.SelectedUser" class="form-control bg-light border-0 small rounded-3" style="font-size: 0.85rem;" placeholder="Search by name or User ID..." />
+    </div>
+    <div class="col-12 col-md-5">
+        <label class="form-label text-muted small fw-medium text-uppercase tracking-wider" style="font-size: 0.65rem;">Target Module Entity</label>
+        <input type="text" name="selectedModule" value="@Model.SelectedModule" class="form-control bg-light border-0 small rounded-3" style="font-size: 0.85rem;" placeholder="Payments, Orders, Products..." />
+    </div>
+    <div class="col-12 col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-sm text-white w-100 rounded-pill fw-medium shadow-none py-2" style="background-color: #475569; font-size: 0.8rem;">
+            <i class="bi bi-filter me-1"></i> Apply Filter
+        </button>
+    </div>
+</form>
 
+<div class="card border-0 shadow-sm rounded-3 bg-white p-4">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
-            <thead class="table-light text-secondary small fw-bold">
+            <thead class="table-light text-muted small fw-semibold" style="background-color: #f8fafc;">
                 <tr>
-                    <th scope="col" class="ps-3">Log Anchor</th>
-                    <th scope="col">Operator Agent</th>
-                    <th scope="col">Module Area</th>
-                    <th scope="col">Committed Action</th>
-                    <th scope="col">Chronology Timestamp</th>
-                    <th scope="col" class="text-end pe-3">Actions Mapping</th>
+                    <th scope="col" class="ps-3 border-0 py-3">Log Anchor</th>
+                    <th scope="col" class="border-0 py-3">Operator Agent</th>
+                    <th scope="col" class="border-0 py-3">Module Area</th>
+                    <th scope="col" class="border-0 py-3">Committed Action</th>
+                    <th scope="col" class="border-0 py-3">Timestamp</th>
+                    <th scope="col" class="text-end pe-3 border-0 py-3">Actions Mapping</th>
                 </tr>
             </thead>
             <tbody>
                 @if (Model.Logs == null || !Model.Logs.Any())
                 {
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-5">
-                            <i class="bi bi-folder-x fs-1 d-block mb-2 text-secondary"></i>No infrastructure log instances captured within selected vector constraints.
+                        <td colspan="6" class="text-center text-muted py-5" style="background-color: #ffffff;">
+                            <i class="bi bi-folder2-open fs-3 d-block mb-2 text-muted opacity-40"></i>No infrastructure log instances captured within constraints.
                         </td>
                     </tr>
                 }
@@ -54,29 +60,38 @@
                 {
                     foreach (var log in Model.Logs)
                     {
-                        <tr>
-                            <td class="ps-3 font-monospace fw-bold text-muted small">
+                        <tr style="border-color: #f8fafc;">
+                            <td class="ps-3 font-monospace fw-semibold text-muted small" style="font-size: 0.75rem;">
                                 TRACE-#@log.Id.ToString("D6")
                             </td>
-                            <td class="fw-semibold text-dark">
-                                <i class="bi bi-person-circle me-1 text-primary"></i> @log.UserFullName
+                            <td class="fw-semibold text-dark small">
+                                <i class="bi bi-person me-1.5 text-muted"></i> @log.UserFullName
                             </td>
                             <td>
-                                <span class="badge bg-secondary-subtle text-dark font-monospace text-uppercase small px-2 py-1 border">
+                                <span class="badge bg-light text-secondary font-monospace text-uppercase small px-2 py-1 border" style="font-size: 0.7rem; border-color: #e2e8f0 !important;">
                                     @log.EntityName
                                 </span>
                             </td>
                             <td>
-                                <span class="badge @(log.Action.ToLower() == "create" ? "bg-success-subtle text-success" : log.Action.ToLower() == "delete" ? "bg-danger-subtle text-danger" : "bg-warning-subtle text-warning") rounded-pill px-2.5 py-1 text-uppercase small">
+                                @{
+                                    var act = log.Action.ToLower();
+                                    var isCreate = act == "create" || act == "insert";
+                                    var isDelete = act == "delete" || act == "remove";
+                                }
+                                <span class="badge rounded-pill px-2.5 py-1 text-uppercase font-monospace fw-medium"
+                                      style="font-size: 0.7rem;
+                                    background-color: @(isCreate ? "#f0fdf4" : isDelete ? "#fef2f2" : "#fffbeb");
+                                    color: @(isCreate ? "#16a34a" : isDelete ? "#dc2626" : "#b45309");
+                                    border: 1px solid @(isCreate ? "#bbf7d0" : isDelete ? "#fecaca" : "#fde68a");">
                                     @log.Action
                                 </span>
                             </td>
-                            <td class="text-muted font-monospace small">
+                            <td class="text-muted font-monospace small" style="font-size: 0.75rem;">
                                 @log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss") UTC
                             </td>
                             <td class="text-end pe-3">
-                                <a asp-area="Admin" asp-action="Details" asp-route-id="@log.Id" class="btn btn-sm btn-outline-dark rounded-pill px-3 fw-semibold">
-                                    <i class="bi bi-file-earmark-medical me-1"></i> Audit Details
+                                <a asp-area="Admin" asp-action="Details" asp-route-id="@log.Id" class="btn btn-sm btn-light border rounded-pill px-3 fw-medium text-dark font-monospace" style="font-size: 0.75rem; border-color: #cbd5e1 !important;">
+                                    <i class="bi bi-search me-1 text-muted"></i> Inspect
                                 </a>
                             </td>
                         </tr>

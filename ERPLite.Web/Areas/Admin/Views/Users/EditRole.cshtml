@@ -1,17 +1,20 @@
 ﻿@model EditUserRoleViewModel
 
 @{
-    ViewData["Title"] = "Alter Authorization Role";
+    ViewData["Title"] = "Modify Role";
 }
 
 <div class="row justify-content-center">
     <div class="col-12 col-md-8 col-lg-5">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
-            <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
-                <i class="bi bi-shield-lock text-primary fs-3 me-2"></i>
+        <div class="card border-0 shadow-sm rounded-3 bg-white p-4">
+
+            <div class="d-flex align-items-center mb-3 pb-3 border-bottom" style="border-color: #f1f5f9 !important;">
+                <div class="p-2.5 rounded-3 me-3" style="background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0;">
+                    <i class="bi bi-shield-lock fs-4"></i>
+                </div>
                 <div>
-                    <h5 class="fw-bold text-dark mb-0">Modify Identity Role Assignment</h5>
-                    <small class="text-muted">Altering the application tier privilege layer for this account.</small>
+                    <h6 class="fw-bold text-dark mb-0">Modify Security Access Role</h6>
+                    <small class="text-muted" style="font-size: 0.75rem;">Adjust the authorization privileges for this account.</small>
                 </div>
             </div>
 
@@ -21,27 +24,27 @@
 
                 <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
-                <div class="mb-4 bg-light p-3 rounded-3 border">
-                    <span class="d-block small text-muted fw-semibold mb-1">Target Identity Profile</span>
-                    <div class="fw-bold text-dark mb-1">@Model.FullName</div>
-                    <div class="small text-secondary"><i class="bi bi-envelope-fill me-1"></i>@Model.Email</div>
+                <div class="mb-4 bg-light p-3 rounded-3 border-0">
+                    <span class="d-block small text-muted fw-semibold text-uppercase tracking-wider mb-1" style="font-size: 0.6rem;">Target Identity</span>
+                    <span class="fw-semibold text-dark small d-block">@Model.FullName</span>
+                    <small class="text-muted font-monospace" style="font-size: 0.75rem;">@Model.Email</small>
                 </div>
 
                 <div class="mb-4">
-                    <label asp-for="Role" class="form-label fw-semibold text-muted small">New System Security Level</label>
-                    <select asp-for="Role" class="form-select rounded-3 fw-semibold border-primary" id="roleSelect" onchange="updateSelectColor(this)">
-                        <option value="None" class="text-danger fw-bold">⚠️ Purge User Account (Keep Offline HR Employee Record)</option>
-                        <option value="Admin">Admin (Full Infrastructure Control)</option>
+                    <label asp-for="Role" class="form-label text-muted small fw-medium">System Permission Level</label>
+                    <select asp-for="Role" class="form-select bg-light border-0 small rounded-3" style="font-size: 0.85rem;" id="roleSelect">
+                        <option value="None">⚠️ Purge Login Account (Preserve Offline HR Records)</option>
+                        <option value="Admin">Admin (Full Control Privilege)</option>
                         <option value="Manager">Manager (Department Supervisor)</option>
-                        <option value="Employee">Employee (Restricted Portal Entry)</option>
+                        <option value="Employee">Employee (Standard Access Entry)</option>
                     </select>
                     <span asp-validation-for="Role" class="text-danger small"></span>
                 </div>
 
-                <div class="d-flex gap-2 justify-content-end border-top pt-3">
-                    <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
-                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">
-                        <i class="bi bi-arrow-repeat me-1"></i> Update Access Layer
+                <div class="d-flex gap-2 justify-content-end border-top pt-3" style="border-color: #f1f5f9 !important;">
+                    <a asp-action="Index" class="btn btn-sm btn-light border rounded-pill px-3 text-dark font-monospace" style="font-size: 0.8rem; border-color: #cbd5e1 !important;">Cancel</a>
+                    <button type="submit" class="btn btn-sm text-white rounded-pill px-3 fw-medium shadow-none" style="background-color: #475569; font-size: 0.8rem;">
+                        Update Access Role
                     </button>
                 </div>
             </form>
@@ -52,31 +55,13 @@
 @section Scripts {
     <partial name="~/Views/Shared/Infrastructure/_ValidationScriptsPartial.cshtml" />
 
-
     <script>
-        function updateSelectColor(select) {
-            if (select.value === "None") {
-                select.classList.remove('text-primary', 'border-primary');
-                select.classList.add('text-danger', 'border-danger');
-            } else {
-                select.classList.remove('text-danger', 'border-danger');
-                select.classList.add('text-primary', 'border-primary');
-            }
-        }
-
         function confirmAction(form) {
             var select = document.getElementById('roleSelect');
             if (select.value === "None") {
-                return confirm("Are you absolutely sure you want to permanently delete this user's login credentials? The account will be purged from the system, and the employee will lose all access.");
+                return confirm("Are you sure you want to completely remove this user's login access credentials? The system profile will be dismantled while retaining basic corporate offline files.");
             }
             return true;
         }
-
-        document.addEventListener("DOMContentLoaded", function() {
-            var selectElement = document.getElementById('roleSelect');
-            if (selectElement) {
-                updateSelectColor(selectElement);
-            }
-        });
     </script>
 }

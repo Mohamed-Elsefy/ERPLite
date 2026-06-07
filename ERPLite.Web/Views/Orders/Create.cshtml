@@ -1,164 +1,188 @@
-﻿@model CreateOrderViewModel
-
+﻿@model ERPLite.Web.Models.Orders.CreateOrderViewModel
 @{
-    ViewData["Title"] = "Establish Sales Order";
+    ViewData["Title"] = "Provision Invoice Ledger";
 }
 
-<form id="orderForm" asp-action="Create" method="post">
-    @Html.AntiForgeryToken()
-    
-    <div class="row">
-        <div class="col-12 col-xl-4 mb-4">
-            <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
-                <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
-                    <i class="bi bi-person-bounding-box text-primary me-2"></i>Entity Selection
-                </h5>
-
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 small border-0 mb-3"></div>
-
-                <div class="mb-4">
-                    <label asp-for="CustomerId" class="form-label text-secondary small fw-bold">Target Customer Profile</label>
-                    <select asp-for="CustomerId" asp-items="Model.Customers" class="form-select bg-light rounded-3">
-                        <option value="">-- Associate Commercial Account --</option>
-                    </select>
-                    <span asp-validation-for="CustomerId" class="text-danger small mt-1 d-block"></span>
-                </div>
-
-                <div class="bg-light rounded-4 p-3 border mb-4">
-                    <small class="text-muted d-block uppercase fw-bold mb-1" style="font-size:0.65rem;">Financial Matrix</small>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-semibold text-secondary">Grand Total:</span>
-                        <h3 class="fw-black text-success mb-0 font-monospace" id="grandTotalDisplay">$0.00</h3>
-                    </div>
-                </div>
-
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary rounded-pill py-2 fw-semibold shadow-sm">
-                        <i class="bi bi-cloud-check-fill me-1"></i>Authorize & Commit Order
-                    </button>
-                    <a asp-action="Index" class="btn btn-light border rounded-pill py-2 fw-semibold btn-sm">Discard Scope</a>
-                </div>
-            </div>
+<div class="card border-0 shadow-sm rounded-4 bg-white p-4 p-sm-5">
+    <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-light">
+        <div class="bg-light border rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px; border-color: #e2e8f0 !important;">
+            <i class="bi bi-file-earmark-plus text-secondary fs-5"></i>
         </div>
-
-        <div class="col-12 col-xl-8 mb-4">
-            <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-                    <div>
-                        <h5 class="fw-bold text-dark mb-0"><i class="bi bi-cart4 text-primary me-2"></i>Line Items Manifest</h5>
-                        <small class="text-muted">Dynamically append stock units and dictate quantity vectors.</small>
-                    </div>
-                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold" onclick="addNewProductRow()">
-                        <i class="bi bi-patch-plus me-1"></i>Append Row
-                    </button>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table align-middle" id="orderItemsTable">
-                        <thead class="table-light small fw-bold text-secondary">
-                            <tr>
-                                <th style="width: 50%;">Product Stock Identifier</th>
-                                <th style="width: 20%;">Price Unit</th>
-                                <th style="width: 15%;">Quantity</th>
-                                <th style="width: 15%;" class="text-end">Subtotal</th>
-                                <th style="width: 5%;"></th>
-                            </tr>
-                        </thead>
-                        <tbody class="border-0">
-                            </tbody>
-                    </table>
-                </div>
-            </div>
+        <div>
+            <h5 class="fw-bold text-dark mb-0">Generate Transaction Invoice</h5>
+            <p class="text-muted small mb-0" style="font-size: 0.75rem;">Select an account holder, map catalogued inventory lines, and evaluate system margins.</p>
         </div>
     </div>
-</form> 
+
+    <form asp-action="Create" method="post" id="orderForm">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly" class="text-danger small mb-4 font-monospace"></div>
+
+        <div class="row mb-4">
+            <div class="col-12 col-md-6 col-lg-5">
+                <label asp-for="CustomerId" class="form-label fw-bold text-secondary text-uppercase mb-1" style="font-size: 0.65rem; letter-spacing: 0.05em;"></label>
+                <select asp-for="CustomerId" asp-items="Model.Customers" class="form-select border rounded-3 bg-white py-2 shadow-none small" style="font-size: 0.85rem;">
+                    <option value="">-- Choose Account Target Entity --</option>
+                </select>
+                <span asp-validation-for="CustomerId" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+            </div>
+        </div>
+
+        <div class="card border rounded-3 bg-light bg-opacity-30 p-3 p-sm-4 mb-4" style="border-color: #e2e8f0 !important;">
+            <h6 class="fw-bold text-dark mb-3 small" style="font-size: 0.85rem;"><i class="bi bi-box-seam me-2 text-muted"></i>Invoice Line Components</h6>
+
+            <div class="row g-2 align-items-end mb-4 bg-white p-3 rounded-3 border" style="border-color: #f1f5f9 !important;">
+                <div class="col-12 col-md-6 col-lg-5">
+                    <label class="form-label text-muted small mb-1" style="font-size: 0.7rem;">Select Warehouse Asset</label>
+                    <select id="productPicker" class="form-select border shadow-none form-control-sm small" style="font-size: 0.8rem;">
+                        <option value="">-- Select Asset Pipeline Code --</option>
+                        @foreach (var p in Model.Products)
+                        {
+                            <option value="@p.Value">@p.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-6 col-md-3 col-lg-2">
+                    <label class="form-label text-muted small mb-1" style="font-size: 0.7rem;">Volume (Qty)</label>
+                    <input type="number" id="quantityPicker" min="1" value="1" class="form-control border shadow-none form-control-sm font-monospace text-center small" style="font-size: 0.8rem;" />
+                </div>
+                <div class="col-6 col-md-3 col-lg-2">
+                    <button type="button" id="btnAddToInvoice" class="btn btn-sm btn-outline-secondary w-100 font-monospace py-1.5" style="font-size: 0.75rem;">
+                        <i class="bi bi-plus-lg me-1"></i> Append Item
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle bg-white rounded-3 border overflow-hidden mb-0" id="itemsTable" style="border-color: #f1f5f9 !important;">
+                    <thead class="table-light text-muted small fw-medium" style="font-size: 0.7rem;">
+                        <tr>
+                            <th scope="col" class="ps-3 py-2.5">Asset Spec</th>
+                            <th scope="col" class="py-2.5">Unit Value</th>
+                            <th scope="col" class="py-2.5">Qty Bound</th>
+                            <th scope="col" class="py-2.5">Subtotal</th>
+                            <th scope="col" class="text-end pe-3 py-2.5">Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceItemsContainer">
+                        <tr id="emptyRowPlaceholder">
+                            <td colspan="5" class="text-center text-muted py-4 small">
+                                <i class="bi bi-basket me-1 opacity-50"></i>No line allocations mapped yet. Use the selector engine above.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center border-top pt-4 border-light gap-3">
+            <div>
+                <span class="text-uppercase text-muted fw-bold d-block mb-1 font-monospace" style="font-size: 0.65rem;">Aggregated Grand Total Valuation</span>
+                <h3 class="fw-bold text-success font-monospace mb-0">$<span id="grandTotalText">0.00</span></h3>
+                <input type="hidden" id="GrandTotal" name="GrandTotal" value="0" />
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-light border rounded-pill px-4 fw-medium small text-secondary">Cancel Ledger</a>
+                <button type="submit" class="btn btn-dark rounded-pill px-4 fw-medium shadow-sm" style="background-color: #475569; font-size: 0.85rem;">
+                    <i class="bi bi-check-circle-fill me-1"></i> Finalize & Post Invoice
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="~/Views/Shared/Infrastructure/_ValidationScriptsPartial.cshtml" />
 
     <script>
-        let rowIndex = 0;
-        const productsCatalog = @Html.Raw(Json.Serialize(ViewBag.ProductsRaw));
+        // مصفوفة جافاسكريبت خام ومسحوبة من الـ ViewBag لتأمين الوصول المباشر للأسعار بدون طلب أياكس إضافي
+        const rawProductsList = @Html.Raw(Json.Serialize(ViewBag.ProductsRaw));
+        let activeLineIndex = 0;
 
-        function addNewProductRow() {
-            let options = '<option value="">-- Choose Stock Entry --</option>';
-            productsCatalog.forEach(p => {
-                options += `<option value="${p.id}">${p.name}</option>`;
-            });
+        document.getElementById('btnAddToInvoice').addEventListener('click', function () {
+            const productSelect = document.getElementById('productPicker');
+            const qtyInput = document.getElementById('quantityPicker');
 
-            let row = `
-            <tr class="item-row">
-                <td>
-                    <select name="Items[${rowIndex}].ProductId" class="form-select product-selector rounded-3" onchange="productSelectionChanged(this)" required>
-                        ${options}
-                    </select>
-                </td>
-                <td>
-                    <input type="text" class="form-control price-display font-monospace bg-light" readonly value="0.00" />
-                </td>
-                <td>
-                    <input name="Items[${rowIndex}].Quantity" type="number" min="1" value="1" class="form-control quantity-input rounded-3 font-monospace" oninput="calculateRowTotals()" required />
-                </td>
-                <td class="text-end fw-bold text-dark font-monospace row-subtotal-display">
-                    $0.00
-                </td>
-                <td class="text-end">
-                    <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeProductRow(this)">
-                        <i class="bi bi-trash3-fill fs-5"></i>
-                    </button>
-                </td>
-            </tr>`;
+            const productId = parseInt(productSelect.value);
+            const quantity = parseInt(qtyInput.value);
 
-            $('#orderItemsTable tbody').append(row);
-            rowIndex++;
-            calculateRowTotals();
-        }
-
-        function productSelectionChanged(selectElement) {
-            const productId = $(selectElement).val();
-            const product = productsCatalog.find(p => p.id == productId);
-            const $row = $(selectElement).closest('tr');
-
-            if (product) {
-                $row.find('.price-display').val(product.price.toFixed(2));
-            } else {
-                $row.find('.price-display').val('0.00');
+            if (!productId || quantity <= 0) {
+                alert('Validation Failure: Select a valid inventory asset node and positive quantity.');
+                return;
             }
-            calculateRowTotals();
-        }
 
-        function removeProductRow(buttonElement) {
-            $(buttonElement).closest('tr').remove();
-            calculateRowTotals();
-            reIndexTableNames();
-        }
+            // العثور على بيانات المنتج المطابق
+            const productData = rawProductsList.find(p => p.id === productId);
+            if (!productData) return;
 
-        function calculateRowTotals() {
-            let grandTotal = 0;
+            // إخفاء عنصر الحجز النصي الفارغ في أول إدخال
+            const placeholder = document.getElementById('emptyRowPlaceholder');
+            if (placeholder) placeholder.remove();
 
-            $('.item-row').each(function() {
-                const price = parseFloat($(this).find('.price-display').val()) || 0;
-                const quantity = parseInt($(this).find('.quantity-input').val()) || 0;
-                const subTotal = price * quantity;
+            const tbodyContainer = document.getElementById('invoiceItemsContainer');
 
-                grandTotal += subTotal;
-                $(this).find('.row-subtotal-display').text('$' + subTotal.toFixed(2));
-            });
+            // توليد الـ HTML المطابق لهيكلية ربط مصفوفات دوت نت الدقيقة Items[i].Property
+            const tableRowHtml = `
+                <tr id="row_${activeLineIndex}" class="invoice-item-row" data-price="${productData.price}" data-qty="${quantity}">
+                    <td class="ps-3 py-2.5">
+                        <span class="fw-medium text-dark small" style="font-size: 0.8rem;">${productData.name}</span>
+                        <input type="hidden" name="Items[${activeLineIndex}].ProductId" value="${productId}" />
+                        <input type="hidden" name="Items[${activeLineIndex}].ProductName" value="${productData.name}" />
+                    </td>
+                    <td class="font-monospace small text-secondary">$${productData.price.toFixed(2)}
+                        <input type="hidden" name="Items[${activeLineIndex}].Price" value="${productData.price}" />
+                    </td>
+                    <td class="font-monospace small text-dark">${quantity}
+                        <input type="hidden" name="Items[${activeLineIndex}].Quantity" value="${quantity}" />
+                    </td>
+                    <td class="font-monospace fw-bold small text-secondary">$${(productData.price * quantity).toFixed(2)}</td>
+                    <td class="text-end pe-3 py-2.5">
+                        <button type="button" class="btn btn-sm btn-link text-danger text-decoration-none p-0" onclick="removeInvoiceLine(${activeLineIndex})">
+                            <i class="bi bi-trash3 small"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
 
-            $('#grandTotalDisplay').text('$' + grandTotal.toFixed(2));
-        }
+            tbodyContainer.insertAdjacentHTML('beforeend', tableRowHtml);
+            activeLineIndex++;
 
-        function reIndexTableNames() {
-            rowIndex = 0;
-            $('.item-row').each(function() {
-                $(this).find('.product-selector').attr('name', `Items[${rowIndex}].ProductId`);
-                $(this).find('.quantity-input').attr('name', `Items[${rowIndex}].Quantity`);
-                rowIndex++;
-            });
-        }
+            // إعادة ضبط حقول الإدخال
+            productSelect.value = '';
+            qtyInput.value = 1;
 
-        $(document).ready(function() {
-            addNewProductRow();
+            recalculateGrandInvoiceTotal();
         });
+
+        function removeInvoiceLine(index) {
+            document.getElementById(`row_${index}`).remove();
+            recalculateGrandInvoiceTotal();
+
+            const tbodyContainer = document.getElementById('invoiceItemsContainer');
+            if (tbodyContainer.children.length === 0) {
+                tbodyContainer.innerHTML = `
+                    <tr id="emptyRowPlaceholder">
+                        <td colspan="5" class="text-center text-muted py-4 small">
+                            <i class="bi bi-basket me-1 opacity-50"></i>No line allocations mapped yet. Use the selector engine above.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function recalculateGrandInvoiceTotal() {
+            let totalSum = 0;
+            const rows = document.querySelectorAll('.invoice-item-row');
+
+            rows.forEach(row => {
+                const price = parseFloat(row.getAttribute('data-price'));
+                const qty = parseInt(row.getAttribute('data-qty'));
+                totalSum += (price * qty);
+            });
+
+            document.getElementById('grandTotalText').innerText = totalSum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('GrandTotal').value = totalSum;
+        }
     </script>
 }

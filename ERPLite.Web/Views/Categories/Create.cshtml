@@ -1,28 +1,46 @@
-﻿@model CategoryFormViewModel
-
+﻿@model ERPLite.Web.Models.Categories.CategoryFormViewModel
 @{
-    ViewData["Title"] = "Add Category";
+    ViewData["Title"] = "Catalog New Category";
 }
 
 <div class="row justify-content-center">
     <div class="col-12 col-md-8 col-lg-6">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 p-sm-5">
 
-            <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
-                <div class="avatar-circle bg-primary-subtle text-primary fw-bold me-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                    <i class="bi bi-tags-fill fs-5"></i>
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-light">
+                <div class="bg-light border rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px; border-color: #e2e8f0 !important;">
+                    <i class="bi bi-folder-plus text-secondary fs-5"></i>
                 </div>
                 <div>
-                    <h5 class="fw-bold text-dark mb-0">Provision New Category</h5>
-                    <small class="text-muted">Configure inventory data segregation and product hierarchy rules.</small>
+                    <h5 class="fw-bold text-dark mb-0">Catalog Asset Category</h5>
+                    <p class="text-muted small mb-0" style="font-size: 0.75rem;">Create a new partitioning asset branch inside the stock architecture.</p>
                 </div>
             </div>
 
             <form asp-action="Create" method="post" autocomplete="off">
                 @Html.AntiForgeryToken()
-                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+                <input asp-for="IsEditMode" type="hidden" />
 
-                <partial name="_CategoryForm" model="Model" />
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3 font-monospace"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Classification Name</label>
+                    <input asp-for="Name" class="form-control border rounded-3 bg-white py-2 shadow-none" style="font-size: 0.85rem;" placeholder="e.g. Industrial Electronics Cluster" />
+                    <span asp-validation-for="Name" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Functional Core Description</label>
+                    <textarea asp-for="Description" class="form-control border rounded-3 bg-white shadow-none p-3" rows="4" style="font-size: 0.85rem;" placeholder="Document specifications, restrictions, or storage mandates governing this classification..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 border-top pt-3 border-light">
+                    <a asp-action="Index" class="btn btn-light border rounded-pill px-4 fw-medium small text-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-dark rounded-pill px-4 fw-medium shadow-sm" style="background-color: #475569; font-size: 0.85rem;">
+                        <i class="bi bi-check-circle-fill me-1"></i> Provision Catalog
+                    </button>
+                </div>
             </form>
         </div>
     </div>

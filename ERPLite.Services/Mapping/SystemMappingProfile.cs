@@ -10,6 +10,8 @@ namespace ERPLite.Services.Mapping
         {
             CreateMap<ActivityLog, ActivityLogDto>()
                 .ForMember(d => d.UserFullName, o => o.MapFrom(s => s.User!.FullName));
+
+            CreateMap<Notification, SystemNotificationDto>();
         }
     }
 }

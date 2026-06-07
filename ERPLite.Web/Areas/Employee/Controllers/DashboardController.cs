@@ -29,7 +29,7 @@ namespace ERPLite.Web.Areas.Employee.Controllers
 
             if (!attendanceResult.Success || attendanceResult.Data == null)
             {
-                ViewData["ErrorMessage"] = attendanceResult.Message ?? "Unable to load attendance data.";
+                ViewData["ErrorMessage"] = attendanceResult.Message ?? "Unable to load workspace attendance metrics.";
                 return View(new EmployeeDashboardViewModel());
             }
 
@@ -42,7 +42,7 @@ namespace ERPLite.Web.Areas.Employee.Controllers
                 RecentAttendances = attendanceResult.Data.OrderByDescending(a => a.Date).Take(10).ToList()
             };
 
-            ViewData["PageTitle"] = "My Portal Dashboard";
+            ViewData["PageTitle"] = "Employee Portal Dashboard";
             return View(vm);
         }
     }

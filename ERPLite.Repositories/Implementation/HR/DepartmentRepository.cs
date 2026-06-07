@@ -7,7 +7,7 @@ namespace ERPLite.Repositories.Implementation.HR
 {
     public class DepartmentRepository : GenericRepository<Department, int>, IDepartmentRepository
     {
-        public DepartmentRepository(AppDbContext context) : base(context)
+        public DepartmentRepository(Data.Context.AppDbContext context) : base(context)
         {
         }
 

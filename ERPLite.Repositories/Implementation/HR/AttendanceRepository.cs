@@ -1,4 +1,5 @@
-﻿using ERPLite.Data.Entities.HR;
+﻿using ERPLite.Data.Context;
+using ERPLite.Data.Entities.HR;
 using ERPLite.Repositories.Implementation.Common;
 using ERPLite.Repositories.Interfaces.HR;
 using Microsoft.EntityFrameworkCore;
@@ -81,12 +82,12 @@ namespace ERPLite.Repositories.Implementation.HR
             var query = _dbSet
                 .AsNoTracking()
                 .Include(a => a.Employee)
-                    .ThenInclude(e => e.Department)
+                    .ThenInclude(e => e!.Department)
                 .Where(a => a.Date >= today && a.Date < tomorrow);
 
             if (departmentId.HasValue)
             {
-                query = query.Where(a => a.Employee.DepartmentId == departmentId.Value);
+                query = query.Where(a => a.Employee!.DepartmentId == departmentId.Value);
             }
 
             return await query.ToListAsync();

@@ -1,49 +1,43 @@
-﻿@model CreateCustomerViewModel
-
+﻿@model ERPLite.Web.Models.Customers.CreateCustomerViewModel
 @{
-    ViewData["Title"] = "Onboard Corporate Customer";
+    ViewData["Title"] = "Onboard Corporate Client";
 }
 
 <div class="row justify-content-center">
     <div class="col-12 col-md-8 col-lg-6">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
-            <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
-                <div class="avatar-circle bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
-                    <i class="bi bi-person-plus-fill fs-4"></i>
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 p-sm-5">
+
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-light">
+                <div class="bg-light border rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px; border-color: #e2e8f0 !important;">
+                    <i class="bi bi-person-fill-add text-secondary fs-5"></i>
                 </div>
                 <div>
                     <h5 class="fw-bold text-dark mb-0">Onboard New Customer</h5>
-                    <small class="text-muted">Provision a new commercial relationship file into the unified ERP node.</small>
+                    <p class="text-muted small mb-0" style="font-size: 0.75rem;">Initialize a new customer account entity within the core sales ecosystem.</p>
                 </div>
             </div>
 
-            <form asp-action="Create" method="post">
+            <form asp-action="Create" method="post" autocomplete="off">
                 @Html.AntiForgeryToken()
 
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 small border-0 mb-3"></div>
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3 font-monospace"></div>
 
                 <div class="mb-3">
-                    <label asp-for="FullName" class="form-label text-secondary small fw-bold">Full Identity Name</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-person"></i></span>
-                        <input asp-for="FullName" class="form-control bg-light border-start-0" placeholder="e.g. Acme Corporation / John Doe" />
-                    </div>
-                    <span asp-validation-for="FullName" class="text-danger small mt-1 d-block"></span>
+                    <label asp-for="FullName" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;"></label>
+                    <input asp-for="FullName" class="form-control border rounded-3 bg-white py-2 shadow-none" style="font-size: 0.85rem;" placeholder="e.g. Johnathan Doe" />
+                    <span asp-validation-for="FullName" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
                 </div>
 
                 <div class="mb-4">
-                    <label asp-for="Phone" class="form-label text-secondary small fw-bold">Phone Telephony Footprint</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-telephone"></i></span>
-                        <input asp-for="Phone" class="form-control bg-light border-start-0" placeholder="e.g. +1 (555) 019-2834" />
-                    </div>
-                    <span asp-validation-for="Phone" class="text-danger small mt-1 d-block"></span>
+                    <label asp-for="Phone" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;"></label>
+                    <input asp-for="Phone" type="tel" class="form-control border rounded-3 bg-white py-2 shadow-none font-monospace" style="font-size: 0.85rem;" placeholder="+1 (555) 019-2834" />
+                    <span asp-validation-for="Phone" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
                 </div>
 
-                <div class="d-flex gap-2 justify-content-end border-top pt-3">
-                    <a asp-action="Index" class="btn btn-light border rounded-pill px-4 fw-semibold btn-sm">Cancel</a>
-                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold btn-sm shadow-sm">
-                        <i class="bi bi-cloud-arrow-up-fill me-1"></i>Commit & Onboard
+                <div class="d-flex justify-content-end gap-2 border-top pt-3 border-light">
+                    <a asp-action="Index" class="btn btn-light border rounded-pill px-4 fw-medium small text-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-dark rounded-pill px-4 fw-medium shadow-sm" style="background-color: #475569; font-size: 0.85rem;">
+                        <i class="bi bi-check-circle-fill me-1"></i> Finalize Onboarding
                     </button>
                 </div>
             </form>

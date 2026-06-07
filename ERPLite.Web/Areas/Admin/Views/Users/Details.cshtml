@@ -1,8 +1,7 @@
 ﻿@model UserDetailsViewModel
 
 @{
-
-    ViewData["Title"] = "Identity Profile Details";
+    ViewData["Title"] = "User Details";
     var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
     var avatarText = !string.IsNullOrEmpty(Model.FullName) && Model.FullName.Length >= 2
         ? Model.FullName.Substring(0, 2).ToUpper()
@@ -14,121 +13,124 @@
 
         <div class="d-flex justify-content-between align-items-center mb-4 pb-2">
             <div>
-                <h4 class="fw-bold text-dark mb-1"><i class="bi bi-person-badge-fill text-primary me-2"></i>Integrated Identity File</h4>
-                <p class="text-muted small mb-0">Cross-referencing system authentication tokens with corporate HR records.</p>
+                <h5 class="fw-bold text-dark mb-1"><i class="bi bi-person-vcard text-secondary me-2"></i>User Profile Ledger</h5>
+                <p class="text-muted small mb-0">Cross-referencing authentication metrics with associated workspace records.</p>
             </div>
-            <a asp-action="Index" class="btn btn-light border rounded-pill px-4 fw-semibold small shadow-sm">
+            <a asp-action="Index" class="btn btn-sm btn-light border rounded-pill px-3 text-dark font-monospace" style="font-size: 0.75rem; border-color: #cbd5e1 !important;">
                 <i class="bi bi-arrow-left me-1"></i> Back to Fleet
             </a>
         </div>
 
         <div class="row g-4">
             <div class="col-12 col-md-7">
-                <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 d-flex flex-column">
-                    <div class="d-flex align-items-center pb-3 border-bottom mb-4">
-                        <div class="avatar-circle bg-primary-subtle text-primary fw-bold rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px; font-size: 1.3rem;">
+                <div class="card border-0 shadow-sm rounded-3 bg-white p-4 h-100 d-flex flex-column">
+                    <div class="d-flex align-items-center pb-3 border-bottom mb-4" style="border-color: #f1f5f9 !important;">
+                        <div class="fw-semibold text-secondary d-flex align-items-center justify-content-center border rounded-3 me-3 font-monospace"
+                             style="width: 52px; height: 52px; background-color: #f8fafc; border-color: #e2e8f0 !important; font-size: 1.1rem;">
                             @avatarText
                         </div>
                         <div>
-                            <h5 class="fw-bold text-dark mb-1">@Model.FullName</h5>
-                            <span class="badge bg-light text-primary border border-primary-subtle rounded-pill px-3 py-1.5 fw-semibold small">
-                                <i class="bi bi-tag-fill me-1"></i>@Model.Role
+                            <h6 class="fw-bold text-dark mb-1">@Model.FullName</h6>
+                            <span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1 font-monospace" style="font-size: 0.7rem; border-color: #e2e8f0 !important;">
+                                @Model.Role
                             </span>
                         </div>
                     </div>
 
-                    <h6 class="fw-bold text-secondary mb-3 small text-uppercase tracking-wider">Security Layer</h6>
+                    <span class="d-block text-muted small fw-semibold text-uppercase tracking-wider mb-3" style="font-size: 0.65rem;">Authentication Metadata</span>
 
                     <div class="mb-3">
-                        <label class="text-muted small d-block mb-1">User Identity ID</label>
-                        <div class="fw-bold text-dark font-monospace p-2 bg-light rounded-3 border text-break small">@Model.UserId</div>
+                        <label class="text-muted small d-block mb-1">User Identifier ID</label>
+                        <div class="font-monospace p-2 bg-light rounded-3 text-secondary border-0 text-break small" style="font-size: 0.8rem;">@Model.UserId</div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="text-muted small d-block mb-1">Login Identifier (Email)</label>
-                        <div class="fw-semibold text-dark p-2 bg-light rounded-3 border">
-                            <i class="bi bi-envelope me-2 text-muted"></i>@Model.Email
+                        <label class="text-muted small d-block mb-1">Email Address</label>
+                        <div class="text-dark p-2 bg-light rounded-3 small border-0" style="font-size: 0.85rem;">
+                            <i class="bi bi-envelope me-1.5 text-muted"></i>@Model.Email
                         </div>
                     </div>
 
                     @if (Model.AccountCreatedAt != DateTime.MinValue)
                     {
                         <div class="mb-4">
-                            <label class="text-muted small d-block mb-1">Provisioned Date</label>
-                            <div class="fw-semibold text-dark p-2 bg-light rounded-3 border">
-                                <i class="bi bi-calendar-plus me-2 text-muted"></i>@Model.AccountCreatedAt.ToString("dd MMMM yyyy, hh:mm tt")
+                            <label class="text-muted small d-block mb-1">Provisioned Timestamp</label>
+                            <div class="text-dark p-2 bg-light rounded-3 small border-0" style="font-size: 0.85rem;">
+                                <i class="bi bi-calendar3 me-1.5 text-muted"></i>@Model.AccountCreatedAt.ToString("yyyy-MM-dd HH:mm:ss") UTC
                             </div>
                         </div>
                     }
 
-                    <div class="mb-4 p-3 bg-primary-subtle border border-primary-subtle rounded-3">
-                        <label class="text-primary-emphasis small d-block mb-1 fw-bold text-uppercase">Account Operational Status</label>
+                    <div class="mb-4 p-3 rounded-3 border" style="background-color: #fafafa; border-color: #e2e8f0 !important;">
+                        <label class="text-muted small d-block mb-1 fw-semibold text-uppercase tracking-wider" style="font-size: 0.65rem;">Operational Status</label>
                         @if (Model.IsLocked)
                         {
-                            <div class="fw-bold text-danger d-flex align-items-center fs-6">
-                                <i class="bi bi-lock-fill me-2"></i> Administrative Block is Active
-                            </div>
+                            <span class="text-danger small fw-semibold d-flex align-items-center">
+                                <i class="bi bi-lock me-1.5"></i> Administrative Suspension Active
+                            </span>
                         }
                         else
                         {
-                            <div class="fw-bold text-success d-flex align-items-center fs-6">
-                                <i class="bi bi-shield-check me-2"></i> Access Clear / Operational
-                            </div>
+                            <span class="text-success small fw-semibold d-flex align-items-center">
+                                <i class="bi bi-check-circle me-1.5"></i> Clear / Active
+                            </span>
                         }
                     </div>
 
-                    <div class="d-flex gap-2 mt-auto pt-3 border-top">
-                        <a asp-action="EditRole" asp-route-id="@Model.UserId" class="btn btn-sm btn-primary rounded-pill px-4 fw-semibold shadow-sm">
-                            <i class="bi bi-shield-shaded me-1"></i> Modify Access Privileges
+                    <div class="d-flex gap-2 mt-auto pt-3 border-top" style="border-color: #f1f5f9 !important;">
+                        <a asp-action="EditRole" asp-route-id="@Model.UserId" class="btn btn-sm btn-light border rounded-pill px-3 font-monospace text-dark" style="font-size: 0.75rem; border-color: #cbd5e1 !important;">
+                            <i class="bi bi-pencil me-1 text-muted"></i> Modify Role
                         </a>
                     </div>
                 </div>
             </div>
 
             <div class="col-12 col-md-5">
-                <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 d-flex flex-column">
-                    <div class="d-flex align-items-center pb-3 border-bottom mb-4">
-                        <i class="bi bi-building text-success fs-3 me-2"></i>
+                <div class="card border-0 shadow-sm rounded-3 bg-white p-4 h-100 d-flex flex-column">
+                    <div class="d-flex align-items-center pb-3 border-bottom mb-4" style="border-color: #f1f5f9 !important;">
+                        <div class="p-2 rounded-3 me-2.5" style="background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0;">
+                            <i class="bi bi-building fs-5"></i>
+                        </div>
                         <div>
-                            <h5 class="fw-bold text-dark mb-0">HR Synchronization</h5>
-                            <small class="text-muted">Active financial database allocations.</small>
+                            <h6 class="fw-bold text-dark mb-0">HR File Linking</h6>
+                            <small class="text-muted" style="font-size: 0.75rem;">Workspace organizational mapping.</small>
                         </div>
                     </div>
 
                     @if (Model.EmployeeId.HasValue)
                     {
-                        <div class="text-center py-3 bg-light rounded-4 border mb-4">
-                            <div class="text-success mb-2"><i class="bi bi-building-check fs-2"></i></div>
-                            <h6 class="fw-bold text-dark mb-1">Active HR File Mapping</h6>
-                            <small class="text-muted font-monospace d-block small">ID: #EMP-@Model.EmployeeId.Value.ToString("D4")</small>
+                        <div class="text-center py-3 bg-light rounded-3 mb-4 border border-light">
+                            <i class="bi bi-link-45deg fs-4 text-muted mb-1 d-block"></i>
+                            <h6 class="text-dark small fw-semibold mb-1">Mapped Employee Profile</h6>
+                            <span class="font-monospace text-muted small" style="font-size: 0.75rem;">ID: #EMP-@Model.EmployeeId.Value.ToString("D4")</span>
                         </div>
 
                         <div class="mb-3">
                             <label class="text-muted small d-block mb-1">Organizational Unit</label>
-                            <span class="badge bg-light text-primary border border-primary-subtle rounded-pill px-3 py-2 fw-semibold w-100 text-start">
-                                <i class="bi bi-building-fill me-2"></i>@Model.DepartmentName
-                            </span>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="text-muted small d-block mb-1">Financial Allocation Rate</label>
-                            <div class="p-2 bg-success-subtle border border-success-subtle rounded-3 text-success fw-bold">
-                                <i class="bi bi-cash-stack me-2"></i>@Model.Salary?.ToString("C2", culture) / Mo
+                            <div class="p-2 bg-light rounded-3 font-monospace text-secondary small" style="font-size: 0.8rem;">
+                                @Model.DepartmentName
                             </div>
                         </div>
 
-                        <div class="d-grid gap-2 mt-auto pt-3 border-top">
-                            <a asp-area="Admin" asp-controller="Employees" asp-action="Details" asp-route-id="@Model.EmployeeId" class="btn btn-outline-success rounded-pill btn-sm fw-semibold">
-                                <i class="bi bi-pencil-square me-1"></i> View HR Profile
+                        <div class="mb-4">
+                            <label class="text-muted small d-block mb-1">Financial Payroll Base</label>
+                            <div class="p-2 rounded-3 font-monospace text-dark small fw-semibold" style="font-size: 0.8rem; background-color: #fafafa; border: 1px solid #e2e8f0;">
+                                @Model.Salary?.ToString("C2", culture) / Mo
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-auto pt-3 border-top" style="border-color: #f1f5f9 !important;">
+                            <a asp-area="Admin" asp-controller="Employees" asp-action="Details" asp-route-id="@Model.EmployeeId" class="btn btn-sm btn-light border rounded-pill fw-medium text-dark font-monospace" style="font-size: 0.75rem; border-color: #cbd5e1 !important;">
+                                Open Full Employee Profile
                             </a>
                         </div>
                     }
                     else
                     {
                         <div class="text-center my-auto py-4">
-                            <div class="text-secondary-subtle mb-3"><i class="bi bi-exclamation-diamond display-6"></i></div>
-                            <h6 class="fw-bold text-dark">No Synchronized HR File</h6>
-                            <p class="text-muted small px-3">This user account exists strictly within the security context and is not tied to a physical corporate employee file.</p>
+                            <i class="bi bi-exclamation-triangle text-muted opacity-40 fs-3 d-block mb-2"></i>
+                            <h6 class="text-dark small fw-semibold mb-1">Unlinked Security Profile</h6>
+                            <p class="text-muted small mb-0 px-2" style="font-size: 0.8rem;">This identity functions purely within the software context and has no bound physical corporate employee records.</p>
                         </div>
                     }
                 </div>

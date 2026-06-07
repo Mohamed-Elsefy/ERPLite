@@ -9,5 +9,7 @@ namespace ERPLite.Services.DTOs.HR
         public string? Description { get; set; }
 
         public int EmployeesCount { get; set; }
+
+        public ICollection<EmployeeDto> Employees { get; set; } = new List<EmployeeDto>();
     }
 }

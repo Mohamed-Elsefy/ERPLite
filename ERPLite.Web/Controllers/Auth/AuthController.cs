@@ -1,37 +1,33 @@
-﻿using ERPLite.Data.Entities.Identity;
-using ERPLite.Shared.Constants;
+﻿using ERPLite.Services.DTOs.Auth;
+using ERPLite.Services.Interfaces.Auth;
+using ERPLite.Shared.Helpers;
 using ERPLite.Web.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ERPLite.Web.Controllers.Auth
 {
     public class AuthController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IAuthenticationService _authService;
 
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AuthController(IAuthenticationService authService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _authService = authService;
         }
-
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Login(string? returnUrl = null)
         {
-            if (_signInManager.IsSignedIn(User))
+            if (await _authService.IsSignedInAsync(User))
             {
-                return await RedirectUserByRole();
+                return RedirectUserByRole();
             }
 
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
-
 
         [HttpPost]
         [AllowAnonymous]
@@ -43,44 +39,38 @@ namespace ERPLite.Web.Controllers.Auth
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
+            var dto = new LoginDto
             {
-                ModelState.AddModelError(string.Empty, "Invalid email or password");
+                Email = model.Email,
+                Password = model.Password,
+                RememberMe = model.RememberMe
+            };
+
+            var result = await _authService.LoginAsync(dto);
+
+            if (!result.Success)
+            {
+                ModelState.AddModelError(string.Empty, result.Message ?? "Invalid email or password");
                 return View(model);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(
-                user.UserName!,
-                model.Password,
-                model.RememberMe,
-                lockoutOnFailure: true);
-
-            if (!result.Succeeded)
-            {
-                ModelState.AddModelError(string.Empty, "Invalid email or password");
-                return View(model);
-            }
-
-            // ReturnUrl Handling
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
 
-            return await RedirectUserByRole();
+            return RedirectUserByRole();
         }
-
 
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
+            var userId = User.GetUserId();
+            await _authService.LogoutAsync(userId ?? string.Empty);
             return RedirectToAction("Login");
         }
-
 
         [HttpGet]
         [AllowAnonymous]
@@ -89,24 +79,15 @@ namespace ERPLite.Web.Controllers.Auth
             return View();
         }
 
-
         [Authorize]
-        public async Task<IActionResult> RedirectUserByRole()
+        public IActionResult RedirectUserByRole()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return RedirectToAction("Login");
-            }
-
-            var roles = await _userManager.GetRolesAsync(user);
-
-            if (roles.Contains(Roles.Admin))
+            if (User.IsAdmin())
             {
                 return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
             }
 
-            if (roles.Contains(Roles.Manager))
+            if (User.IsManager())
             {
                 return RedirectToAction("Index", "Dashboard", new { area = "Manager" });
             }

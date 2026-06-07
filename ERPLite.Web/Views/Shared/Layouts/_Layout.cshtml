@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ERPLite Infrastructure</title>
+    <title>@ViewData["Title"] - ERPLite</title>
 
     <partial name="~/Views/Shared/Infrastructure/_CssLibraries.cshtml" />
 
@@ -11,31 +11,52 @@
             body {
                 font-family: 'Inter', system-ui, -apple-system, sans-serif;
                 letter-spacing: -0.01em;
+                color: #334155; 
+                background-color: #f8fafc;
             }
 
-            .sidebar .nav-link {
-                color: rgba(255, 255, 255, 0.75);
-                transition: all 0.2s ease-in-out;
-                border-radius: 0.375rem;
-                display: flex;
-                align-items: center;
-                padding: 0.625rem 1rem;
+            .sidebar {
+                background-color: #0f172a !important;
+                border-right: 1px solid #1e293b;
             }
 
-                .sidebar .nav-link:hover {
-                    color: #fff;
-                    background-color: rgba(255, 255, 255, 0.08);
+                .sidebar .nav-link {
+                    color: #94a3b8; 
+                    transition: all 0.2s ease-in-out;
+                    border-radius: 0.375rem;
+                    display: flex;
+                    align-items: center;
+                    padding: 0.625rem 1rem;
+                    font-size: 0.9rem;
                 }
 
-                .sidebar .nav-link.active {
-                    color: #0dcaf0 !important; /* text-info */
-                    background-color: rgba(13, 202, 240, 0.15) !important;
-                    font-weight: 600;
-                }
+                    .sidebar .nav-link i {
+                        color: #64748b !important; 
+                        transition: color 0.2s ease-in-out;
+                    }
+
+                    .sidebar .nav-link:hover {
+                        color: #f8fafc;
+                        background-color: rgba(255, 255, 255, 0.05);
+                    }
+
+                        .sidebar .nav-link:hover i {
+                            color: #38bdf8 !important; 
+                        }
+
+                    .sidebar .nav-link.active {
+                        color: #38bdf8 !important; 
+                        background-color: rgba(56, 189, 248, 0.1) !important;
+                        font-weight: 500;
+                    }
+
+                        .sidebar .nav-link.active i {
+                            color: #38bdf8 !important;
+                        }
 
             ::-webkit-scrollbar {
-                width: 6px;
-                height: 6px;
+                width: 5px;
+                height: 5px;
             }
 
             ::-webkit-scrollbar-track {
@@ -44,7 +65,7 @@
 
             ::-webkit-scrollbar-thumb {
                 background: #cbd5e1;
-                border-radius: 4px;
+                border-radius: 10px;
             }
 
                 ::-webkit-scrollbar-thumb:hover {
@@ -72,7 +93,7 @@
     }
     else
     {
-        <div class="min-vh-100 d-flex align-items-center justify-content-center bg-gradient" style="background: #f8fafc;">
+        <div class="min-vh-100 d-flex align-items-center justify-content-center" style="background: #f8fafc;">
             <main class="w-100 py-4">
                 @RenderBody()
             </main>

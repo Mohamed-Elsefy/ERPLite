@@ -6,6 +6,9 @@ using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.HR;
 using ERPLite.Services.Interfaces.System;
 using ERPLite.Shared.Constants;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ERPLite.Services.Services.HR
 {
@@ -26,7 +29,6 @@ namespace ERPLite.Services.Services.HR
         {
             var departments = await _unitOfWork.Departments.GetAllWithEmployeesAsync();
             var result = _mapper.Map<IEnumerable<DepartmentDto>>(departments);
-
             return ServiceResult<IEnumerable<DepartmentDto>>.Successful(result);
         }
 
@@ -37,7 +39,6 @@ namespace ERPLite.Services.Services.HR
                 return ServiceResult<DepartmentDto>.Failed("Department not found.");
 
             var dto = _mapper.Map<DepartmentDto>(department);
-
             return ServiceResult<DepartmentDto>.Successful(dto);
         }
 
