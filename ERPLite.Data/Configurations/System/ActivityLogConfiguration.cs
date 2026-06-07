@@ -4,8 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ERPLite.Data.Configurations.System
 {
-    public class ActivityLogConfiguration
-        : IEntityTypeConfiguration<ActivityLog>
+    public class ActivityLogConfiguration : IEntityTypeConfiguration<ActivityLog>
     {
         public void Configure(EntityTypeBuilder<ActivityLog> builder)
         {
@@ -21,13 +20,17 @@ namespace ERPLite.Data.Configurations.System
                 .HasMaxLength(100)
                 .IsRequired();
 
+            builder.Property(al => al.Description)
+                .HasMaxLength(500)
+                .IsRequired();
+
             builder.Property(al => al.Timestamp)
                 .IsRequired();
 
             builder.HasOne(al => al.User)
                 .WithMany()
                 .HasForeignKey(al => al.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

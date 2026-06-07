@@ -1,0 +1,65 @@
+﻿@model ERPLite.Web.Models.Payments.CreatePaymentViewModel
+@using ERPLite.Shared.Enums
+
+@{
+    ViewData["Title"] = "Issue Remittance Receipt";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+            <div class="text-center border-bottom pb-3 mb-4">
+                <h4 class="fw-black text-dark mb-1">
+                    <i class="bi bi-cash-register text-success me-2"></i>Process Inward Receipt
+                </h4>
+                <p class="text-muted small mb-0">Commit liquid funds inflow against ledger accounts for Order #@Model.OrderId.ToString("D5")</p>
+            </div>
+
+            <div class="alert alert-warning border-0 rounded-4 d-flex justify-content-between align-items-center mb-4">
+                <small class="fw-bold text-dark"><i class="bi bi-exclamation-triangle-fill me-2"></i>Maximum Allowed Allocation Check:</small>
+                <h5 class="fw-black text-danger font-monospace mb-0">@Model.RemainingBalance.ToString("C2")</h5>
+            </div>
+
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <input asp-for="OrderId" type="hidden" />
+                <input asp-for="RemainingBalance" type="hidden" />
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 small border-0 mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Amount" class="form-label text-secondary small fw-bold">Receipt Remitted Value</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted font-monospace">$</span>
+                        <input asp-for="Amount" class="form-control bg-light border-start-0 font-monospace fw-bold text-success text-end rounded-end-3"
+                               type="number" step="0.01" max="@Model.RemainingBalance" placeholder="0.00" />
+                    </div>
+                    <span asp-validation-for="Amount" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="PaymentMethod" class="form-label text-secondary small fw-bold">Remittance Channel Node</label>
+                    <select asp-for="PaymentMethod" class="form-select bg-light rounded-3"
+                            asp-items="Html.GetEnumSelectList<PaymentMethod>()">
+                        <option value="">-- Select Corporate Cash/Bank Flow Node --</option>
+                    </select>
+                    <span asp-validation-for="PaymentMethod" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-success rounded-pill py-2.5 fw-semibold shadow-sm">
+                        <i class="bi bi-shield-check me-1"></i>Commit Remittance & Update Ledger
+                    </button>
+                    <a asp-action="OrderPayments" asp-route-orderId="@Model.OrderId" class="btn btn-light border rounded-pill py-2 small fw-semibold text-muted">
+                        Abort Execution
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="~/Views/Shared/Infrastructure/_ValidationScriptsPartial.cshtml" />
+}

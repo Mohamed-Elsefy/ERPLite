@@ -1,0 +1,64 @@
+﻿@model ERPLite.Web.Models.Products.ProductFormViewModel
+
+<input type="hidden" asp-for="Id" />
+<input type="hidden" asp-for="IsEditMode" />
+
+<div class="row g-3">
+    <div class="col-12">
+        <label asp-for="Name" class="form-label small fw-bold text-secondary text-uppercase" style="font-size: 0.65rem;">Product Asset Title</label>
+        <input asp-for="Name" class="form-control bg-white border shadow-none" placeholder="Enter formal product specification descriptor..." />
+        <span asp-validation-for="Name" class="text-danger small font-monospace" style="font-size: 0.7rem;"></span>
+    </div>
+
+    <div class="col-12 col-md-6">
+        <label asp-for="CategoryId" class="form-label small fw-bold text-secondary text-uppercase" style="font-size: 0.65rem;">Categorical Segment Node</label>
+        <select asp-for="CategoryId" asp-items="Model.CategoriesList" class="form-select bg-white border shadow-none small">
+            <option value="">-- Map Inventory Classification --</option>
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger small font-monospace" style="font-size: 0.7rem;"></span>
+    </div>
+
+    <div class="col-12 col-md-6">
+        <label asp-for="SupplierId" class="form-label small fw-bold text-secondary text-uppercase" style="font-size: 0.65rem;">Procurement Logistics Vendor</label>
+        <select asp-for="SupplierId" asp-items="Model.SuppliersList" class="form-select bg-white border shadow-none small">
+            <option value="">-- Assign Certified Supplier Source --</option>
+        </select>
+        <span asp-validation-for="SupplierId" class="text-danger small font-monospace" style="font-size: 0.7rem;"></span>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <label asp-for="Price" class="form-label small fw-bold text-secondary text-uppercase" style="font-size: 0.65rem;">Unit Asset Valuation</label>
+        <div class="input-group">
+            <span class="input-group-text bg-light text-muted font-monospace py-2" style="font-size: 0.85rem;">$</span>
+            <input asp-for="Price" type="number" step="0.01" class="form-control bg-white border shadow-none font-monospace text-end" placeholder="0.00" />
+        </div>
+        <span asp-validation-for="Price" class="text-danger small font-monospace" style="font-size: 0.7rem;"></span>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <label asp-for="QuantityInStock" class="form-label small fw-bold text-secondary text-uppercase" style="font-size: 0.65rem;">Live Warehouse Volume</label>
+        @if (Model.IsEditMode)
+        {
+            <input asp-for="QuantityInStock" type="number" class="form-control bg-light border shadow-none font-monospace text-center" readonly />
+            <small class="text-muted d-block mt-1" style="font-size: 0.65rem;"><i class="bi bi-info-circle me-1"></i>Adjust stock via official ledger vouchers.</small>
+        }
+        else
+        {
+            <input asp-for="QuantityInStock" type="number" class="form-control bg-white border shadow-none font-monospace text-center" placeholder="0" />
+        }
+        <span asp-validation-for="QuantityInStock" class="text-danger small font-monospace" style="font-size: 0.7rem;"></span>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <label asp-for="MinStockLevel" class="form-label small fw-bold text-secondary text-uppercase" style="font-size: 0.65rem;">Safety Floor Buffer Threshold</label>
+        <input asp-for="MinStockLevel" type="number" class="form-control bg-white border shadow-none font-monospace text-center" placeholder="0" />
+        <span asp-validation-for="MinStockLevel" class="text-danger small font-monospace" style="font-size: 0.7rem;"></span>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end gap-2 border-top pt-4 mt-4">
+    <a asp-action="Index" class="btn btn-light border rounded-pill px-4 fw-medium small text-secondary">Cancel Specifications</a>
+    <button type="submit" class="btn btn-dark rounded-pill px-4 fw-medium shadow-sm" style="background-color: #475569; font-size: 0.85rem;">
+        <i class="bi bi-shield-check me-1"></i> Commit Asset Record
+    </button>
+</div>

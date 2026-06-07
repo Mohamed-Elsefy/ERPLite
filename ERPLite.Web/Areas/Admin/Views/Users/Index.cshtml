@@ -1,0 +1,141 @@
+﻿@model UserIndexViewModel
+
+@{
+    ViewData["Title"] = "User Accounts Management";
+}
+
+<div class="card border-0 shadow-sm rounded-3 bg-white p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="fw-bold text-dark mb-1">
+                <i class="bi bi-person-gear text-secondary me-2"></i>User Access Management
+            </h5>
+            <p class="text-muted small mb-0">Monitor user credentials, modify application authority roles, and enforce system account suspensions.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Promote" class="btn btn-sm btn-light border rounded-pill px-3 fw-medium text-dark font-monospace shadow-none" style="border-color: #cbd5e1 !important; font-size: 0.8rem;">
+                <i class="bi bi-arrow-up-right me-1 text-muted"></i> Link Employee
+            </a>
+            <a asp-action="Create" class="btn btn-sm text-white rounded-pill px-3 fw-medium shadow-none" style="background-color: #475569; font-size: 0.8rem;">
+                <i class="bi bi-plus-lg me-1"></i> Create User Account
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success border-0 rounded-3 small d-flex align-items-center py-2.5 mb-3" role="alert" style="background-color: #f0fdf4; color: #16a34a;">
+        <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger border-0 rounded-3 small d-flex align-items-center py-2.5 mb-3" role="alert" style="background-color: #fef2f2; color: #dc2626;">
+        <i class="bi bi-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+    </div>
+}
+
+<form asp-action="Index" method="get" class="row g-2 mb-4 mx-0 bg-white p-3 border rounded-3 shadow-sm" style="border-color: #e2e8f0 !important;">
+    <div class="col-12 col-md-5 col-lg-4">
+        <div class="input-group">
+            <span class="input-group-text bg-light border-0 text-muted small" style="font-size: 0.85rem;"><i class="bi bi-search"></i></span>
+            <input type="text" name="search" value="@Model.SearchTerm" class="form-control bg-light border-0 small rounded-end-3" style="font-size: 0.85rem;" placeholder="Search by full name or email..." />
+        </div>
+    </div>
+    <div class="col-auto d-flex align-items-center gap-2">
+        <button type="submit" class="btn btn-sm btn-light border rounded-3 px-3 fw-medium text-dark" style="font-size: 0.85rem; border-color: #cbd5e1 !important;">Search</button>
+        @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+        {
+            <a asp-action="Index" class="text-decoration-none text-muted small fst-italic">Clear Filter</a>
+        }
+    </div>
+</form>
+
+<div class="card border-0 shadow-sm rounded-3 bg-white p-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-muted small fw-semibold" style="background-color: #f8fafc;">
+                <tr>
+                    <th scope="col" class="ps-3 border-0 py-3">Identity Profiler</th>
+                    <th scope="col" class="border-0 py-3">Access Role</th>
+                    <th scope="col" class="border-0 py-3">Account State</th>
+                    <th scope="col" class="text-end pe-3 border-0 py-3">Authorization Control</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Users == null || !Model.Users.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-5" style="background-color: #ffffff;">
+                            <i class="bi bi-person-x fs-3 d-block mb-2 text-muted opacity-40"></i>No credentials match current filters.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var user in Model.Users)
+                    {
+                        <tr style="border-color: #f8fafc;">
+                            <td class="ps-3 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="fw-semibold text-secondary d-flex align-items-center justify-content-center border rounded-3 me-3 small font-monospace"
+                                         style="width: 36px; height: 36px; background-color: #f8fafc; border-color: #e2e8f0 !important; font-size: 0.8rem;">
+                                        @user.FullName.Substring(0, Math.Min(2, user.FullName.Length)).ToUpper()
+                                    </div>
+                                    <div>
+                                        <span class="fw-semibold text-dark d-block small">@user.FullName</span>
+                                        <small class="text-muted" style="font-size: 0.75rem;">@user.Email</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-secondary border rounded-pill fw-medium px-2.5 py-1 font-monospace" style="font-size: 0.7rem; border-color: #e2e8f0 !important;">
+                                    @user.Role
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill px-2.5 py-1 fw-medium"
+                                      style="font-size: 0.7rem;
+                                    background-color: @(user.IsLocked ? "#fef2f2" : "#f0fdf4");
+                                    color: @(user.IsLocked ? "#dc2626" : "#16a34a");
+                                    border: 1px solid @(user.IsLocked ? "#fecaca" : "#bbf7d0");">
+                                    <i class="bi @(user.IsLocked ? "bi-lock" : "bi-check-circle") me-1"></i>
+                                    @(user.IsLocked ? "Suspended" : "Active / Clear")
+                                </span>
+                            </td>
+                            <td class="text-end pe-3">
+                                <div class="d-inline-flex gap-2 align-items-center">
+                                    <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-light border rounded-pill px-2.5 font-monospace" style="font-size: 0.75rem; border-color: #cbd5e1 !important;" title="View Ledger">
+                                        <i class="bi bi-eye text-muted"></i>
+                                    </a>
+
+                                    <a asp-action="EditRole" asp-route-id="@user.Id" class="btn btn-sm btn-light border rounded-pill px-3 fw-medium text-dark font-monospace" style="font-size: 0.75rem; border-color: #cbd5e1 !important;">
+                                        Role
+                                    </a>
+
+                                    @if (user.IsLocked)
+                                    {
+                                        <form asp-action="Unlock" asp-route-id="@user.Id" method="post" class="d-inline m-0">
+                                            <button type="submit" class="btn btn-sm btn-light border rounded-pill px-3 fw-medium text-success font-monospace" style="font-size: 0.75rem; border-color: #bbf7d0 !important; background-color: #f0fdf4;">
+                                                Restore
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="Lock" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Suspend this user identity ledger access?');" class="d-inline m-0">
+                                            <button type="submit" class="btn btn-sm btn-light border rounded-pill px-3 fw-medium text-danger font-monospace" style="font-size: 0.75rem; border-color: #fecaca !important; background-color: #fef2f2;">
+                                                Suspend
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

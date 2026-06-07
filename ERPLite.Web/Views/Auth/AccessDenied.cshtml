@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Access Restricted";
+}
+
+<div class="container d-flex flex-column justify-content-center align-items-center min-vh-100" style="padding-bottom: 10%; background-color: #f8fafc;">
+    <div class="row justify-content-center w-100">
+        <div class="col-12 col-md-6 col-lg-5 col-xl-4">
+            <div class="card border border-light shadow-sm text-center p-5 bg-white rounded-3" style="border-color: #e2e8f0 !important;">
+
+                <div class="mb-3 mx-auto d-flex align-items-center justify-content-center border rounded-circle"
+                     style="width: 64px; height: 64px; background-color: #fef2f2; border-color: #fecaca !important; color: #dc2626;">
+                    <i class="bi bi-shield-lock fs-4"></i>
+                </div>
+
+                <h6 class="fw-bold text-dark mb-2">Access Restricted</h6>
+                <p class="text-muted mb-4 small">
+                    Your profile scope does not possess the clearance policy required to pull this resource directory.
+                </p>
+
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <a asp-controller="Auth" asp-action="RedirectUserByRole" class="btn btn-sm text-white px-4 py-2 rounded-pill font-monospace shadow-none" style="background-color: #475569; font-size: 0.75rem;">
+                        <i class="bi bi-speedometer2 me-1"></i> Return to Portal Dashboard
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Auth" asp-action="Login" class="btn btn-sm text-white px-4 py-2 rounded-pill font-monospace shadow-none" style="background-color: #64748b; font-size: 0.75rem;">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Return to Gateway Login
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

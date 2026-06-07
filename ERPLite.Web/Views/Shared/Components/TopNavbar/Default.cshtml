@@ -1,0 +1,35 @@
+﻿@{
+    var roleName = User.IsInRole(Roles.Admin) ? "System Administrator" : User.IsInRole(Roles.Manager) ? "Department Manager" : "Corporate Employee";
+}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white px-4 py-2 shadow-sm border-bottom" style="border-color: #f1f5f9 !important;">
+    <div class="container-fluid px-0">
+
+        <div class="d-flex align-items-center">
+            <span class="navbar-brand mb-0 h6 fw-semibold text-dark border-start border-primary border-3 ps-2 style-title" style="font-size: 0.95rem;">
+                @(ViewData["Title"] ?? "Enterprise Portal")
+            </span>
+        </div>
+
+        <div class="d-flex align-items-center ms-auto gap-3">
+
+            <div class="d-flex align-items-center px-3 py-1 bg-light rounded-pill border border-light shadow-none">
+                <i class="bi bi-person-circle fs-5 text-secondary me-2"></i>
+                <div class="d-flex flex-column align-items-start">
+                    <span class="fw-semibold text-dark leading-none" style="font-size: 0.75rem; line-height: 1;">@User.Identity?.Name</span>
+                    <small class="text-muted font-monospace" style="font-size: 0.6rem; margin-top: 2px;">@roleName</small>
+                </div>
+            </div>
+
+            @await Component.InvokeAsync("NotificationBell")
+
+            <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post" class="m-0" id="logoutForm">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-sm btn-link text-decoration-none text-danger d-flex align-items-center gap-1 rounded-pill px-2.5 py-1 small fw-medium transition-all" style="font-size: 0.8rem;">
+                    <i class="bi bi-box-arrow-right"></i> Sign Out
+                </button>
+            </form>
+
+        </div>
+    </div>
+</nav>

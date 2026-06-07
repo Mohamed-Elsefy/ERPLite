@@ -1,0 +1,122 @@
+﻿@model ERPLite.Web.Models.Categories.CategoryIndexViewModel
+@{
+    var isAdmin = User.IsInRole("Admin");
+    ViewData["Title"] = "Inventory Category Matrix";
+}
+
+<div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 pb-3 border-bottom border-light gap-3">
+        <div>
+            <h5 class="fw-bold text-dark mb-1">
+                <i class="bi bi-tags text-secondary me-2"></i>Inventory Category Matrix
+            </h5>
+            <p class="text-muted small mb-0" style="font-size: 0.75rem;">
+                Define, catalog, and segment stock keeping units (SKUs) based on functional asset classifications.
+            </p>
+        </div>
+        @if (isAdmin)
+        {
+            <a asp-action="Create" class="btn btn-sm btn-dark rounded-pill px-4 fw-medium font-monospace" style="background-color: #475569; font-size: 0.8rem;">
+                <i class="bi bi-plus-circle-fill me-1"></i> Catalog New Category
+            </a>
+        }
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 small mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 small mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <form asp-action="Index" method="get" class="row g-2 mb-4">
+        <div class="col-12 col-md-5 col-lg-4">
+            <div class="input-group border rounded-3" style="border-color: #cbd5e1 !important;">
+                <span class="input-group-text bg-light border-0 text-muted px-3"><i class="bi bi-search small"></i></span>
+                <input type="text" name="search" value="@Model.SearchTerm" class="form-control border-0 bg-white py-2 small shadow-none" placeholder="Search categories..." />
+            </div>
+        </div>
+        <div class="col-auto d-flex align-items-center gap-2">
+            <button type="submit" class="btn btn-light border fw-medium rounded-3 px-3 py-2 small text-secondary" style="font-size: 0.8rem; border-color: #cbd5e1 !important;">Filter</button>
+            @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+            {
+                <a asp-action="Index" class="btn btn-link text-decoration-none text-muted small px-1">Clear</a>
+            }
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-secondary small fw-medium" style="font-size: 0.75rem;">
+                <tr>
+                    <th scope="col" class="ps-3 py-3 text-uppercase tracking-wider">Classification Group</th>
+                    <th scope="col" class="py-3 text-uppercase tracking-wider">Description</th>
+                    <th scope="col" class="text-end pe-3 py-3 text-uppercase tracking-wider">Asset Routing</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Categories == null || !Model.Categories.Any())
+                {
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-5">
+                            <i class="bi bi-tag-fill fs-2 d-block mb-2 opacity-30"></i>No stock classifications registered inside the ledger.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model.Categories)
+                    {
+                        <tr style="border-color: #f1f5f9 !important;">
+                            <td class="ps-3 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light text-secondary rounded-3 d-flex align-items-center justify-content-center border me-3 font-monospace" style="width: 36px; height: 36px; font-size: 0.8rem; border-color: #e2e8f0 !important;">
+                                        <i class="bi bi-folder2-open text-muted"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0 text-dark small" style="font-size: 0.85rem;">@item.Name</h6>
+                                        <small class="text-muted font-monospace" style="font-size: 0.7rem;">CAT-ID: #@item.Id.ToString("D3")</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3 small text-muted">
+                                <span class="d-inline-block text-truncate" style="max-width: 400px;" title="@item.Description">
+                                    @(string.IsNullOrEmpty(item.Description) ? "No contextual description allocated." : item.Description)
+                                </span>
+                            </td>
+                            <td class="text-end pe-3 py-3">
+                                <div class="d-inline-flex gap-2 align-items-center">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-light border rounded-circle d-flex align-items-center justify-content-center" style="width:32px; height:32px; padding:0; border-color: #cbd5e1 !important;" title="Audit Category">
+                                        <i class="bi bi-eye text-secondary" style="font-size: 0.85rem;"></i>
+                                    </a>
+
+                                    @if (isAdmin)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-light border rounded-circle d-flex align-items-center justify-content-center" style="width:32px; height:32px; padding:0; border-color: #cbd5e1 !important;" title="Edit Parameters">
+                                            <i class="bi bi-pencil text-secondary" style="font-size: 0.85rem;"></i>
+                                        </a>
+
+                                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Data Integrity Purge: Confirming complete disposal of this classification group?');" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-light border rounded-circle d-flex align-items-center justify-content-center" style="width:32px; height:32px; padding:0; border-color: #cbd5e1 !important;" title="Purge Classification">
+                                                <i class="bi bi-trash3 text-danger" style="font-size: 0.85rem;"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

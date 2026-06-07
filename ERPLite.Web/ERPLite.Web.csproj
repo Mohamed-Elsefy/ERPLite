@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,47 +7,72 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Admin\Data\**" />
+    <Compile Remove="Areas\Employee\Data\**" />
+    <Compile Remove="Areas\Manager\Data\**" />
+    <Compile Remove="Controllers\AI\**" />
+    <Compile Remove="Filters\**" />
+    <Compile Remove="Models\AI\**" />
+    <Compile Remove="Models\HR\**" />
+    <Compile Remove="Models\Inventory\**" />
+    <Compile Remove="Models\Reports\**" />
+    <Compile Remove="Models\Sales\**" />
+    <Compile Remove="Views\AI\**" />
+    <Compile Remove="Views\HR\**" />
+    <Compile Remove="Views\Inventory\**" />
+    <Compile Remove="Views\Sales\**" />
+    <Content Remove="Areas\Admin\Data\**" />
+    <Content Remove="Areas\Employee\Data\**" />
+    <Content Remove="Areas\Manager\Data\**" />
+    <Content Remove="Controllers\AI\**" />
+    <Content Remove="Filters\**" />
+    <Content Remove="Models\AI\**" />
+    <Content Remove="Models\HR\**" />
+    <Content Remove="Models\Inventory\**" />
+    <Content Remove="Models\Reports\**" />
+    <Content Remove="Models\Sales\**" />
+    <Content Remove="Views\AI\**" />
+    <Content Remove="Views\HR\**" />
+    <Content Remove="Views\Inventory\**" />
+    <Content Remove="Views\Sales\**" />
+    <EmbeddedResource Remove="Areas\Admin\Data\**" />
+    <EmbeddedResource Remove="Areas\Employee\Data\**" />
+    <EmbeddedResource Remove="Areas\Manager\Data\**" />
+    <EmbeddedResource Remove="Controllers\AI\**" />
+    <EmbeddedResource Remove="Filters\**" />
+    <EmbeddedResource Remove="Models\AI\**" />
+    <EmbeddedResource Remove="Models\HR\**" />
+    <EmbeddedResource Remove="Models\Inventory\**" />
+    <EmbeddedResource Remove="Models\Reports\**" />
+    <EmbeddedResource Remove="Models\Sales\**" />
+    <EmbeddedResource Remove="Views\AI\**" />
+    <EmbeddedResource Remove="Views\HR\**" />
+    <EmbeddedResource Remove="Views\Inventory\**" />
+    <EmbeddedResource Remove="Views\Sales\**" />
+    <None Remove="Areas\Admin\Data\**" />
+    <None Remove="Areas\Employee\Data\**" />
+    <None Remove="Areas\Manager\Data\**" />
+    <None Remove="Controllers\AI\**" />
+    <None Remove="Filters\**" />
+    <None Remove="Models\AI\**" />
+    <None Remove="Models\HR\**" />
+    <None Remove="Models\Inventory\**" />
+    <None Remove="Models\Reports\**" />
+    <None Remove="Models\Sales\**" />
+    <None Remove="Views\AI\**" />
+    <None Remove="Views\HR\**" />
+    <None Remove="Views\Inventory\**" />
+    <None Remove="Views\Sales\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ERPLite.Repositories\ERPLite.Repositories.csproj" />
     <ProjectReference Include="..\ERPLite.Services\ERPLite.Services.csproj" />
     <ProjectReference Include="..\ERPLite.Shared\ERPLite.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Controllers\" />
-    <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Areas\Admin\Views\" />
-    <Folder Include="Areas\Employee\Controllers\" />
-    <Folder Include="Areas\Employee\Data\" />
-    <Folder Include="Areas\Employee\Models\" />
-    <Folder Include="Areas\Employee\Views\" />
-    <Folder Include="Areas\Manager\Controllers\" />
-    <Folder Include="Areas\Manager\Data\" />
     <Folder Include="Areas\Manager\Models\" />
-    <Folder Include="Areas\Manager\Views\" />
-    <Folder Include="Controllers\Auth\" />
-    <Folder Include="Controllers\HR\" />
-    <Folder Include="Controllers\Inventory\" />
-    <Folder Include="Controllers\AI\" />
-    <Folder Include="Controllers\Notifications\" />
-    <Folder Include="Controllers\Reports\" />
-    <Folder Include="Controllers\Sales\" />
-    <Folder Include="Areas\" />
-    <Folder Include="Middlewares\" />
-    <Folder Include="Filters\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Helpers\" />
-    <Folder Include="ViewModel\Auth\" />
-    <Folder Include="ViewModel\HR\" />
-    <Folder Include="ViewModel\Inventory\" />
-    <Folder Include="ViewModel\AI\" />
-    <Folder Include="ViewModel\Reports\" />
-    <Folder Include="ViewModel\Sales\" />
-    <Folder Include="Views\AI\" />
-    <Folder Include="Views\Inventory\" />
-    <Folder Include="Views\HR\" />
-    <Folder Include="Views\Auth\" />
-    <Folder Include="Views\Sales\" />
-    <Folder Include="Views\Reports\" />
   </ItemGroup>
 
   <ItemGroup>

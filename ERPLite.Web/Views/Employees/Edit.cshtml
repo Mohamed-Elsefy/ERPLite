@@ -1,0 +1,81 @@
+﻿@model ERPLite.Web.Models.Products.ProductFormViewModel
+@{
+    ViewData["Title"] = "Modify Product Parameters";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-10 col-xl-8">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 p-sm-5">
+
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-light">
+                <div class="bg-warning-subtle text-warning border border-warning-subtle rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                    <i class="bi bi-pencil-square fs-5"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-dark mb-0">Modify Inventory Metadata</h5>
+                    <p class="text-muted small mb-0" style="font-size: 0.75rem;">Adjust procurement prices, volumes, or tracking thresholds for active metrics.</p>
+                </div>
+            </div>
+
+            <form asp-action="Edit" method="post" autocomplete="off">
+                @Html.AntiForgeryToken()
+
+                <input asp-for="Id" type="hidden" />
+                <input asp-for="IsEditMode" type="hidden" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3 font-monospace"></div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <label asp-for="Name" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Product Identifier Name</label>
+                        <input asp-for="Name" class="form-control border rounded-3 bg-white py-2 shadow-none small" style="font-size: 0.85rem;" />
+                        <span asp-validation-for="Name" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label asp-for="CategoryId" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Categorical Classification</label>
+                        <select asp-for="CategoryId" asp-items="Model.CategoriesList" class="form-select border rounded-3 bg-white py-2 shadow-none small" style="font-size: 0.85rem;">
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label asp-for="SupplierId" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Approved Pipeline Supplier</label>
+                        <select asp-for="SupplierId" asp-items="Model.SuppliersList" class="form-select border rounded-3 bg-white py-2 shadow-none small" style="font-size: 0.85rem;">
+                        </select>
+                        <span asp-validation-for="SupplierId" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+                    </div>
+
+                    <div class="col-12 col-md-4 mt-4">
+                        <label asp-for="Price" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Unit Procurement Price ($)</label>
+                        <input asp-for="Price" type="number" step="0.01" class="form-control border rounded-3 bg-white py-2 shadow-none font-monospace small" style="font-size: 0.85rem;" />
+                        <span asp-validation-for="Price" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+                    </div>
+
+                    <div class="col-12 col-md-4 mt-4">
+                        <label asp-for="QuantityInStock" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Current Stock Volume</label>
+                        <input asp-for="QuantityInStock" type="number" class="form-control border rounded-3 bg-white py-2 shadow-none font-monospace small" style="font-size: 0.85rem;" />
+                        <span asp-validation-for="QuantityInStock" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+                    </div>
+
+                    <div class="col-12 col-md-4 mt-4">
+                        <label asp-for="MinStockLevel" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Safety Buffer Threshold</label>
+                        <input asp-for="MinStockLevel" type="number" class="form-control border rounded-3 bg-white py-2 shadow-none font-monospace small" style="font-size: 0.85rem;" />
+                        <span asp-validation-for="MinStockLevel" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 border-top pt-3 border-light">
+                    <a asp-action="Index" class="btn btn-light border rounded-pill px-4 fw-medium small text-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-warning text-white rounded-pill px-4 fw-medium shadow-sm" style="font-size: 0.85rem;">
+                        <i class="bi bi-check-circle-fill me-1"></i> Commit Parameter Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="~/Views/Shared/Infrastructure/_ValidationScriptsPartial.cshtml" />
+}

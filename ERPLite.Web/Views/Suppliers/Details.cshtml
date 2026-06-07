@@ -1,0 +1,131 @@
+﻿@model ERPLite.Web.Models.Suppliers.SupplierDetailsViewModel
+@{
+    var isAdmin = User.IsInRole("Admin");
+    ViewData["Title"] = $"Supplier Profile - {Model.Name}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2">
+    <div>
+        <h5 class="fw-bold text-dark mb-1"><i class="bi bi-building text-secondary me-2"></i>Vendor Operational Profile</h5>
+        <p class="text-muted small mb-0" style="font-size: 0.75rem;">Comprehensive overview of corporate contact nodes and active logistical asset flow.</p>
+    </div>
+    <div>
+        <a asp-action="Index" class="btn btn-sm btn-light border font-monospace text-dark px-3 py-2" style="font-size: 0.75rem; border-color: #cbd5e1 !important;">
+            <i class="bi bi-arrow-left me-1"></i> Back to Directory
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-md-5 col-lg-4">
+        <div class="card border-0 shadow-sm bg-white p-4 rounded-4 h-100 d-flex flex-column">
+            <div class="d-flex align-items-center pb-3 border-bottom mb-4" style="border-color: #f1f5f9 !important;">
+                <div class="d-flex align-items-center justify-content-center border rounded-3 text-secondary font-monospace me-3"
+                     style="width: 44px; height: 44px; background-color: #f8fafc; border-color: #e2e8f0 !important;">
+                    <i class="bi bi-patch-check"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0 small" style="font-size: 0.9rem;">@Model.Name</h6>
+                    <span class="badge bg-light text-secondary border font-monospace mt-1" style="font-size: 0.65rem; border-color: #e2e8f0 !important;">
+                        VND-CODE: #@Model.Id.ToString("D3")
+                    </span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="text-secondary small d-block mb-1 text-uppercase fw-bold tracking-wider" style="font-size: 0.65rem;">Primary Phone Node</label>
+                <div class="fw-medium text-dark font-monospace small"><i class="bi bi-telephone text-muted me-1.5"></i>@Model.Phone</div>
+            </div>
+
+            <div class="mb-4">
+                <label class="text-secondary small d-block mb-1 text-uppercase fw-bold tracking-wider" style="font-size: 0.65rem;">Corporate Headquarters</label>
+                <div class="p-2.5 border rounded-3 text-secondary bg-light small" style="border-color: #e2e8f0 !important;">
+                    <i class="bi bi-geo-alt me-1 text-muted"></i>@(string.IsNullOrWhiteSpace(Model.Address) ? "No physical location registered." : Model.Address)
+                </div>
+            </div>
+
+            <div class="mt-auto">
+                <div class="p-3 rounded-3 border mb-3" style="background-color: #f8fafc; border-color: #e2e8f0 !important;">
+                    <label class="text-muted small d-block mb-1 text-uppercase" style="font-size: 0.65rem;">Active Supplied SKUs</label>
+                    <span class="fs-4 fw-bold font-monospace text-dark">@Model.TotalProductsCount</span> <span class="text-muted small">Active Products</span>
+                </div>
+
+                <div class="p-3 rounded-3 border text-primary" style="background-color: #eff6ff; border-color: #bfdbfe !important;">
+                    <label class="text-primary small d-block mb-1 text-uppercase fw-bold" style="font-size: 0.65rem;">Total Financial Asset Pipeline Valuation</label>
+                    <span class="fs-4 fw-bold font-monospace">$@Model.TotalFinancialVolume.ToString("N2")</span>
+                </div>
+            </div>
+
+            @if (isAdmin)
+            {
+                <div class="pt-3 border-top mt-4" style="border-color: #f1f5f9 !important;">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-light border font-monospace text-dark w-100 py-2" style="font-size: 0.75rem; border-color: #cbd5e1 !important;">
+                        <i class="bi bi-pencil small text-muted me-1"></i>Modify Vendor Metadata
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-12 col-md-7 col-lg-8">
+        <div class="card border-0 shadow-sm bg-white p-4 rounded-4 h-100">
+            <div class="d-flex align-items-center pb-3 border-bottom mb-4" style="border-color: #f1f5f9 !important;">
+                <div class="p-2 rounded-3 me-3 text-secondary border bg-light">
+                    <i class="bi bi-boxes fs-5"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">Catalogued Stock Pipeline</h6>
+                    <small class="text-muted" style="font-size: 0.75rem;">Real-time asset allocations assigned to this profile node.</small>
+                </div>
+            </div>
+
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-muted small fw-medium sticky-top" style="background-color: #f8fafc; font-size: 0.75rem;">
+                        <tr>
+                            <th scope="col" class="ps-2 border-0 py-2.5">SKU Specification</th>
+                            <th scope="col" class="border-0 py-2.5">Purchase Unit Cost</th>
+                            <th scope="col" class="border-0 py-2.5">Stock Volume</th>
+                            <th scope="col" class="text-end pe-2 border-0 py-2.5">Net Asset Valuation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.SuppliedProducts != null && Model.SuppliedProducts.Any())
+                        {
+                            foreach (var product in Model.SuppliedProducts)
+                            {
+                                <tr style="border-color: #f8fafc;">
+                                    <td class="ps-2 py-2.5">
+                                        <div>
+                                            <h6 class="fw-medium mb-0 text-dark small" style="font-size: 0.8rem;">@product.Name</h6>
+                                            <small class="text-muted font-monospace" style="font-size: 0.65rem;">SKU: #@product.Id.ToString("D5")</small>
+                                        </div>
+                                    </td>
+                                    <td class="font-monospace small text-dark" style="font-size: 0.75rem;">
+                                        $@product.Price.ToString("N2")
+                                    </td>
+                                    <td class="py-2.5">
+                                        <span class="badge rounded-pill bg-light text-secondary border px-2.5 py-1 font-monospace" style="font-size: 0.7rem;">
+                                            @product.QuantityInStock Units
+                                        </span>
+                                    </td>
+                                    <td class="text-end pe-2 font-monospace fw-bold text-secondary small" style="font-size: 0.75rem;">
+                                        $@((product.Price * product.QuantityInStock).ToString("N2"))
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-5" style="background-color: #ffffff;">
+                                    <i class="bi bi-box-arrow-down d-block fs-3 mb-2 text-muted opacity-40"></i>No active commercial stock items bound to this profile pipeline.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

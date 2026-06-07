@@ -1,0 +1,53 @@
+﻿@model ERPLite.Web.Models.Categories.CategoryFormViewModel
+@{
+    ViewData["Title"] = "Modify Stock Classification";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 p-sm-5">
+
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-light">
+                <div class="bg-warning-subtle text-warning border border-warning-subtle rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                    <i class="bi bi-pencil-square fs-5"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-dark mb-0">Modify Classification Node</h5>
+                    <p class="text-muted small mb-0" style="font-size: 0.75rem;">Adjust parameters, names, or functional summaries for the active branch.</p>
+                </div>
+            </div>
+
+            <form asp-action="Edit" method="post" autocomplete="off">
+                @Html.AntiForgeryToken()
+
+                <input asp-for="Id" type="hidden" />
+                <input asp-for="IsEditMode" type="hidden" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3 font-monospace"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Classification Name</label>
+                    <input asp-for="Name" class="form-control border rounded-3 bg-white py-2 shadow-none" style="font-size: 0.85rem;" />
+                    <span asp-validation-for="Name" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Functional Core Description</label>
+                    <textarea asp-for="Description" class="form-control border rounded-3 bg-white shadow-none p-3" rows="4" style="font-size: 0.85rem;"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 border-top pt-3 border-light">
+                    <a asp-action="Index" class="btn btn-light border rounded-pill px-4 fw-medium small text-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-warning text-white rounded-pill px-4 fw-medium shadow-sm" style="font-size: 0.85rem;">
+                        <i class="bi bi-check-circle-fill me-1"></i> Commit Parameter Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="~/Views/Shared/Infrastructure/_ValidationScriptsPartial.cshtml" />
+}

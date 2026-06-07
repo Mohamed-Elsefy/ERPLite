@@ -1,0 +1,111 @@
+﻿@model ManagerDashboardViewModel
+
+@{
+    ViewData["Title"] = "Manager Dashboard";
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="card border border-light shadow-sm bg-white p-4 rounded-3" style="border-color: #e2e8f0 !important;">
+            <div class="d-flex align-items-center">
+                <div class="p-2.5 rounded-3 me-3 text-secondary font-monospace" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                    <i class="bi bi-people fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-0 fw-medium small" style="font-size: 0.8rem;">Department Personnel</h6>
+                    <h4 class="fw-bold mb-0 text-dark font-monospace">@Model.Statistics.TotalEmployees</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card border border-light shadow-sm bg-white p-4 rounded-3" style="border-color: #e2e8f0 !important;">
+            <div class="d-flex align-items-center">
+                <div class="p-2.5 rounded-3 me-3 text-secondary font-monospace" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                    <i class="bi bi-cart fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-0 fw-medium small" style="font-size: 0.8rem;">Monitored Sales Pools</h6>
+                    <h4 class="fw-bold mb-0 text-dark font-monospace">@Model.Statistics.TotalOrders</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card border border-light shadow-sm bg-white p-4 rounded-3" style="border-color: #e2e8f0 !important;">
+            <div class="d-flex align-items-center">
+                <div class="p-2.5 rounded-3 me-3 text-secondary font-monospace" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                    <i class="bi bi-building fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-0 fw-medium small" style="font-size: 0.8rem;">Active Departments</h6>
+                    <h4 class="fw-bold mb-0 text-dark font-monospace">@Model.Statistics.TotalDepartments</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-12 col-lg-8">
+        <div class="row g-3">
+            <div class="col-12 col-sm-6">
+                <div class="card shadow-sm border-0 bg-white p-4 rounded-3 border-start border-4" style="border-left-color: #475569 !important;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted small mb-1 fw-semibold text-uppercase tracking-wider" style="font-size: 0.65rem;">Monthly Revenue</h6>
+                            <h4 class="fw-bold mb-0 font-monospace" style="color: #475569;">@Model.Statistics.MonthlyRevenue.ToString("C2")</h4>
+                        </div>
+                        <i class="bi bi-currency-dollar text-muted opacity-40 fs-3"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6">
+                <div class="card shadow-sm border-0 bg-white p-4 rounded-3 border-start border-4" style="border-left-color: #64748b !important;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted small mb-1 fw-semibold text-uppercase tracking-wider" style="font-size: 0.65rem;">Monthly Total Orders</h6>
+                            <h4 class="fw-bold mb-0 font-monospace" style="color: #64748b;">@Model.Statistics.NewOrdersThisMonth</h4>
+                        </div>
+                        <i class="bi bi-receipt text-muted opacity-40 fs-3"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="p-3 rounded-3 border border-light" style="background-color: #f8fafc; border-color: #e2e8f0 !important;">
+                    <div class="small text-secondary d-flex align-items-center">
+                        <i class="bi bi-info-circle me-2 text-secondary"></i>
+                        <span>Operational Metric: This month recorded <strong class="text-dark font-monospace">@Model.Statistics.NewCustomersThisMonth</strong> new active consumer logs inside the directory systems.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-3 bg-white p-4 h-100 d-flex flex-column">
+            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-box-seam text-secondary me-2"></i>Inventory Parameters</h6>
+
+            <div class="row w-100 text-center mb-3 g-0 bg-light rounded-3 py-2 mx-auto">
+                <div class="col-6 border-end" style="border-color: #e2e8f0 !important;">
+                    <h5 class="fw-bold mb-0 text-secondary font-monospace">@Model.Statistics.LowStockProducts</h5>
+                    <span class="text-muted small" style="font-size: 0.75rem;">Low Threshold</span>
+                </div>
+                <div class="col-6">
+                    <h5 class="fw-bold mb-0 text-danger font-monospace">@Model.Statistics.OutOfStockProducts</h5>
+                    <span class="text-muted small" style="font-size: 0.75rem;">Depleted</span>
+                </div>
+            </div>
+
+            <p class="text-muted small text-center mb-4" style="font-size: 0.75rem;">Procurement reviews are recommended to stabilize stock lifecycles.</p>
+
+            <a asp-area="Manager" asp-controller="Products" asp-action="Index" class="btn btn-sm btn-light border rounded-pill w-100 mt-auto py-2 font-monospace text-dark" style="font-size: 0.75rem; border-color: #cbd5e1 !important;">
+                Open Stock Registry
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,79 @@
+﻿@model LoginViewModel
+
+@{
+    ViewData["Title"] = "Account Authentication";
+}
+
+<div class="container d-flex flex-column justify-content-center align-items-center min-vh-100" style="padding-bottom: 8%; background-color: #f8fafc;">
+    <div class="row justify-content-center w-100">
+        <div class="col-12 col-sm-10 col-md-7 col-lg-5 col-xl-4">
+
+            <div class="text-center mb-4">
+                <h4 class="fw-bold text-dark d-flex align-items-center justify-content-center mb-1">
+                    <i class="bi bi-layers text-secondary me-2 fs-4"></i>ERPLite
+                </h4>
+                <p class="text-muted small" style="font-size: 0.75rem;">Enterprise Resource Planning Portal</p>
+            </div>
+
+            <div class="card border border-light shadow-sm bg-white rounded-3" style="border-color: #e2e8f0 !important;">
+                <div class="card-body p-4 p-sm-5">
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-dark mb-1">Secure Area Sign In</h6>
+                        <p class="text-muted small mb-0">Please authenticate your account credentials to continue.</p>
+                    </div>
+
+                    <form asp-controller="Auth" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" autocomplete="off" class="m-0">
+                        @Html.AntiForgeryToken()
+
+                        @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty] != null)
+                        {
+                            <div class="alert border-0 rounded-3 small py-2 mb-3 font-monospace" style="background-color: #fef2f2; color: #dc2626; font-size: 0.75rem;">
+                                <i class="bi bi-exclamation-circle me-1"></i> <span asp-validation-summary="ModelOnly"></span>
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-medium text-secondary small text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Email Address</label>
+                            <div class="input-group border rounded-3" style="border-color: #cbd5e1 !important; overflow: hidden;">
+                                <span class="input-group-text bg-light border-0 text-muted px-3"><i class="bi bi-envelope small"></i></span>
+                                <input asp-for="Email" class="form-control border-0 bg-white py-2.5 small font-monospace shadow-none" style="font-size: 0.85rem;" placeholder="name@company.com" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger font-monospace mt-1 d-block" style="font-size: 0.7rem;"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label fw-medium text-secondary small text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Password</label>
+                            <div class="input-group border rounded-3" style="border-color: #cbd5e1 !important; overflow: hidden;">
+                                <span class="input-group-text bg-light border-0 text-muted px-3"><i class="bi bi-lock small"></i></span>
+                                <input asp-for="Password" type="password" class="form-control border-0 bg-white py-2.5 small font-monospace shadow-none" style="font-size: 0.85rem;" placeholder="••••••••" />
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger font-monospace mt-1 d-block" style="font-size: 0.7rem;"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check d-flex align-items-center">
+                                <input asp-for="RememberMe" class="form-check-input shadow-none rounded border-secondary-subtle" style="width: 14px; height: 14px;" />
+                                <label asp-for="RememberMe" class="form-check-label text-muted small ms-2" style="font-size: 0.75rem;">
+                                    Remember me on this device
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn text-white w-100 py-2.5 fw-medium rounded-pill shadow-none font-monospace" style="background-color: #475569; font-size: 0.8rem;">
+                            Establish Connection <i class="bi bi-chevron-right ms-1" style="font-size: 0.7rem;"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-4 small text-muted font-monospace" style="font-size: 0.7rem;">
+                Secured Workspace Environment &copy; 2026
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <partial name="~/Views/Shared/Infrastructure/_ValidationScriptsPartial.cshtml" />
+}

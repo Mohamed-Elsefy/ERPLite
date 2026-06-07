@@ -4,8 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ERPLite.Data.Configurations.Sales
 {
-    public class PaymentConfiguration
-        : IEntityTypeConfiguration<Payment>
+    public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
     {
         public void Configure(EntityTypeBuilder<Payment> builder)
         {
@@ -18,10 +17,12 @@ namespace ERPLite.Data.Configurations.Sales
                 .IsRequired();
 
             builder.Property(p => p.PaymentMethod)
+                .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();
 
             builder.Property(p => p.Status)
+                .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();
 

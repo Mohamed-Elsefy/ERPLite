@@ -1,6 +1,8 @@
-﻿namespace ERPLite.Data.Entities.Inventory
+﻿using ERPLite.Data.Constants;
+
+namespace ERPLite.Data.Entities.Inventory
 {
-    public class Category
+    public class Category : ISoftDeletable
     {
         public int Id { get; set; }
 

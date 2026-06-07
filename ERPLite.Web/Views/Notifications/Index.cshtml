@@ -1,0 +1,84 @@
+﻿@model IEnumerable<ERPLite.Services.DTOs.System.SystemNotificationDto>
+@{
+    ViewData["Title"] = "System Notifications Hub";
+}
+
+<div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-light">
+        <div>
+            <h5 class="fw-bold text-dark mb-1">
+                <i class="bi bi-bell text-secondary me-2"></i>System Notifications Hub
+            </h5>
+            <p class="text-muted small mb-0" style="font-size: 0.75rem;">
+                Central communication vectors dispatched by system processes and background audits.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-secondary small fw-medium" style="font-size: 0.75rem;">
+                <tr>
+                    <th scope="col" class="ps-3 py-3 text-uppercase tracking-wider">Status</th>
+                    <th scope="col" class="py-3 text-uppercase tracking-wider">Context</th>
+                    <th scope="col" class="py-3 text-uppercase tracking-wider">Domain</th>
+                    <th scope="col" class="py-3 text-uppercase tracking-wider">Dispatched</th>
+                    <th scope="col" class="text-end pe-3 py-3 text-uppercase tracking-wider">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-5 small">
+                            <i class="bi bi-bell-slash fs-2 d-block mb-2 opacity-50"></i>No pending communications found.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var alert in Model)
+                    {
+                        <tr class="@(!alert.IsRead ? "bg-primary-subtle bg-opacity-25 fw-bold" : "")" style="border-color: #f1f5f9 !important;">
+                            <td class="ps-3 py-3">
+                                <span class="badge rounded-circle p-1.5 @(alert.Priority.ToLower() == "urgent" ? "bg-danger" : "bg-secondary")"
+                                      style="display: inline-block; width: 10px; height: 10px; vertical-align: middle;"
+                                      title="Priority: @alert.Priority"></span>
+                            </td>
+                            <td class="py-3">
+                                <div class="text-dark small mb-0" style="font-size: 0.85rem;">@alert.Title</div>
+                                <div class="text-muted small fw-normal" style="font-size: 0.75rem;">@alert.Message</div>
+                            </td>
+                            <td class="py-3">
+                                <span class="badge rounded-pill bg-light text-secondary border font-monospace fw-normal" style="font-size: 0.65rem; border-color: #e2e8f0 !important;">
+                                    @alert.Type
+                                </span>
+                            </td>
+                            <td class="py-3 text-muted font-monospace small fw-normal" style="font-size: 0.75rem;">
+                                @alert.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                            </td>
+                            <td class="text-end pe-3 py-3">
+                                <div class="d-inline-flex gap-1">
+                                    <a asp-action="Details" asp-route-id="@alert.Id" class="btn btn-sm btn-light border rounded-pill px-3 fw-medium text-secondary" style="font-size: 0.75rem;">
+                                        Inspect
+                                    </a>
+
+                                    @if (!alert.IsRead)
+                                    {
+                                        <form asp-action="MarkAsRead" asp-route-id="@alert.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-link text-decoration-none text-muted p-0 ms-2 small fw-normal" title="Mark as read">
+                                                <i class="bi bi-check-all fs-5 text-success"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>

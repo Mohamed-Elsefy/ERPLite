@@ -4,8 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ERPLite.Data.Configurations.HR
 {
-    public class AttendanceConfiguration
-        : IEntityTypeConfiguration<Attendance>
+    public class AttendanceConfiguration : IEntityTypeConfiguration<Attendance>
     {
         public void Configure(EntityTypeBuilder<Attendance> builder)
         {
@@ -14,15 +13,17 @@ namespace ERPLite.Data.Configurations.HR
             builder.HasKey(a => a.Id);
 
             builder.Property(a => a.Status)
+                .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();
 
             builder.HasOne(a => a.Employee)
                 .WithMany(e => e.Attendances)
                 .HasForeignKey(a => a.EmployeeId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasIndex(a => new { a.EmployeeId, a.Date })
+                .HasFilter("[EmployeeId] IS NOT NULL")
                 .IsUnique();
         }
     }

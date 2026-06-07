@@ -1,0 +1,110 @@
+﻿@model ERPLite.Services.DTOs.Inventory.ProductDto
+@{
+    var isAdmin = User.IsInRole("Admin");
+    ViewData["Title"] = $"SKU Audit - {Model.Name}";
+    var totalAssetValuation = Model.Price * Model.QuantityInStock;
+    var isUnderSafetyBuffer = Model.QuantityInStock <= Model.MinStockLevel;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2">
+    <div>
+        <h5 class="fw-bold text-dark mb-1"><i class="bi bi-box-seam text-secondary me-2"></i>Product Master Specification</h5>
+        <p class="text-muted small mb-0" style="font-size: 0.75rem;">Granular physical tracking, procurement valuations, and pipeline parameters.</p>
+    </div>
+    <div>
+        <a asp-action="Index" class="btn btn-sm btn-light border font-monospace text-dark px-3 py-2" style="font-size: 0.75rem; border-color: #cbd5e1 !important;">
+            <i class="bi bi-arrow-left me-1"></i> Back to Ledger
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-md-7 col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
+            <div class="d-flex align-items-center pb-4 border-bottom mb-4" style="border-color: #f1f5f9 !important;">
+                <div class="bg-light border rounded-3 d-flex align-items-center justify-content-center me-3 text-secondary font-monospace fw-bold" style="width: 52px; height: 52px; border-color: #e2e8f0 !important;">
+                    <i class="bi bi-box fs-4 text-muted"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-dark mb-1">@Model.Name</h5>
+                    <span class="badge bg-light text-secondary border font-monospace small" style="font-size: 0.65rem; border-color: #cbd5e1 !important;">SKU-REF: #@Model.Id.ToString("D5")</span>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-12 col-sm-6">
+                    <label class="text-muted small d-block mb-1 text-uppercase fw-bold tracking-wider" style="font-size: 0.6rem;">Categorical Classification</label>
+                    <div class="fw-medium text-dark small" style="font-size: 0.85rem;">
+                        <i class="bi bi-tag me-2 text-muted"></i>@Model.CategoryName
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <label class="text-muted small d-block mb-1 text-uppercase fw-bold tracking-wider" style="font-size: 0.6rem;">Approved Pipeline Supplier</label>
+                    <div class="fw-medium text-dark small" style="font-size: 0.85rem;">
+                        <i class="bi bi-truck me-2 text-muted"></i>@Model.SupplierName
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 mt-4">
+                    <label class="text-muted small d-block mb-1 text-uppercase fw-bold tracking-wider" style="font-size: 0.6rem;">Unit procurement cost</label>
+                    <div class="fw-bold font-monospace text-dark" style="font-size: 1.1rem;">
+                        $@Model.Price.ToString("N2")
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 mt-4">
+                    <label class="text-muted small d-block mb-1 text-uppercase fw-bold tracking-wider" style="font-size: 0.6rem;">Accumulated Financial Asset Valuation</label>
+                    <div class="fw-bold font-monospace text-success" style="font-size: 1.1rem;">
+                        $@totalAssetValuation.ToString("N2")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-5 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 d-flex flex-column">
+            <h6 class="fw-bold text-dark mb-3 small text-uppercase tracking-wider" style="font-size: 0.7rem;">
+                <i class="bi bi-pie-chart me-2 text-secondary"></i>Warehouse Metric Volumetrics
+            </h6>
+
+            @if (isUnderSafetyBuffer)
+            {
+                <div class="alert alert-danger bg-danger-subtle text-danger border-0 small rounded-3 p-3 mb-4 d-flex align-items-center" style="font-size: 0.75rem;">
+                    <i class="bi bi-exclamation-octagon-fill fs-4 me-2.5"></i>
+                    <div>
+                        <span class="fw-bold d-block">Critical Stock Depletion</span>
+                        <span>Inventory level rests at or below the safety buffer. Procurement requisition required.</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success bg-success-subtle text-success border-0 small rounded-3 p-3 mb-4 d-flex align-items-center" style="font-size: 0.75rem;">
+                    <i class="bi bi-shield-check-fill fs-4 me-2.5"></i>
+                    <div>
+                        <span class="fw-bold d-block">Inventory Level Stable</span>
+                        <span>Stock metrics are completely compliant with current corporate safety levels.</span>
+                    </div>
+                </div>
+            }
+
+            <div class="mb-3 p-3 border rounded-3 bg-light" style="border-color: #e2e8f0 !important;">
+                <label class="text-secondary small d-block mb-1 text-uppercase" style="font-size: 0.65rem;">Active Physical Stock</label>
+                <div class="font-monospace fw-bold text-dark fs-4">@Model.QuantityInStock <span class="fs-6 text-muted fw-normal">Units</span></div>
+            </div>
+
+            <div class="mb-0 p-3 border rounded-3 bg-light" style="border-color: #e2e8f0 !important;">
+                <label class="text-secondary small d-block mb-1 text-uppercase" style="font-size: 0.65rem;">Safety Threshold Buffer</label>
+                <div class="font-monospace fw-bold text-secondary fs-5">@Model.MinStockLevel <span class="fs-6 text-muted fw-normal">Units Threshold</span></div>
+            </div>
+
+            @if (isAdmin)
+            {
+                <div class="pt-3 border-top mt-auto">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-light border font-monospace text-dark w-100 py-2" style="font-size: 0.75rem; border-color: #cbd5e1 !important;">
+                        <i class="bi bi-pencil small text-muted me-1"></i>Adjust SKU Parameters
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

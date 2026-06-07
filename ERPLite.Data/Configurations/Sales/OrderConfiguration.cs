@@ -4,8 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ERPLite.Data.Configurations.Sales
 {
-    public class OrderConfiguration
-        : IEntityTypeConfiguration<Order>
+    public class OrderConfiguration : IEntityTypeConfiguration<Order>
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
@@ -18,8 +17,13 @@ namespace ERPLite.Data.Configurations.Sales
                 .IsRequired();
 
             builder.Property(o => o.Status)
+                .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();
+
+            builder.Property(o => o.PaymentStatus)
+                .HasConversion<string>()
+                .HasMaxLength(20);
 
             builder.Property(o => o.OrderDate)
                 .IsRequired();
@@ -29,7 +33,8 @@ namespace ERPLite.Data.Configurations.Sales
             builder.HasOne(o => o.Customer)
                 .WithMany(c => c.Orders)
                 .HasForeignKey(o => o.CustomerId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired(false);
 
             builder.HasOne(o => o.CreatedByUser)
                 .WithMany()

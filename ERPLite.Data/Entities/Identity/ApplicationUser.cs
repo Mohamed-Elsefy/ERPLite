@@ -9,6 +9,8 @@ namespace ERPLite.Data.Entities.Identity
 
         public DateTime CreatedAt { get; set; }
 
+        public int? EmployeeId { get; set; }
+
         public Employee? Employee { get; set; }
     }
 }

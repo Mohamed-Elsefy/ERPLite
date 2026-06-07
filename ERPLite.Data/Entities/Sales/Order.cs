@@ -1,4 +1,5 @@
 ﻿using ERPLite.Data.Entities.Identity;
+using ERPLite.Shared.Enums;
 
 namespace ERPLite.Data.Entities.Sales
 {
@@ -18,10 +19,16 @@ namespace ERPLite.Data.Entities.Sales
 
         public decimal TotalPrice { get; set; }
 
-        public string Status { get; set; } = null!;
+        public OrderStatus Status { get; set; }
+
+        public OrderPaymentStatus PaymentStatus { get; set; } = OrderPaymentStatus.Unpaid;
 
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
+        public decimal PaidAmount => Payments?.Sum(p => p.Amount) ?? 0;
+
+        public decimal RemainingAmount => TotalPrice - PaidAmount;
     }
 }

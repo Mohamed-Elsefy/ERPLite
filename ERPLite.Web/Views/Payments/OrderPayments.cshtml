@@ -1,0 +1,96 @@
+﻿@model OrderFinancialViewModel
+
+@{
+    ViewData["Title"] = $"Financial Audit - ORD-{Model.OrderId}";
+
+    string statusBadgeClass = Model.PaymentStatus switch
+    {
+        OrderPaymentStatus.Paid => "bg-success text-white",
+        OrderPaymentStatus.PartiallyPaid => "bg-warning text-dark",
+        OrderPaymentStatus.Unpaid => "bg-danger text-white",
+        _ => "bg-secondary text-white"
+    };
+}
+
+<div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+    <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+        <div>
+            <span class="text-uppercase font-monospace text-muted small">Invoice Matrix and Exposure Analysis</span>
+            <div class="d-flex align-items-center mt-1">
+                <h4 class="fw-black text-dark mb-0 me-2">Financial Status for Order #@Model.OrderId.ToString("D5")</h4>
+                <span class="badge @statusBadgeClass rounded-pill px-3 py-1 small">@Model.PaymentStatus</span>
+            </div>
+            <p class="mb-0 text-secondary small mt-1">Corporate Client: <strong class="text-dark">@Model.CustomerName</strong></p>
+        </div>
+        <div>
+            @if (Model.RemainingAmount > 0 && (User.IsInRole("Admin") || User.IsInRole("Manager")))
+            {
+                <a asp-action="Create" asp-route-orderId="@Model.OrderId" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm me-2">
+                    <i class="bi bi-cash-register me-1"></i> Collect Payment
+                </a>
+            }
+            <a asp-controller="Orders" asp-action="Details" asp-route-id="@Model.OrderId" class="btn btn-light border rounded-pill px-3 text-secondary fw-semibold">
+                Back to Invoice Details
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12 col-md-4">
+            <div class="bg-light rounded-4 p-3 border border-start-0 border-3 border-primary h-100">
+                <small class="text-muted fw-bold text-uppercase d-block mb-1" style="font-size:0.75rem;">Contracted Total Invoiced</small>
+                <h3 class="fw-black text-dark font-monospace mb-0">@Model.TotalPrice.ToString("C2")</h3>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="bg-success-subtle rounded-4 p-3 border border-start-0 border-3 border-success h-100">
+                <small class="text-success fw-bold text-uppercase d-block mb-1" style="font-size:0.75rem;">Aggregated Capital Received</small>
+                <h3 class="fw-black text-success font-monospace mb-0">@Model.PaidAmount.ToString("C2")</h3>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="bg-danger-subtle rounded-4 p-3 border border-start-0 border-3 border-danger h-100">
+                <small class="text-danger fw-bold text-uppercase d-block mb-1" style="font-size:0.75rem;">Outstanding Ledger Balance (Deficit)</small>
+                <h3 class="fw-black text-danger font-monospace mb-0">@Model.RemainingAmount.ToString("C2")</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+    <h5 class="fw-bold text-dark mb-4"><i class="bi bi-clock-history text-primary me-2"></i>Allocated Remittance Log View</h5>
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light small fw-bold text-secondary">
+                <tr>
+                    <th class="ps-3">Receipt Code</th>
+                    <th>Execution Timestamp</th>
+                    <th>Settlement Node</th>
+                    <th class="text-end pe-3">Net Processed Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Payments.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            No active matching ledger receipts or micro-payments matched this order context.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var p in Model.Payments)
+                    {
+                        <tr>
+                            <td class="ps-3 font-monospace fw-bold text-secondary">RC-#@p.Id.ToString("D6")</td>
+                            <td class="text-muted small">@p.PaymentDate.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td><span class="badge bg-light text-dark border px-3 py-1">@p.PaymentMethod</span></td>
+                            <td class="text-end pe-3 fw-bold text-success font-monospace">@p.Amount.ToString("C2")</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
