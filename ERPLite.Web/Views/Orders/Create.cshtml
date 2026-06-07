@@ -96,7 +96,7 @@
     <partial name="~/Views/Shared/Infrastructure/_ValidationScriptsPartial.cshtml" />
 
     <script>
-        // مصفوفة جافاسكريبت خام ومسحوبة من الـ ViewBag لتأمين الوصول المباشر للأسعار بدون طلب أياكس إضافي
+        // جلب المصفوفة مع مراعاة حالة الأحرف للمتغيرات (دعم الحالتين الصغير والكبير لتجنب الـ undefined)
         const rawProductsList = @Html.Raw(Json.Serialize(ViewBag.ProductsRaw));
         let activeLineIndex = 0;
 
@@ -112,9 +112,12 @@
                 return;
             }
 
-            // العثور على بيانات المنتج المطابق
-            const productData = rawProductsList.find(p => p.id === productId);
+            // العثور على بيانات المنتج مع فحص مرن لحالة الأحرف (id أو Id)
+            const productData = rawProductsList.find(p => (p.id === productId || p.Id === productId));
             if (!productData) return;
+
+            const price = productData.price !== undefined ? productData.price : productData.Price;
+            const name = productData.name !== undefined ? productData.name : productData.Name;
 
             // إخفاء عنصر الحجز النصي الفارغ في أول إدخال
             const placeholder = document.getElementById('emptyRowPlaceholder');
@@ -122,21 +125,22 @@
 
             const tbodyContainer = document.getElementById('invoiceItemsContainer');
 
-            // توليد الـ HTML المطابق لهيكلية ربط مصفوفات دوت نت الدقيقة Items[i].Property
+            // الحل السحري: إضافة حقل الـ Index التوجيهي لضمان وصول التعديلات كاملة لـ دوت نت حتى عند حذف صفوف بالمنتصف
             const tableRowHtml = `
-                <tr id="row_${activeLineIndex}" class="invoice-item-row" data-price="${productData.price}" data-qty="${quantity}">
+                <tr id="row_${activeLineIndex}" class="invoice-item-row" data-price="${price}" data-qty="${quantity}">
                     <td class="ps-3 py-2.5">
-                        <span class="fw-medium text-dark small" style="font-size: 0.8rem;">${productData.name}</span>
+                        <span class="fw-medium text-dark small" style="font-size: 0.8rem;">${name}</span>
+                        <input type="hidden" name="Items.Index" value="${activeLineIndex}" />
                         <input type="hidden" name="Items[${activeLineIndex}].ProductId" value="${productId}" />
-                        <input type="hidden" name="Items[${activeLineIndex}].ProductName" value="${productData.name}" />
+                        <input type="hidden" name="Items[${activeLineIndex}].ProductName" value="${name}" />
                     </td>
-                    <td class="font-monospace small text-secondary">$${productData.price.toFixed(2)}
-                        <input type="hidden" name="Items[${activeLineIndex}].Price" value="${productData.price}" />
+                    <td class="font-monospace small text-secondary">$${price.toFixed(2)}
+                        <input type="hidden" name="Items[${activeLineIndex}].Price" value="${price}" />
                     </td>
                     <td class="font-monospace small text-dark">${quantity}
                         <input type="hidden" name="Items[${activeLineIndex}].Quantity" value="${quantity}" />
                     </td>
-                    <td class="font-monospace fw-bold small text-secondary">$${(productData.price * quantity).toFixed(2)}</td>
+                    <td class="font-monospace fw-bold small text-secondary">$${(price * quantity).toFixed(2)}</td>
                     <td class="text-end pe-3 py-2.5">
                         <button type="button" class="btn btn-sm btn-link text-danger text-decoration-none p-0" onclick="removeInvoiceLine(${activeLineIndex})">
                             <i class="bi bi-trash3 small"></i>
@@ -160,7 +164,8 @@
             recalculateGrandInvoiceTotal();
 
             const tbodyContainer = document.getElementById('invoiceItemsContainer');
-            if (tbodyContainer.children.length === 0) {
+            // استرجاع السطر الافتراضي الفارغ إذا مسح المستخدم كل شيء
+            if (tbodyContainer.querySelectorAll('.invoice-item-row').length === 0) {
                 tbodyContainer.innerHTML = `
                     <tr id="emptyRowPlaceholder">
                         <td colspan="5" class="text-center text-muted py-4 small">

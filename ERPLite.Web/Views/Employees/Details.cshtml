@@ -1,110 +1,169 @@
-﻿@model ERPLite.Services.DTOs.Inventory.ProductDto
+﻿@model ERPLite.Web.Models.Employees.EmployeeDetailsViewModel
 @{
-    var isAdmin = User.IsInRole("Admin");
-    ViewData["Title"] = $"SKU Audit - {Model.Name}";
-    var totalAssetValuation = Model.Price * Model.QuantityInStock;
-    var isUnderSafetyBuffer = Model.QuantityInStock <= Model.MinStockLevel;
+    ViewData["Title"] = "Employee Strategic Profile";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4 pb-2">
-    <div>
-        <h5 class="fw-bold text-dark mb-1"><i class="bi bi-box-seam text-secondary me-2"></i>Product Master Specification</h5>
-        <p class="text-muted small mb-0" style="font-size: 0.75rem;">Granular physical tracking, procurement valuations, and pipeline parameters.</p>
-    </div>
-    <div>
-        <a asp-action="Index" class="btn btn-sm btn-light border font-monospace text-dark px-3 py-2" style="font-size: 0.75rem; border-color: #cbd5e1 !important;">
-            <i class="bi bi-arrow-left me-1"></i> Back to Ledger
+<div class="container-fluid p-0">
+    <div class="mb-3">
+        <a asp-action="Index" class="btn btn-sm btn-link text-secondary text-decoration-none p-0">
+            <i class="bi bi-arrow-left me-1"></i> Return to Master Ledger
         </a>
     </div>
-</div>
 
-<div class="row g-4">
-    <div class="col-12 col-md-7 col-lg-8">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
-            <div class="d-flex align-items-center pb-4 border-bottom mb-4" style="border-color: #f1f5f9 !important;">
-                <div class="bg-light border rounded-3 d-flex align-items-center justify-content-center me-3 text-secondary font-monospace fw-bold" style="width: 52px; height: 52px; border-color: #e2e8f0 !important;">
-                    <i class="bi bi-box fs-4 text-muted"></i>
+    <div class="row g-4">
+        <div class="col-12 col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 bg-white text-center p-4">
+                <div class="mx-auto bg-light border rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 90px; height: 90px; border-color: #cbd5e1 !important;">
+                    <i class="bi bi-person-badge text-secondary display-6"></i>
                 </div>
-                <div>
-                    <h5 class="fw-bold text-dark mb-1">@Model.Name</h5>
-                    <span class="badge bg-light text-secondary border font-monospace small" style="font-size: 0.65rem; border-color: #cbd5e1 !important;">SKU-REF: #@Model.Id.ToString("D5")</span>
-                </div>
-            </div>
+                <h5 class="fw-bold text-dark mb-1">@Model.FullName</h5>
+                <p class="text-muted small font-monospace mb-3">ID: #@Model.EmployeeId.ToString("D4")</p>
 
-            <div class="row g-4">
-                <div class="col-12 col-sm-6">
-                    <label class="text-muted small d-block mb-1 text-uppercase fw-bold tracking-wider" style="font-size: 0.6rem;">Categorical Classification</label>
-                    <div class="fw-medium text-dark small" style="font-size: 0.85rem;">
-                        <i class="bi bi-tag me-2 text-muted"></i>@Model.CategoryName
-                    </div>
+                <div class="py-2 border-top border-bottom border-light mb-3">
+                    <span class="badge rounded-pill bg-light text-dark border px-3 py-1.5 small" style="border-color: #cbd5e1 !important;">
+                        <i class="bi bi-building text-muted me-1"></i>@Model.DepartmentName
+                    </span>
                 </div>
-                <div class="col-12 col-sm-6">
-                    <label class="text-muted small d-block mb-1 text-uppercase fw-bold tracking-wider" style="font-size: 0.6rem;">Approved Pipeline Supplier</label>
-                    <div class="fw-medium text-dark small" style="font-size: 0.85rem;">
-                        <i class="bi bi-truck me-2 text-muted"></i>@Model.SupplierName
-                    </div>
+
+                <div class="mb-4 bg-light bg-opacity-50 p-2.5 rounded-3 border" style="border-color: #f1f5f9 !important;">
+                    <span class="text-uppercase text-muted fw-bold d-block mb-1 font-monospace" style="font-size: 0.6rem; letter-spacing: 0.05em;">Base Salary Structure</span>
+                    <h5 class="fw-bold text-success font-monospace mb-0">@Model.Salary.ToString("C2")</h5>
                 </div>
-                <div class="col-12 col-sm-6 mt-4">
-                    <label class="text-muted small d-block mb-1 text-uppercase fw-bold tracking-wider" style="font-size: 0.6rem;">Unit procurement cost</label>
-                    <div class="fw-bold font-monospace text-dark" style="font-size: 1.1rem;">
-                        $@Model.Price.ToString("N2")
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 mt-4">
-                    <label class="text-muted small d-block mb-1 text-uppercase fw-bold tracking-wider" style="font-size: 0.6rem;">Accumulated Financial Asset Valuation</label>
-                    <div class="fw-bold font-monospace text-success" style="font-size: 1.1rem;">
-                        $@totalAssetValuation.ToString("N2")
-                    </div>
+
+                <div class="text-start small">
+                    <span class="text-uppercase text-muted fw-bold d-block mb-1 font-monospace" style="font-size: 0.6rem;">System Account Token</span>
+                    @if (Model.HasSystemAccount)
+                    {
+                        <div class="p-3 rounded-3 bg-success-subtle text-success border border-success-subtle font-monospace">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-shield-check-fill me-2 fs-5"></i>
+                                <div>
+                                    <strong class="d-block" style="font-size: 0.75rem;">Identity Linked</strong>
+                                    <span class="opacity-75 d-block" style="font-size: 0.65rem;">Role: @Model.SystemRole</span>
+                                </div>
+                            </div>
+                            <div class="pt-2 border-top border-success border-opacity-20 d-flex justify-content-between align-items-center">
+                                <span style="font-size: 0.65rem;">Security Status:</span>
+                                @if (Model.IsAccountLocked)
+                                {
+                                    <span class="badge bg-danger text-white rounded-pill px-2 py-0.5" style="font-size: 0.6rem;"><i class="bi bi-lock-fill me-1"></i>Locked</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success text-white rounded-pill px-2 py-0.5" style="font-size: 0.6rem;"><i class="bi bi-unlock-fill me-1"></i>Active</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="p-2.5 rounded-3 bg-warning-subtle text-warning border border-warning-subtle font-monospace d-flex align-items-center">
+                            <i class="bi bi-shield-exclamation-fill me-2 fs-5"></i>
+                            <div>
+                                <strong class="d-block" style="font-size: 0.75rem;">Isolated Profile</strong>
+                                <span class="opacity-75" style="font-size: 0.65rem;">No system access keys binded.</span>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-12 col-md-5 col-lg-4">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 d-flex flex-column">
-            <h6 class="fw-bold text-dark mb-3 small text-uppercase tracking-wider" style="font-size: 0.7rem;">
-                <i class="bi bi-pie-chart me-2 text-secondary"></i>Warehouse Metric Volumetrics
-            </h6>
+        <div class="col-12 col-lg-8">
+            <div class="d-flex flex-column gap-4 h-100">
 
-            @if (isUnderSafetyBuffer)
-            {
-                <div class="alert alert-danger bg-danger-subtle text-danger border-0 small rounded-3 p-3 mb-4 d-flex align-items-center" style="font-size: 0.75rem;">
-                    <i class="bi bi-exclamation-octagon-fill fs-4 me-2.5"></i>
-                    <div>
-                        <span class="fw-bold d-block">Critical Stock Depletion</span>
-                        <span>Inventory level rests at or below the safety buffer. Procurement requisition required.</span>
+                <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-light">
+                        <div>
+                            <h6 class="fw-bold text-dark mb-0">Corporate Specification Fields</h6>
+                            <p class="text-muted small mb-0" style="font-size: 0.7rem;">Audited operational record configurations.</p>
+                        </div>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.EmployeeId" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 font-monospace" style="font-size: 0.75rem;">
+                                <i class="bi bi-pencil me-1"></i> Pivot Parameters
+                            </a>
+                        }
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <span class="text-uppercase text-muted fw-bold d-block mb-1 font-monospace" style="font-size: 0.65rem; letter-spacing: 0.05em;">Primary Communication Identifier</span>
+                            <div class="p-2 border rounded-3 bg-light bg-opacity-30 small text-dark font-monospace">
+                                @Model.Email
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <span class="text-uppercase text-muted fw-bold d-block mb-1 font-monospace" style="font-size: 0.65rem; letter-spacing: 0.05em;">Hire Date & Lifecycle</span>
+                            <div class="p-2 border rounded-3 bg-light bg-opacity-30 small text-dark font-monospace">
+                                @Model.HireDate.ToString("MMMM dd, yyyy")
+                            </div>
+                        </div>
                     </div>
                 </div>
-            }
-            else
-            {
-                <div class="alert alert-success bg-success-subtle text-success border-0 small rounded-3 p-3 mb-4 d-flex align-items-center" style="font-size: 0.75rem;">
-                    <i class="bi bi-shield-check-fill fs-4 me-2.5"></i>
-                    <div>
-                        <span class="fw-bold d-block">Inventory Level Stable</span>
-                        <span>Stock metrics are completely compliant with current corporate safety levels.</span>
+
+                <div class="card border-0 shadow-sm rounded-4 bg-white p-4 flex-grow-1">
+                    <h6 class="fw-bold text-dark mb-3 small" style="font-size: 0.85rem;">
+                        <i class="bi bi-calendar-check me-2 text-muted"></i>Operational Attendance Ledger Logs
+                    </h6>
+
+                    <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                        <table class="table align-middle table-sm mb-0">
+                            <thead class="table-light text-muted small fw-medium sticky-top" style="font-size: 0.7rem; z-index: 1;">
+                                <tr>
+                                    <th scope="col" class="ps-2 py-2">Log Date</th>
+                                    <th scope="col" class="py-2">Check In</th>
+                                    <th scope="col" class="py-2">Check Out</th>
+                                    <th scope="col" class="text-end pe-2 py-2">Status Flag</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.AttendanceLogs == null || !Model.AttendanceLogs.Any())
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-4 small">
+                                            <i class="bi bi-calendar-x me-1 opacity-50"></i>No telemetry log metrics recorded within this zone.
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    foreach (var log in Model.AttendanceLogs)
+                                    {
+                                        <tr style="border-color: #f8fafc !important; font-size: 0.75rem;">
+                                            <td class="ps-2 py-2 font-monospace fw-medium text-dark">
+                                                @log.Date.ToString("yyyy-MM-dd")
+                                            </td>
+                                            <td class="py-2 font-monospace text-secondary">
+                                                @log.CheckInTime.ToString("hh:mm tt")
+                                            </td>
+                                            <td class="py-2 font-monospace text-secondary">
+                                                @(log.CheckOutTime.HasValue ? log.CheckOutTime.Value.ToString("hh:mm tt") : "--:--")
+                                            </td>
+                                            <td class="text-end pe-2 py-2">
+                                                @if (log.Status == "Present" || log.Status == "OnTime")
+                                                {
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 font-monospace" style="font-size: 0.6rem;">@log.Status</span>
+                                                }
+                                                else if (log.Status == "Absent")
+                                                {
+                                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 font-monospace" style="font-size: 0.6rem;">@log.Status</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2 font-monospace" style="font-size: 0.6rem;">@log.Status</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            }
 
-            <div class="mb-3 p-3 border rounded-3 bg-light" style="border-color: #e2e8f0 !important;">
-                <label class="text-secondary small d-block mb-1 text-uppercase" style="font-size: 0.65rem;">Active Physical Stock</label>
-                <div class="font-monospace fw-bold text-dark fs-4">@Model.QuantityInStock <span class="fs-6 text-muted fw-normal">Units</span></div>
             </div>
-
-            <div class="mb-0 p-3 border rounded-3 bg-light" style="border-color: #e2e8f0 !important;">
-                <label class="text-secondary small d-block mb-1 text-uppercase" style="font-size: 0.65rem;">Safety Threshold Buffer</label>
-                <div class="font-monospace fw-bold text-secondary fs-5">@Model.MinStockLevel <span class="fs-6 text-muted fw-normal">Units Threshold</span></div>
-            </div>
-
-            @if (isAdmin)
-            {
-                <div class="pt-3 border-top mt-auto">
-                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-light border font-monospace text-dark w-100 py-2" style="font-size: 0.75rem; border-color: #cbd5e1 !important;">
-                        <i class="bi bi-pencil small text-muted me-1"></i>Adjust SKU Parameters
-                    </a>
-                </div>
-            }
         </div>
     </div>
 </div>

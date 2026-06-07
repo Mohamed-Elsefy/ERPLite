@@ -1,81 +1,108 @@
-﻿@model ERPLite.Web.Models.Products.ProductFormViewModel
+﻿@model ERPLite.Web.Models.Employees.CreateEmployeeViewModel
 @{
-    ViewData["Title"] = "Catalog New Product";
+    ViewData["Title"] = "Onboard Corporate Asset";
 }
 
-<div class="row justify-content-center">
-    <div class="col-12 col-lg-10 col-xl-8">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 p-sm-5">
-
-            <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-light">
-                <div class="bg-light border rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px; border-color: #e2e8f0 !important;">
-                    <i class="bi bi-box-seam text-secondary fs-5"></i>
-                </div>
-                <div>
-                    <h5 class="fw-bold text-dark mb-0">Catalog Inventory Asset</h5>
-                    <p class="text-muted small mb-0" style="font-size: 0.75rem;">Initialize a new SKU record tied to accounting valuations and logistics nodes.</p>
-                </div>
-            </div>
-
-            <form asp-action="Create" method="post" autocomplete="off">
-                @Html.AntiForgeryToken()
-                <input asp-for="IsEditMode" type="hidden" />
-
-                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3 font-monospace"></div>
-
-                <div class="row g-3 mb-4">
-                    <div class="col-12">
-                        <label asp-for="Name" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Product Identifier Name</label>
-                        <input asp-for="Name" class="form-control border rounded-3 bg-white py-2 shadow-none small" style="font-size: 0.85rem;" placeholder="e.g. Enterprise Server Storage Array X1" />
-                        <span asp-validation-for="Name" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <label asp-for="CategoryId" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Categorical Classification</label>
-                        <select asp-for="CategoryId" asp-items="Model.CategoriesList" class="form-select border rounded-3 bg-white py-2 shadow-none small" style="font-size: 0.85rem;">
-                            <option value="">-- Choose Categorical Group --</option>
-                        </select>
-                        <span asp-validation-for="CategoryId" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <label asp-for="SupplierId" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Approved Pipeline Supplier</label>
-                        <select asp-for="SupplierId" asp-items="Model.SuppliersList" class="form-select border rounded-3 bg-white py-2 shadow-none small" style="font-size: 0.85rem;">
-                            <option value="">-- Choose Corporate Supplier --</option>
-                        </select>
-                        <span asp-validation-for="SupplierId" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4 mt-4">
-                        <label asp-for="Price" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Unit Procurement Price ($)</label>
-                        <input asp-for="Price" type="number" step="0.01" class="form-control border rounded-3 bg-white py-2 shadow-none font-monospace small" style="font-size: 0.85rem;" placeholder="0.00" />
-                        <span asp-validation-for="Price" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4 mt-4">
-                        <label asp-for="QuantityInStock" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Initial Stock Quantity</label>
-                        <input asp-for="QuantityInStock" type="number" class="form-control border rounded-3 bg-white py-2 shadow-none font-monospace small" style="font-size: 0.85rem;" placeholder="0" />
-                        <span asp-validation-for="QuantityInStock" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4 mt-4">
-                        <label asp-for="MinStockLevel" class="form-label fw-bold text-secondary text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Safety Buffer Threshold</label>
-                        <input asp-for="MinStockLevel" type="number" class="form-control border rounded-3 bg-white py-2 shadow-none font-monospace small" style="font-size: 0.85rem;" placeholder="0" />
-                        <span asp-validation-for="MinStockLevel" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-end gap-2 border-top pt-3 border-light">
-                    <a asp-action="Index" class="btn btn-light border rounded-pill px-4 fw-medium small text-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-dark rounded-pill px-4 fw-medium shadow-sm" style="background-color: #475569; font-size: 0.85rem;">
-                        <i class="bi bi-check-circle-fill me-1"></i> Provision Asset SKU
-                    </button>
-                </div>
-            </form>
+<div class="card border-0 shadow-sm rounded-4 bg-white p-4 p-sm-5">
+    <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-light">
+        <div class="bg-light border rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px; border-color: #e2e8f0 !important;">
+            <i class="bi bi-person-plus text-secondary fs-5"></i>
+        </div>
+        <div>
+            <h5 class="fw-bold text-dark mb-0">Onboard New Employee Node</h5>
+            <p class="text-muted small mb-0" style="font-size: 0.75rem;">Register physical attributes and conditionally bind application access tokens.</p>
         </div>
     </div>
+
+    <form asp-action="Create" method="post" id="createEmployeeForm">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly" class="text-danger small mb-4 font-monospace"></div>
+
+        <h6 class="fw-bold text-dark mb-3 small" style="font-size: 0.85rem;"><i class="bi bi-card-text me-2 text-muted"></i>Profile Core Demographics</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-6">
+                <label asp-for="Employee.FullName" class="form-label text-muted small text-uppercase mb-1 font-monospace" style="font-size: 0.65rem; letter-spacing: 0.05em;">Full Name</label>
+                <input asp-for="Employee.FullName" class="form-control border rounded-3 bg-white py-2 shadow-none small" style="font-size: 0.85rem;" placeholder="e.g. John Doe" />
+                <span asp-validation-for="Employee.FullName" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label asp-for="Employee.Email" class="form-label text-muted small text-uppercase mb-1 font-monospace" style="font-size: 0.65rem; letter-spacing: 0.05em;">Email Address</label>
+                <input asp-for="Employee.Email" type="email" class="form-control border rounded-3 bg-white py-2 shadow-none small" style="font-size: 0.85rem;" placeholder="username@erplite.com" />
+                <span asp-validation-for="Employee.Email" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label asp-for="Employee.Salary" class="form-label text-muted small text-uppercase mb-1 font-monospace" style="font-size: 0.65rem; letter-spacing: 0.05em;">Base Salary Structure ($)</label>
+                <input asp-for="Employee.Salary" type="number" step="0.01" class="form-control border rounded-3 bg-white py-2 shadow-none small font-monospace" style="font-size: 0.85rem;" />
+                <span asp-validation-for="Employee.Salary" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label asp-for="Employee.DepartmentId" class="form-label text-muted small text-uppercase mb-1 font-monospace" style="font-size: 0.65rem; letter-spacing: 0.05em;">Target Department Allocation</label>
+                <select asp-for="Employee.DepartmentId" asp-items="Model.DepartmentList" class="form-select border rounded-3 bg-white py-2 shadow-none small" style="font-size: 0.85rem;">
+                    <option value="">-- Choose Allocation Department --</option>
+                </select>
+                <span asp-validation-for="Employee.DepartmentId" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label asp-for="Employee.HireDate" class="form-label text-muted small text-uppercase mb-1 font-monospace" style="font-size: 0.65rem; letter-spacing: 0.05em;">Hire Registration Date</label>
+                <input asp-for="Employee.HireDate" type="date" class="form-control border rounded-3 bg-white py-2 shadow-none small font-monospace" style="font-size: 0.85rem;" />
+                <span asp-validation-for="Employee.HireDate" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+            </div>
+        </div>
+
+        <div class="card border rounded-3 bg-light bg-opacity-40 p-3 p-md-4 mb-4" style="border-color: #e2e8f0 !important;">
+            <div class="form-check form-switch mb-0">
+                <input asp-for="CreateUserAccount" class="form-check-input" type="checkbox" id="sysAccountTrigger" role="switch">
+                <label asp-for="CreateUserAccount" class="form-check-label fw-bold text-dark small" for="sysAccountTrigger" style="font-size: 0.85rem;"></label>
+                <p class="text-muted small mb-0" style="font-size: 0.7rem;">Enable this to bind a live system login credential configuration to this physical employee profile record.</p>
+            </div>
+
+            <div id="accountCredentialEngine" class="row g-3 mt-2 border-top pt-3 d-none">
+                <div class="col-12 col-md-6">
+                    <label asp-for="Password" class="form-label text-muted small text-uppercase mb-1 font-monospace" style="font-size: 0.65rem; letter-spacing: 0.05em;"></label>
+                    <input asp-for="Password" type="password" class="form-control border rounded-3 bg-white py-2 shadow-none small" style="font-size: 0.85rem;" />
+                    <span asp-validation-for="Password" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label asp-for="Role" class="form-label text-muted small text-uppercase mb-1 font-monospace" style="font-size: 0.65rem; letter-spacing: 0.05em;">Identity Authority Boundary</label>
+                    <select asp-for="Role" class="form-select border rounded-3 bg-white py-2 shadow-none small" style="font-size: 0.85rem;">
+                        <option value="Employee">Employee Standard Node</option>
+                        <option value="Manager">Department Manager Authority</option>
+                        <option value="Admin">System Super Administrator</option>
+                    </select>
+                    <span asp-validation-for="Role" class="text-danger small mt-1 d-block font-monospace" style="font-size: 0.7rem;"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end align-items-center border-top pt-4 border-light gap-2">
+            <a asp-action="Index" class="btn btn-light border rounded-pill px-4 fw-medium small text-secondary" style="font-size: 0.8rem;">Abort Routing</a>
+            <button type="submit" class="btn btn-dark rounded-pill px-4 fw-medium shadow-sm" style="background-color: #475569; font-size: 0.8rem;">
+                <i class="bi bi-check-circle-fill me-1"></i> Post Ledger Allocation
+            </button>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
     <partial name="~/Views/Shared/Infrastructure/_ValidationScriptsPartial.cshtml" />
+    <script>
+        const trigger = document.getElementById('sysAccountTrigger');
+        const container = document.getElementById('accountCredentialEngine');
+
+        function toggleSubsystemState() {
+            if (trigger.checked) {
+                container.classList.remove('d-none');
+            } else {
+                container.classList.add('d-none');
+            }
+        }
+        trigger.addEventListener('change', toggleSubsystemState);
+        toggleSubsystemState();
+    </script>
 }
