@@ -2,18 +2,25 @@
 using ERPLite.Data.Entities.HR;
 using ERPLite.Shared.Constants;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using ERPLite.Data.Context;
 
 namespace ERPLite.Data.Seeders
 {
+    /// <summary>
+    /// Development-only seeder. Invoked from Program.cs exclusively when
+    /// <c>ASPNETCORE_ENVIRONMENT == Development</c> - never in production.
+    /// Credentials come from configuration ("SeedUsers" section) so no secrets live in code.
+    /// </summary>
     public static class IdentitySeeder
     {
         public static async Task SeedRolesAndUsersAsync(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
             var context = serviceProvider.GetRequiredService<AppDbContext>();
 
             string[] roles = { Roles.Admin, Roles.Manager, Roles.Employee };
@@ -35,9 +42,31 @@ namespace ERPLite.Data.Seeders
                 await context.SaveChangesAsync();
             }
 
-            await CreateUserWithEmployeeAsync(userManager, context, "System Admin", "admin@erplite.com", "Admin@123", Roles.Admin, defaultDepartment.Id);
-            await CreateUserWithEmployeeAsync(userManager, context, "Sales Manager", "manager@erplite.com", "Manager@123", Roles.Manager, defaultDepartment.Id);
-            await CreateUserWithEmployeeAsync(userManager, context, "Employee User", "employee@erplite.com", "Employee@123", Roles.Employee, defaultDepartment.Id);
+            var seedUsers = new[]
+            {
+                GetSeedUser(configuration, "Admin", "System Admin", "admin@erplite.com", "Admin@123", Roles.Admin),
+                GetSeedUser(configuration, "Manager", "Sales Manager", "manager@erplite.com", "Manager@123", Roles.Manager),
+                GetSeedUser(configuration, "Employee", "Employee User", "employee@erplite.com", "Employee@123", Roles.Employee),
+            };
+
+            foreach (var seedUser in seedUsers)
+            {
+                await CreateUserWithEmployeeAsync(
+                    userManager, context,
+                    seedUser.FullName, seedUser.Email, seedUser.Password, seedUser.Role,
+                    defaultDepartment.Id);
+            }
+        }
+
+        private static (string FullName, string Email, string Password, string Role) GetSeedUser(
+            IConfiguration configuration, string key, string defaultFullName, string defaultEmail, string defaultPassword, string role)
+        {
+            var section = configuration.GetSection($"SeedUsers:{key}");
+            return (
+                section["FullName"] ?? defaultFullName,
+                section["Email"] ?? defaultEmail,
+                section["Password"] ?? defaultPassword,
+                role);
         }
 
         private static async Task CreateUserWithEmployeeAsync(
@@ -52,7 +81,7 @@ namespace ERPLite.Data.Seeders
             var existingUser = await userManager.FindByEmailAsync(email);
             if (existingUser != null) return;
 
-            using var transaction = await context.Database.BeginTransactionAsync();
+            await using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
                 var employee = new Employee

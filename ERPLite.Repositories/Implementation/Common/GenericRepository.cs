@@ -21,48 +21,57 @@ namespace ERPLite.Repositories.Implementation.Common
         // Read Operations
         // ================================
 
-        public virtual async Task<T?> GetByIdAsync(TKey id)
+        public virtual async Task<T?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
         {
-            return await _dbSet.FindAsync(id);
+            return await _dbSet.FindAsync([id], cancellationToken);
         }
 
-        public virtual async Task<IEnumerable<T>> GetAllAsync()
-        {
-            return await _dbSet.ToListAsync();
-        }
-
-        public virtual async Task<IEnumerable<T>> FindAsync( Expression<Func<T, bool>> predicate)
+        public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _dbSet
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+        }
+
+        public virtual async Task<IEnumerable<T>> FindByPredicateAsync(
+            Expression<Func<T, bool>> predicate,
+            CancellationToken cancellationToken = default)
+        {
+            return await _dbSet
+                .AsNoTracking()
                 .Where(predicate)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
         public virtual async Task<T?> FirstOrDefaultAsync(
-            Expression<Func<T, bool>> predicate)
+            Expression<Func<T, bool>> predicate,
+            CancellationToken cancellationToken = default)
         {
             return await _dbSet
-                .FirstOrDefaultAsync(predicate);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(predicate, cancellationToken);
         }
 
         public virtual async Task<bool> AnyAsync(
-            Expression<Func<T, bool>> predicate)
+            Expression<Func<T, bool>> predicate,
+            CancellationToken cancellationToken = default)
         {
-            return await _dbSet.AnyAsync(predicate);
+            return await _dbSet.AnyAsync(predicate, cancellationToken);
         }
 
         public virtual async Task<int> CountAsync(
-            Expression<Func<T, bool>>? predicate = null)
+            Expression<Func<T, bool>>? predicate = null,
+            CancellationToken cancellationToken = default)
         {
             if (predicate == null)
-                return await _dbSet.CountAsync();
+                return await _dbSet.CountAsync(cancellationToken);
 
-            return await _dbSet.CountAsync(predicate);
+            return await _dbSet.CountAsync(predicate, cancellationToken);
         }
 
         public virtual IQueryable<T> GetQueryable()
         {
-            return _dbSet.AsQueryable();
+            return _dbSet.AsNoTracking().AsQueryable();
         }
 
 
@@ -70,15 +79,16 @@ namespace ERPLite.Repositories.Implementation.Common
         // Write Operations
         // ================================
 
-        public virtual async Task AddAsync(T entity)
+        public virtual async Task AddAsync(T entity, CancellationToken cancellationToken = default)
         {
-            await _dbSet.AddAsync(entity);
+            await _dbSet.AddAsync(entity, cancellationToken);
         }
 
         public virtual async Task AddRangeAsync(
-            IEnumerable<T> entities)
+            IEnumerable<T> entities,
+            CancellationToken cancellationToken = default)
         {
-            await _dbSet.AddRangeAsync(entities);
+            await _dbSet.AddRangeAsync(entities, cancellationToken);
         }
 
         public virtual void Update(T entity)

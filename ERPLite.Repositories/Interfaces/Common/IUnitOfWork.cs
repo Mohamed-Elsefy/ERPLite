@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ERPLite.Repositories.Interfaces.Common
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork : IAsyncDisposable
     {
         IProductRepository Products { get; }
 
@@ -33,12 +33,17 @@ namespace ERPLite.Repositories.Interfaces.Common
         INotificationRepository Notifications { get; }
 
 
-        Task<int> SaveChangesAsync();
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
-        Task<IDbContextTransaction> BeginTransactionAsync();
+        Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 
-        Task CommitTransactionAsync();
+        /// <summary>
+        /// Persists pending changes and commits the current transaction.
+        /// Call this once per transaction instead of calling
+        /// <see cref="SaveChangesAsync"/> beforehand - the extra save is redundant.
+        /// </summary>
+        Task CommitTransactionAsync(CancellationToken cancellationToken = default);
 
-        Task RollbackTransactionAsync();
+        Task RollbackTransactionAsync(CancellationToken cancellationToken = default);
     }
 }

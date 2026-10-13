@@ -6,8 +6,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <!-- Web -> Services -> Repositories -> Data. Web references Data explicitly ONLY for
+       ASP.NET Core Identity entity types (AddIdentity<ApplicationUser, ApplicationRole>).
+       Repositories is intentionally NOT referenced to prevent bypassing the service layer. -->
   <ItemGroup>
-    <ProjectReference Include="..\ERPLite.Repositories\ERPLite.Repositories.csproj" />
+    <ProjectReference Include="..\ERPLite.Data\ERPLite.Data.csproj" />
     <ProjectReference Include="..\ERPLite.Services\ERPLite.Services.csproj" />
     <ProjectReference Include="..\ERPLite.Shared\ERPLite.Shared.csproj" />
   </ItemGroup>

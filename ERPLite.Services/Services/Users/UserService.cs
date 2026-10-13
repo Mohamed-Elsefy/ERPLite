@@ -112,7 +112,6 @@ namespace ERPLite.Services.Services.Users
 
                 employee.UserId = user.Id;
                 _unitOfWork.Employees.Update(employee);
-                await _unitOfWork.SaveChangesAsync();
 
                 await _unitOfWork.CommitTransactionAsync();
 
@@ -169,7 +168,6 @@ namespace ERPLite.Services.Services.Users
 
                 employee.UserId = newUser.Id;
                 _unitOfWork.Employees.Update(employee);
-                await _unitOfWork.SaveChangesAsync();
 
                 await _unitOfWork.CommitTransactionAsync();
 
@@ -248,7 +246,6 @@ namespace ERPLite.Services.Services.Users
                     return ServiceResult.Failed("Failed to delete user login credentials.");
                 }
 
-                await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
 
                 await _activityLogService.LogAsync(

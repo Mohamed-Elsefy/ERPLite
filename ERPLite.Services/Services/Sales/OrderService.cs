@@ -148,7 +148,6 @@ namespace ERPLite.Services.Services.Sales
                 order.TotalPrice = totalPrice;
                 _unitOfWork.Orders.Update(order);
 
-                await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
 
                 await _notificationService.CreateSystemNotificationAsync(

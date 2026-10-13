@@ -4,13 +4,17 @@ using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Services.Services.Infrastructure;
 using ERPLite.Shared.Constants;
 using ERPLite.Web.Helpers;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
 
 namespace ERPLite.Web.Extensions
 {
     public static class IdentityServiceExtensions
     {
-        public static IServiceCollection AddIdentityServices(this IServiceCollection services)
+        // NOTE: ERPLite.Data types are used here intentionally - ASP.NET Core Identity
+        // must be wired with the concrete ApplicationUser/ApplicationRole entity types.
+        public static IServiceCollection AddIdentityServices(this IServiceCollection services, IWebHostEnvironment environment)
         {
             services.AddHttpContextAccessor();
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
@@ -44,7 +48,11 @@ namespace ERPLite.Web.Extensions
                 options.AccessDeniedPath = "/Auth/AccessDenied";
                 options.SlidingExpiration = true;
                 options.ExpireTimeSpan = TimeSpan.FromDays(7);
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                // SecurePolicy.Always breaks http://localhost in Development (cookie never sent),
+                // so relax it locally and enforce HTTPS-only cookies in higher environments.
+                options.Cookie.SecurePolicy = environment.IsDevelopment()
+                    ? CookieSecurePolicy.SameAsRequest
+                    : CookieSecurePolicy.Always;
                 options.Cookie.SameSite = SameSiteMode.Strict;
             });
 

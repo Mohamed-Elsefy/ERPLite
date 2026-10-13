@@ -23,7 +23,7 @@ namespace ERPLite.Repositories.Implementation.Common
             IOrderItemRepository orderItemRepo,
             IActivityLogRepository activityLogRepo,
             INotificationRepository notificationRepo
-        ) : IUnitOfWork, IAsyncDisposable
+        ) : IUnitOfWork
     {
         private IDbContextTransaction? _currentTransaction;
 
@@ -40,34 +40,34 @@ namespace ERPLite.Repositories.Implementation.Common
         public IActivityLogRepository ActivityLogs { get; } = activityLogRepo;
         public INotificationRepository Notifications { get; } = notificationRepo;
 
-        public async Task<int> SaveChangesAsync()
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            return await context.SaveChangesAsync();
+            return await context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         {
             if (_currentTransaction != null)
                 return _currentTransaction;
 
-            _currentTransaction = await context.Database.BeginTransactionAsync();
+            _currentTransaction = await context.Database.BeginTransactionAsync(cancellationToken);
             return _currentTransaction;
         }
 
-        public async Task CommitTransactionAsync()
+        public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(cancellationToken);
 
                 if (_currentTransaction != null)
                 {
-                    await _currentTransaction.CommitAsync();
+                    await _currentTransaction.CommitAsync(cancellationToken);
                 }
             }
             catch
             {
-                await RollbackTransactionAsync();
+                await RollbackTransactionAsync(cancellationToken);
                 throw;
             }
             finally
@@ -80,20 +80,23 @@ namespace ERPLite.Repositories.Implementation.Common
             }
         }
 
-        public async Task RollbackTransactionAsync()
+        public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
         {
-            if (_currentTransaction != null)
+            try
             {
-                await _currentTransaction.RollbackAsync();
-                await _currentTransaction.DisposeAsync();
-                _currentTransaction = null;
+                if (_currentTransaction != null)
+                {
+                    await _currentTransaction.RollbackAsync(cancellationToken);
+                }
             }
-        }
-
-        public void Dispose()
-        {
-            _currentTransaction?.Dispose();
-            GC.SuppressFinalize(this);
+            finally
+            {
+                if (_currentTransaction != null)
+                {
+                    await _currentTransaction.DisposeAsync();
+                    _currentTransaction = null;
+                }
+            }
         }
 
         public async ValueTask DisposeAsync()

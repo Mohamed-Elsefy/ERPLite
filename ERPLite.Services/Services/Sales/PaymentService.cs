@@ -116,7 +116,6 @@ namespace ERPLite.Services.Services.Sales
                 }
 
                 _unitOfWork.Orders.Update(order);
-                await _unitOfWork.SaveChangesAsync();
 
                 await _unitOfWork.CommitTransactionAsync();
 

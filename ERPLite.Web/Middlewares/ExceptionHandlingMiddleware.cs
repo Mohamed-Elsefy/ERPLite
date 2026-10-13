@@ -24,49 +24,67 @@ namespace ERPLite.Web.Middlewares
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unhandled exception occurred: {Message}", ex.Message);
+                _logger.LogError(ex, "Unhandled exception {ExceptionType} on {Method} {Path} (TraceId: {TraceId})",
+                    ex.GetType().Name, context.Request.Method, context.Request.Path, context.TraceIdentifier);
+
                 await HandleExceptionAsync(context, ex);
             }
         }
 
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            context.Response.ContentType = "application/json";
-            var response = new ExceptionResponse();
-
-            switch (exception)
+            if (context.Response.HasStarted)
             {
-                case NotFoundException notFoundEx:
-                    context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-                    response.StatusCode = context.Response.StatusCode;
-                    response.Message = notFoundEx.Message;
-                    break;
-
-                case BusinessException businessEx:
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    response.StatusCode = context.Response.StatusCode;
-                    response.Message = businessEx.Message;
-                    break;
-
-                case ValidationException validationEx:
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    response.StatusCode = context.Response.StatusCode;
-                    response.Message = "Validation failed.";
-                    response.Details = string.Join(Environment.NewLine, validationEx.Errors);
-                    break;
-
-                default:
-                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    response.StatusCode = context.Response.StatusCode;
-                    response.Message = "An unexpected error occurred.";
-                    #if DEBUG
-                        response.Details = exception.ToString();
-                    #endif
-                    break;
+                // Too late to produce a friendly response; already logged above.
+                return Task.CompletedTask;
             }
 
-            var json = JsonSerializer.Serialize(response);
-            return context.Response.WriteAsync(json);
+            var (statusCode, userMessage, details) = MapException(exception);
+
+            // API / AJAX callers expect JSON; full-page requests get the friendly error page.
+            if (WantsJson(context))
+            {
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = statusCode;
+
+                var response = new ExceptionResponse
+                {
+                    StatusCode = statusCode,
+                    Message = userMessage,
+                    Details = details
+                };
+
+                return context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            }
+
+            context.Response.Redirect($"/Error?code={statusCode}&requestId={context.TraceIdentifier}");
+            return Task.CompletedTask;
+        }
+
+        private static (int StatusCode, string Message, string? Details) MapException(Exception exception)
+        {
+            return exception switch
+            {
+                NotFoundException notFoundEx => ((int)HttpStatusCode.NotFound, notFoundEx.Message, null),
+                BusinessException businessEx => ((int)HttpStatusCode.BadRequest, businessEx.Message, null),
+                ValidationException validationEx => (
+                    (int)HttpStatusCode.BadRequest,
+                    "Validation failed.",
+                    string.Join(Environment.NewLine, validationEx.Errors)),
+                _ => ((int)HttpStatusCode.InternalServerError, "An unexpected error occurred.", null),
+            };
+        }
+
+        private static bool WantsJson(HttpContext context)
+        {
+            if (context.Request.Path.StartsWithSegments("/api", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            if (string.Equals(context.Request.Headers.XRequestedWith, "XMLHttpRequest", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return context.Request.Headers.Accept.ToString()
+                .Contains("application/json", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

@@ -46,7 +46,7 @@ namespace ERPLite.Services.Services.HR
                     return ServiceResult.Failed("This email is already registered to another user account.");
             }
 
-            using var transaction = await _unitOfWork.BeginTransactionAsync();
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var employeeResult = await _employeeService.CreateAsync(employeeDto, currentUserId);
@@ -82,7 +82,6 @@ namespace ERPLite.Services.Services.HR
                     {
                         employee.UserId = newUser.Id;
                         _unitOfWork.Employees.Update(employee);
-                        await _unitOfWork.SaveChangesAsync();
                     }
                 }
 
