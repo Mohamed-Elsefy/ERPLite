@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ERPLite.Services.Interfaces.HR;
 using ERPLite.Web.Areas.Employee.Models.Dashboard;
+using ERPLite.Shared.Constants;
 
 namespace ERPLite.Web.Areas.Employee.Controllers
 {
@@ -42,7 +43,7 @@ namespace ERPLite.Web.Areas.Employee.Controllers
                 RecentAttendances = attendanceResult.Data.OrderByDescending(a => a.Date).Take(10).ToList()
             };
 
-            ViewData["PageTitle"] = "Employee Portal Dashboard";
+            ViewData[UiKeys.PageTitle] = "Employee Portal Dashboard";
             return View(vm);
         }
     }

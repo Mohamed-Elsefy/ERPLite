@@ -55,13 +55,13 @@ namespace ERPLite.Services.Services.Inventory
                 userId: currentUserId,
                 title: "New Inventory Node Structure",
                 message: $"A new structural classification group '{category.Name}' has been introduced to the catalog matrix.",
-                type: "Catalog",
-                priority: "Low"
+                type: NotificationTypes.Catalog,
+                priority: NotificationPriorities.Low
             );
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Create",
+                action: AuditActions.Create,
                 entityName: SystemModules.Categories,
                 entityId: category.Id,
                 description: $"Created inventory category group: '{category.Name}'."
@@ -85,7 +85,7 @@ namespace ERPLite.Services.Services.Inventory
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Update",
+                action: AuditActions.Update,
                 entityName: SystemModules.Categories,
                 entityId: category.Id,
                 description: $"Updated inventory category properties for: '{category.Name}'."
@@ -109,7 +109,7 @@ namespace ERPLite.Services.Services.Inventory
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Delete",
+                action: AuditActions.Delete,
                 entityName: SystemModules.Categories,
                 entityId: id,
                 description: $"Soft-deleted inventory category group: '{categoryName}'."

@@ -66,7 +66,7 @@ namespace ERPLite.Services.Services.HR
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Create",
+                action: AuditActions.Create,
                 entityName: SystemModules.Employees,
                 entityId: employee.Id,
                 description: $"Created employee profile for '{employee.FullName}' within department '{department.Name}'."
@@ -96,7 +96,7 @@ namespace ERPLite.Services.Services.HR
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Update",
+                action: AuditActions.Update,
                 entityName: SystemModules.Employees,
                 entityId: employee.Id,
                 description: $"Updated employee data details for: '{employee.FullName}'."
@@ -118,7 +118,7 @@ namespace ERPLite.Services.Services.HR
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Delete",
+                action: AuditActions.Delete,
                 entityName: SystemModules.Employees,
                 entityId: id,
                 description: $"Permanently deleted employee entry '{employeeName}' from HR Domain."

@@ -55,7 +55,7 @@ namespace ERPLite.Services.Services.HR
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Create",
+                action: AuditActions.Create,
                 entityName: SystemModules.Departments,
                 entityId: department.Id,
                 description: $"Created organizational department record: '{department.Name}'."
@@ -81,7 +81,7 @@ namespace ERPLite.Services.Services.HR
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Update",
+                action: AuditActions.Update,
                 entityName: SystemModules.Departments,
                 entityId: department.Id,
                 description: $"Updated profile and metadata configuration for department: '{department.Name}'."
@@ -106,7 +106,7 @@ namespace ERPLite.Services.Services.HR
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Delete",
+                action: AuditActions.Delete,
                 entityName: SystemModules.Departments,
                 entityId: id,
                 description: $"Permanently deleted organizational department: '{departmentName}'."

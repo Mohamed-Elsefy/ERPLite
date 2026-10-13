@@ -154,13 +154,13 @@ namespace ERPLite.Services.Services.Sales
                     userId: currentUserId,
                     title: "Corporate Sales Commitment Placed",
                     message: $"New order #{order.Id} finalized for Customer ID {dto.CustomerId}. Ledger revenue valuation: {order.TotalPrice}.",
-                    type: "Sales",
-                    priority: "Medium"
+                    type: NotificationTypes.Sales,
+                    priority: NotificationPriorities.Medium
                 );
 
                 await _activityLogService.LogAsync(
                     userId: currentUserId,
-                    action: "Create",
+                    action: AuditActions.Create,
                     entityName: SystemModules.Orders,
                     entityId: order.Id,
                     description: $"Placed a new order for Customer: '{customer.FullName}' with a total price of {order.TotalPrice} across {dto.Items.Count} unique items."

@@ -123,13 +123,13 @@ namespace ERPLite.Services.Services.Sales
                     userId: currentUserId,
                     title: "Financial Sinking Fund Credit",
                     message: $"Remittance allocation of {dto.Amount} committed for Order #{order.Id} via {dto.PaymentMethod}.",
-                    type: "Finance",
-                    priority: "High"
+                    type: NotificationTypes.Finance,
+                    priority: NotificationPriorities.High
                 );
 
                 await _activityLogService.LogAsync(
                     userId: currentUserId,
-                    action: "Create",
+                    action: AuditActions.Create,
                     entityName: SystemModules.Payments,
                     entityId: payment.Id,
                     description: $"Recorded payment of {payment.Amount} via {payment.PaymentMethod} for Order #{order.Id}. New order financial status: {order.PaymentStatus}."

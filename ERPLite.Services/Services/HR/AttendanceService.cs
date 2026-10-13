@@ -6,6 +6,7 @@ using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.HR;
 using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Services.Interfaces.System;
+using ERPLite.Shared.Constants;
 using ERPLite.Shared.Enums;
 
 namespace ERPLite.Services.Services.HR
@@ -52,7 +53,7 @@ namespace ERPLite.Services.Services.HR
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "CheckIn",
+                action: AuditActions.CheckIn,
                 entityName: "Attendance",
                 entityId: attendance.Id,
                 description: $"Recorded Check-In for employee: '{employee.FullName}' at {attendance.CheckInTime:hh:mm tt}."
@@ -80,7 +81,7 @@ namespace ERPLite.Services.Services.HR
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "CheckOut",
+                action: AuditActions.CheckOut,
                 entityName: "Attendance",
                 entityId: attendance.Id,
                 description: $"Recorded Check-Out for employee: '{employeeName}' at {attendance.CheckOutTime:hh:mm tt}."

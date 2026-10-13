@@ -1,6 +1,7 @@
 ﻿using ERPLite.Services.DTOs.Reports;
 using ERPLite.Services.Interfaces.Reports;
 using ERPLite.Services.Interfaces.Infrastructure;
+using ERPLite.Shared.Constants;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 
@@ -205,7 +206,7 @@ namespace ERPLite.Services.Services.Reports
                 {
                     table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text(order.Id.ToString());
                     table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text(order.OrderDate.ToString("yyyy-MM-dd HH:mm"));
-                    table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text(order.CustomerName ?? "Walking Customer");
+                    table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text(order.CustomerName ?? DisplayDefaults.WalkingCustomer);
                     table.Cell().Padding(5).BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Text($"${order.TotalPrice:N2}");
                 }
             });

@@ -1,7 +1,7 @@
-﻿@model ERPLite.Web.Models.Categories.CategoryDetailsViewModel
+@model ERPLite.Web.Models.Categories.CategoryDetailsViewModel
 @{
     var isAdmin = User.IsInRole("Admin");
-    ViewData["Title"] = $"Category Audit - {Model.Name}";
+    ViewData[UiKeys.Title] = $"Category Audit - {Model.Name}";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4 pb-2">

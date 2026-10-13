@@ -1,10 +1,11 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Interfaces.Sales;
 using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Web.Models.Customers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ERPLite.Shared.Constants;
 
 namespace ERPLite.Web.Controllers.Sales
 {
@@ -54,7 +55,7 @@ namespace ERPLite.Web.Controllers.Sales
             var result = await _customerService.GetByIdAsync(id);
             if (!result.Success || result.Data == null)
             {
-                TempData["Error"] = "Target customer profile not found.";
+                TempData[UiKeys.Error] = "Target customer profile not found.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -93,7 +94,7 @@ namespace ERPLite.Web.Controllers.Sales
                 return View(viewModel);
             }
 
-            TempData["Success"] = result.Message;
+            TempData[UiKeys.Success] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 
@@ -133,7 +134,7 @@ namespace ERPLite.Web.Controllers.Sales
                 return View(viewModel);
             }
 
-            TempData["Success"] = result.Message;
+            TempData[UiKeys.Success] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 
@@ -148,7 +149,7 @@ namespace ERPLite.Web.Controllers.Sales
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _customerService.DeleteAsync(id, _currentUser.UserId!);
-            TempData[result.Success ? "Success" : "Error"] = result.Message;
+            TempData[result.Success ? UiKeys.Success : UiKeys.Error] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 

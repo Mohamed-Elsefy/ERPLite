@@ -3,6 +3,7 @@ using ERPLite.Services.DTOs.Auth;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Auth;
 using ERPLite.Services.Interfaces.System;
+using ERPLite.Shared.Constants;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -45,7 +46,7 @@ namespace ERPLite.Services.Services.Auth
 
             await _activityLogService.LogAsync(
                 userId: user.Id,
-                action: "Login",
+                action: AuditActions.Login,
                 entityName: "Users",
                 entityId: 0,
                 description: "User logged in."
@@ -60,7 +61,7 @@ namespace ERPLite.Services.Services.Auth
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Logout",
+                action: AuditActions.Logout,
                 entityName: "Users",
                 entityId: 0,
                 description: "User logged out."
@@ -87,7 +88,7 @@ namespace ERPLite.Services.Services.Auth
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "ChangePassword",
+                action: AuditActions.ChangePassword,
                 entityName: "Users",
                 entityId: 0,
                 description: "Password changed."

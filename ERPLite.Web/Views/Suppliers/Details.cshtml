@@ -1,7 +1,7 @@
-﻿@model ERPLite.Web.Models.Suppliers.SupplierDetailsViewModel
+@model ERPLite.Web.Models.Suppliers.SupplierDetailsViewModel
 @{
     var isAdmin = User.IsInRole("Admin");
-    ViewData["Title"] = $"Supplier Profile - {Model.Name}";
+    ViewData[UiKeys.Title] = $"Supplier Profile - {Model.Name}";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4 pb-2">

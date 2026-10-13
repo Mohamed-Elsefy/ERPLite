@@ -1,7 +1,7 @@
-﻿@model UserDetailsViewModel
+@model UserDetailsViewModel
 
 @{
-    ViewData["Title"] = "User Details";
+    ViewData[UiKeys.Title] = "User Details";
     var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
     var avatarText = !string.IsNullOrEmpty(Model.FullName) && Model.FullName.Length >= 2
         ? Model.FullName.Substring(0, 2).ToUpper()

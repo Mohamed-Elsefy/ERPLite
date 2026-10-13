@@ -1,9 +1,10 @@
-﻿using ERPLite.Services.DTOs.HR;
+using ERPLite.Services.DTOs.HR;
 using ERPLite.Services.Interfaces.HR;
 using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Web.Areas.Employee.Models.Attendance;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ERPLite.Shared.Constants;
 
 namespace ERPLite.Web.Areas.Employee.Controllers
 {
@@ -68,9 +69,9 @@ namespace ERPLite.Web.Areas.Employee.Controllers
             );
 
             if (!result.Success)
-                TempData["Error"] = result.Message;
+                TempData[UiKeys.Error] = result.Message;
             else
-                TempData["Success"] = result.Message;
+                TempData[UiKeys.Success] = result.Message;
 
             return RedirectToAction(nameof(Index));
         }
@@ -92,9 +93,9 @@ namespace ERPLite.Web.Areas.Employee.Controllers
             );
 
             if (!result.Success)
-                TempData["Error"] = result.Message;
+                TempData[UiKeys.Error] = result.Message;
             else
-                TempData["Success"] = result.Message;
+                TempData[UiKeys.Success] = result.Message;
 
             return RedirectToAction(nameof(Index));
         }

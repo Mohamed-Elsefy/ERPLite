@@ -1,7 +1,7 @@
-﻿@model UserIndexViewModel
+@model UserIndexViewModel
 
 @{
-    ViewData["Title"] = "User Accounts Management";
+    ViewData[UiKeys.Title] = "User Accounts Management";
 }
 
 <div class="card border-0 shadow-sm rounded-3 bg-white p-4 mb-4">
@@ -23,10 +23,10 @@
     </div>
 </div>
 
-@if (TempData["Success"] != null)
+@if (TempData[UiKeys.Success] != null)
 {
     <div class="alert alert-success border-0 rounded-3 small d-flex align-items-center py-2.5 mb-3" role="alert" style="background-color: #f0fdf4; color: #16a34a;">
-        <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+        <i class="bi bi-check-circle me-2"></i>@TempData[UiKeys.Success]
     </div>
 }
 @if (TempData["ErrorMessage"] != null)

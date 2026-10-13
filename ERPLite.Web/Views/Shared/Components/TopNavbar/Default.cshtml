@@ -1,4 +1,4 @@
-﻿@{
+@{
     var roleName = User.IsInRole(Roles.Admin) ? "System Administrator" : User.IsInRole(Roles.Manager) ? "Department Manager" : "Corporate Employee";
 }
 
@@ -7,7 +7,7 @@
 
         <div class="d-flex align-items-center">
             <span class="navbar-brand mb-0 h6 fw-semibold text-dark border-start border-primary border-3 ps-2 style-title" style="font-size: 0.95rem;">
-                @(ViewData["Title"] ?? "Enterprise Portal")
+                @(ViewData[UiKeys.Title] ?? "Enterprise Portal")
             </span>
         </div>
 

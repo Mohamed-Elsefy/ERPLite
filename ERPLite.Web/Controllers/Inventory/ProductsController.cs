@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.Interfaces.Inventory;
 using ERPLite.Services.Interfaces.Infrastructure;
@@ -6,6 +6,7 @@ using ERPLite.Web.Models.Products;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ERPLite.Shared.Constants;
 
 namespace ERPLite.Web.Controllers.Inventory
 {
@@ -58,7 +59,7 @@ namespace ERPLite.Web.Controllers.Inventory
             var result = await _productService.GetByIdAsync(id);
             if (!result.Success || result.Data == null)
             {
-                TempData["Error"] = "Product could not be resolved.";
+                TempData[UiKeys.Error] = "Product could not be resolved.";
                 return RedirectToAction(nameof(Index));
             }
             return View(result.Data);
@@ -99,12 +100,12 @@ namespace ERPLite.Web.Controllers.Inventory
 
             if (!result.Success)
             {
-                TempData["Error"] = result.Message;
+                TempData[UiKeys.Error] = result.Message;
                 await PopulateDropdownsAsync(viewModel);
                 return View(viewModel);
             }
 
-            TempData["Success"] = result.Message;
+            TempData[UiKeys.Success] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 
@@ -115,7 +116,7 @@ namespace ERPLite.Web.Controllers.Inventory
             var result = await _productService.GetByIdAsync(id);
             if (!result.Success || result.Data == null)
             {
-                TempData["Error"] = "Product entity not found.";
+                TempData[UiKeys.Error] = "Product entity not found.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -151,12 +152,12 @@ namespace ERPLite.Web.Controllers.Inventory
 
             if (!result.Success)
             {
-                TempData["Error"] = result.Message;
+                TempData[UiKeys.Error] = result.Message;
                 await PopulateDropdownsAsync(viewModel);
                 return View(viewModel);
             }
 
-            TempData["Success"] = result.Message;
+            TempData[UiKeys.Success] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 
@@ -167,7 +168,7 @@ namespace ERPLite.Web.Controllers.Inventory
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _productService.DeleteAsync(id, _currentUser.UserId!);
-            TempData[result.Success ? "Success" : "Error"] = result.Message;
+            TempData[result.Success ? UiKeys.Success : UiKeys.Error] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 

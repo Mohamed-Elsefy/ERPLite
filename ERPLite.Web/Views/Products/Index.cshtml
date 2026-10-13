@@ -1,7 +1,7 @@
-﻿@model ProductIndexViewModel
+@model ProductIndexViewModel
 
 @{
-    ViewData["Title"] = "Warehouse Stock Inventory";
+    ViewData[UiKeys.Title] = "Warehouse Stock Inventory";
 }
 
 <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
@@ -18,17 +18,17 @@
         }
     </div>
 
-    @if (TempData["Success"] != null)
+    @if (TempData[UiKeys.Success] != null)
     {
         <div class="alert alert-success alert-dismissible fade show border-0 rounded-3" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData[UiKeys.Success]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
-    @if (TempData["Error"] != null)
+    @if (TempData[UiKeys.Error] != null)
     {
         <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData[UiKeys.Error]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }

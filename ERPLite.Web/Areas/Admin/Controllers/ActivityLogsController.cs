@@ -1,7 +1,8 @@
-﻿using ERPLite.Services.Interfaces.System;
+using ERPLite.Services.Interfaces.System;
 using ERPLite.Web.Areas.Admin.Models.System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ERPLite.Shared.Constants;
 
 namespace ERPLite.Web.Areas.Admin.Controllers
 {
@@ -22,7 +23,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
             var result = await _activityLogService.GetRecentLogsAsync();
             if (!result.Success || result.Data == null)
             {
-                TempData["Error"] = "Unable to retrieve system audit logs.";
+                TempData[UiKeys.Error] = "Unable to retrieve system audit logs.";
                 return View(new ActivityLogsIndexViewModel());
             }
 

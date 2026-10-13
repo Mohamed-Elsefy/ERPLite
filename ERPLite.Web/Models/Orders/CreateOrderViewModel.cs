@@ -16,5 +16,7 @@ namespace ERPLite.Web.Models.Orders
         public IEnumerable<SelectListItem> Customers { get; set; } = Enumerable.Empty<SelectListItem>();
 
         public IEnumerable<SelectListItem> Products { get; set; } = Enumerable.Empty<SelectListItem>();
+
+        public List<ProductOptionViewModel> AvailableProducts { get; set; } = new();
     }
 }

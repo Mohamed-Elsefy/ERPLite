@@ -1,7 +1,7 @@
-﻿@model ERPLite.Web.Models.Departments.DepartmentDetailsViewModel
+@model ERPLite.Web.Models.Departments.DepartmentDetailsViewModel
 @{
     var isAdmin = User.IsInRole("Admin");
-    ViewData["Title"] = $"Department Details - {Model.Name}";
+    ViewData[UiKeys.Title] = $"Department Details - {Model.Name}";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4 pb-2">

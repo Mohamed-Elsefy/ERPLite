@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ERPLite.Services.DTOs.HR;
 using ERPLite.Services.Interfaces.Dashboard;
 using ERPLite.Services.Interfaces.HR;
@@ -7,6 +7,7 @@ using ERPLite.Web.Models.Employees;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ERPLite.Shared.Constants;
 
 namespace ERPLite.Web.Controllers.HR
 {
@@ -59,7 +60,7 @@ namespace ERPLite.Web.Controllers.HR
             var result = await _employeeService.GetByIdAsync(id);
             if (!result.Success || result.Data == null)
             {
-                TempData["Error"] = "Target employee profile not found.";
+                TempData[UiKeys.Error] = "Target employee profile not found.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -117,7 +118,7 @@ namespace ERPLite.Web.Controllers.HR
                 return View(viewModel);
             }
 
-            TempData["Success"] = result.Message;
+            TempData[UiKeys.Success] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 
@@ -155,7 +156,7 @@ namespace ERPLite.Web.Controllers.HR
                 return View(viewModel);
             }
 
-            TempData["Success"] = result.Message;
+            TempData[UiKeys.Success] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 
@@ -171,7 +172,7 @@ namespace ERPLite.Web.Controllers.HR
                 // حماية أمنية: منع المسؤول الفعال من تدمير حسابه الخاص
                 if (employeeResult.Data.UserId == _currentUser.UserId)
                 {
-                    TempData["Error"] = "Protection Shield: You cannot delete the profile of the currently logged-in administrator.";
+                    TempData[UiKeys.Error] = "Protection Shield: You cannot delete the profile of the currently logged-in administrator.";
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -179,9 +180,9 @@ namespace ERPLite.Web.Controllers.HR
             var result = await _employeeService.DeleteAsync(id, _currentUser.UserId!);
 
             if (!result.Success)
-                TempData["Error"] = result.Message;
+                TempData[UiKeys.Error] = result.Message;
             else
-                TempData["Success"] = result.Message;
+                TempData[UiKeys.Success] = result.Message;
 
             return RedirectToAction(nameof(Index));
         }

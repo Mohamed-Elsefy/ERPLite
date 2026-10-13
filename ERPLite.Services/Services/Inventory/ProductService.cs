@@ -67,7 +67,7 @@ namespace ERPLite.Services.Services.Inventory
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Create",
+                action: AuditActions.Create,
                 entityName: SystemModules.Products,
                 entityId: product.Id,
                 description: $"Created product entry for '{product.Name}' with initial stock of {product.QuantityInStock} units under category '{category.Name}'."
@@ -94,8 +94,8 @@ namespace ERPLite.Services.Services.Inventory
                     userId: currentUserId,
                     title: "CRITICAL VECTOR: Inventory Depletion",
                     message: $"Product '{product.Name}' has depleted below safety parameters. Current stock: {product.QuantityInStock} units.",
-                    type: "Inventory",
-                    priority: "Urgent"
+                    type: NotificationTypes.Inventory,
+                    priority: NotificationPriorities.Urgent
                 );
             }
 
@@ -103,7 +103,7 @@ namespace ERPLite.Services.Services.Inventory
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Update",
+                action: AuditActions.Update,
                 entityName: SystemModules.Products,
                 entityId: product.Id,
                 description: $"Updated catalog details and inventory rules for product: '{product.Name}'."
@@ -127,7 +127,7 @@ namespace ERPLite.Services.Services.Inventory
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Delete",
+                action: AuditActions.Delete,
                 entityName: SystemModules.Products,
                 entityId: id,
                 description: $"Soft-deleted product from inventory tracking: '{productName}'."

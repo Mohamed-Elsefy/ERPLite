@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Interfaces.Inventory;
@@ -8,6 +8,7 @@ using ERPLite.Web.Models.Orders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ERPLite.Shared.Constants;
 
 namespace ERPLite.Web.Controllers.Sales
 {
@@ -48,7 +49,7 @@ namespace ERPLite.Web.Controllers.Sales
             var result = await _orderService.GetOrderDetailsAsync(id);
             if (!result.Success || result.Data == null)
             {
-                TempData["Error"] = result.Message;
+                TempData[UiKeys.Error] = result.Message;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -92,7 +93,7 @@ namespace ERPLite.Web.Controllers.Sales
                 return View(viewModel);
             }
 
-            TempData["Success"] = result.Message;
+            TempData[UiKeys.Success] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 
@@ -116,7 +117,12 @@ namespace ERPLite.Web.Controllers.Sales
                 Text = $"{p.Name} (Price: {p.Price:C2} | Stock: {p.QuantityInStock})"
             }).ToList();
 
-            ViewBag.ProductsRaw = activeProducts.Select(p => new { p.Id, p.Price, p.Name }).ToList();
+            viewModel.AvailableProducts = activeProducts.Select(p => new ProductOptionViewModel
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price
+            }).ToList();
         }
     }
 }

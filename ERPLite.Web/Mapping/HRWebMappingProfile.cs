@@ -20,16 +20,10 @@ namespace ERPLite.Web.Mapping
                 .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.AttendanceLogs, opt => opt.Ignore());
 
+            CreateMap<EmployeeDto, UpdateEmployeeDto>();
+
             CreateMap<EmployeeDto, EditEmployeeViewModel>()
-                .ForMember(dest => dest.Employee, opt => opt.MapFrom(src => new UpdateEmployeeDto
-                {
-                    Id = src.Id,
-                    FullName = src.FullName,
-                    Email = src.Email,
-                    Salary = src.Salary,
-                    DepartmentId = src.DepartmentId,
-                    UserId = src.UserId
-                }))
+                .ForMember(dest => dest.Employee, opt => opt.MapFrom(src => src))
                 .ForMember(dest => dest.DepartmentList, opt => opt.Ignore());
         }
     }

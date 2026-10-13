@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Interfaces.Sales;
 using ERPLite.Services.Interfaces.Infrastructure;
@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ERPLite.Shared.Constants;
 
 namespace ERPLite.Web.Controllers.Sales
 {
@@ -48,14 +49,14 @@ namespace ERPLite.Web.Controllers.Sales
             var orderDetails = await _orderService.GetOrderDetailsAsync(orderId);
             if (!orderDetails.Success || orderDetails.Data == null)
             {
-                TempData["Error"] = "Sales record target context not found.";
+                TempData[UiKeys.Error] = "Sales record target context not found.";
                 return RedirectToAction("Index", "Orders");
             }
 
             var financialSummary = await _paymentService.GetOrderFinancialSummaryAsync(orderId);
             if (!financialSummary.Success || financialSummary.Data == null)
             {
-                TempData["Error"] = "Unable to compute financial summary vectors.";
+                TempData[UiKeys.Error] = "Unable to compute financial summary vectors.";
                 return RedirectToAction("Index", "Orders");
             }
 
@@ -83,14 +84,14 @@ namespace ERPLite.Web.Controllers.Sales
             var summaryResult = await _paymentService.GetOrderFinancialSummaryAsync(orderId);
             if (!summaryResult.Success || summaryResult.Data == null)
             {
-                TempData["Error"] = "Cannot initialize remittance voucher context.";
+                TempData[UiKeys.Error] = "Cannot initialize remittance voucher context.";
                 return RedirectToAction("Index", "Orders");
             }
 
             var financial = summaryResult.Data;
             if (financial.RemainingAmount <= 0)
             {
-                TempData["Error"] = "This ledger invoice is already fully cleared.";
+                TempData[UiKeys.Error] = "This ledger invoice is already fully cleared.";
                 return RedirectToAction(nameof(OrderPayments), new { orderId });
             }
 
@@ -138,7 +139,7 @@ namespace ERPLite.Web.Controllers.Sales
                 return View(vm);
             }
 
-            TempData["Success"] = "Remittance transaction finalized and committed to sales ledger.";
+            TempData[UiKeys.Success] = "Remittance transaction finalized and committed to sales ledger.";
             return RedirectToAction(nameof(OrderPayments), new { orderId = vm.OrderId });
         }
     }

@@ -117,7 +117,7 @@ namespace ERPLite.Services.Services.Users
 
                 await _activityLogService.LogAsync(
                     userId: currentUserId,
-                    action: "Create",
+                    action: AuditActions.Create,
                     entityName: SystemModules.Users,
                     entityId: employee.Id,
                     description: "Created user account and employee profile."
@@ -173,7 +173,7 @@ namespace ERPLite.Services.Services.Users
 
                 await _activityLogService.LogAsync(
                     userId: currentUserId,
-                    action: "GrantAccess",
+                    action: AuditActions.GrantAccess,
                     entityName: SystemModules.Users,
                     entityId: employee.Id,
                     description: "Granted employee access."
@@ -210,7 +210,7 @@ namespace ERPLite.Services.Services.Users
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "UpdateRole",
+                action: AuditActions.UpdateRole,
                 entityName: SystemModules.Users,
                 entityId: 0,
                 description: "Updated user role."
@@ -250,7 +250,7 @@ namespace ERPLite.Services.Services.Users
 
                 await _activityLogService.LogAsync(
                     userId: currentUserId,
-                    action: "DeleteUserIdentity",
+                    action: AuditActions.DeleteUserIdentity,
                     entityName: SystemModules.Users,
                     entityId: 0,
                     description: "Removed user access."
@@ -277,7 +277,7 @@ namespace ERPLite.Services.Services.Users
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Lock",
+                action: AuditActions.Lock,
                 entityName: SystemModules.Users,
                 entityId: 0,
                 description: "Locked user account."
@@ -298,7 +298,7 @@ namespace ERPLite.Services.Services.Users
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Unlock",
+                action: AuditActions.Unlock,
                 entityName: SystemModules.Users,
                 entityId: 0,
                 description: "Unlocked user account."

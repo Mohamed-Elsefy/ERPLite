@@ -1,8 +1,9 @@
-﻿using ERPLite.Repositories.Interfaces.Common;
+﻿using AutoMapper;
+using ERPLite.Repositories.Interfaces.Common;
 using ERPLite.Services.DTOs.Dashboard;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Dashboard;
-using ERPLite.Services.Interfaces.Infrastructure; 
+using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,11 +13,13 @@ namespace ERPLite.Services.Services.Dashboard
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IMapper _mapper;
 
-        public DashboardService(IUnitOfWork unitOfWork, IDateTimeProvider dateTimeProvider)
+        public DashboardService(IUnitOfWork unitOfWork, IDateTimeProvider dateTimeProvider, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _dateTimeProvider = dateTimeProvider;
+            _mapper = mapper;
         }
 
         public async Task<ServiceResult<DashboardStatisticsDto>> GetStatisticsAsync()
@@ -93,16 +96,7 @@ namespace ERPLite.Services.Services.Dashboard
 
                 if (absentCount < 0) absentCount = 0;
 
-                var recordsDto = attendanceList.Select(a => new AttendanceManagementDto
-                {
-                    AttendanceId = a.Id,
-                    EmployeeName = a.Employee?.FullName ?? "Unknown Employee",
-                    DepartmentName = a.Employee?.Department?.Name ?? "No Department",
-                    Date = a.Date,
-                    CheckInTime = a.CheckInTime,
-                    CheckOutTime = a.CheckOutTime,
-                    Status = a.Status.ToString()
-                }).ToList();
+                var recordsDto = _mapper.Map<List<AttendanceManagementDto>>(attendanceList);
 
                 var dashboardData = new AttendanceDashboardDataDto
                 {
@@ -127,16 +121,7 @@ namespace ERPLite.Services.Services.Dashboard
             {
                 var history = await _unitOfWork.Attendances.GetEmployeeAttendanceAsync(employeeId);
 
-                var dto = history.Select(a => new AttendanceManagementDto
-                {
-                    AttendanceId = a.Id,
-                    EmployeeName = a.Employee?.FullName ?? "Unknown",
-                    DepartmentName = a.Employee?.Department?.Name ?? "No Department",
-                    Date = a.Date,
-                    CheckInTime = a.CheckInTime,
-                    CheckOutTime = a.CheckOutTime,
-                    Status = a.Status.ToString()
-                }).ToList();
+                var dto = _mapper.Map<List<AttendanceManagementDto>>(history.ToList());
 
                 return ServiceResult<IEnumerable<AttendanceManagementDto>>.Successful(dto);
             }

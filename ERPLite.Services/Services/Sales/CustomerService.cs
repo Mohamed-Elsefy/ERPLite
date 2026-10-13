@@ -59,7 +59,7 @@ namespace ERPLite.Services.Services.Sales
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Create",
+                action: AuditActions.Create,
                 entityName: SystemModules.Customers,
                 entityId: customer.Id,
                 description: $"Created customer record for '{customer.FullName}' with phone: {customer.Phone}."
@@ -83,7 +83,7 @@ namespace ERPLite.Services.Services.Sales
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Update",
+                action: AuditActions.Update,
                 entityName: SystemModules.Customers,
                 entityId: customer.Id,
                 description: $"Updated profile and information details for customer: '{customer.FullName}'."
@@ -107,7 +107,7 @@ namespace ERPLite.Services.Services.Sales
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Delete",
+                action: AuditActions.Delete,
                 entityName: SystemModules.Customers,
                 entityId: id,
                 description: $"Soft-deleted customer account: '{customerName}'."

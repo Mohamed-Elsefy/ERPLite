@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ERPLite.Services.DTOs.HR;
 using ERPLite.Services.DTOs.Users;
 using ERPLite.Services.Helpers;
@@ -9,6 +9,7 @@ using ERPLite.Web.Areas.Admin.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ERPLite.Shared.Constants;
 
 namespace ERPLite.Web.Areas.Admin.Controllers
 {
@@ -92,7 +93,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            TempData["Success"] = result.Message;
+            TempData[UiKeys.Success] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 
@@ -132,7 +133,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            TempData["Success"] = result.Message;
+            TempData[UiKeys.Success] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 
@@ -218,7 +219,7 @@ namespace ERPLite.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            TempData["Success"] = result.Message;
+            TempData[UiKeys.Success] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 

@@ -1,10 +1,11 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.Interfaces.Inventory;
 using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Web.Models.Suppliers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ERPLite.Shared.Constants;
 
 namespace ERPLite.Web.Controllers.Inventory
 {
@@ -48,7 +49,7 @@ namespace ERPLite.Web.Controllers.Inventory
             var result = await _supplierService.GetByIdAsync(id);
             if (!result.Success || result.Data == null)
             {
-                TempData["Error"] = "Supplier not found";
+                TempData[UiKeys.Error] = "Supplier not found";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -76,11 +77,11 @@ namespace ERPLite.Web.Controllers.Inventory
 
             if (!result.Success)
             {
-                TempData["Error"] = result.Message;
+                TempData[UiKeys.Error] = result.Message;
                 return View(viewModel);
             }
 
-            TempData["Success"] = result.Message;
+            TempData[UiKeys.Success] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 
@@ -114,11 +115,11 @@ namespace ERPLite.Web.Controllers.Inventory
 
             if (!result.Success)
             {
-                TempData["Error"] = result.Message;
+                TempData[UiKeys.Error] = result.Message;
                 return View(viewModel);
             }
 
-            TempData["Success"] = result.Message;
+            TempData[UiKeys.Success] = result.Message;
             return RedirectToAction(nameof(Index));
         }
 
@@ -129,7 +130,7 @@ namespace ERPLite.Web.Controllers.Inventory
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _supplierService.DeleteAsync(id, _currentUser.UserId!);
-            TempData[result.Success ? "Success" : "Error"] = result.Message;
+            TempData[result.Success ? UiKeys.Success : UiKeys.Error] = result.Message;
             return RedirectToAction(nameof(Index));
         }
     }

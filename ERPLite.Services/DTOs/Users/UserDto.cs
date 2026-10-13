@@ -1,8 +1,10 @@
-﻿using ERPLite.Services.DTOs.Common;
-
-namespace ERPLite.Services.DTOs.Users
+﻿namespace ERPLite.Services.DTOs.Users
 {
-    public class UserDto : BaseDto
+    /// <summary>
+    /// Identity keys are strings (<see cref="UserId"/>), so this DTO intentionally
+    /// does not inherit the int-based <c>BaseDto</c> to avoid a misleading dual-ID shape.
+    /// </summary>
+    public class UserDto
     {
         public string UserId { get; set; } = string.Empty;
 

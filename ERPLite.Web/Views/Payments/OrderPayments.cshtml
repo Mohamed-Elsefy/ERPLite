@@ -1,7 +1,7 @@
-﻿@model OrderFinancialViewModel
+@model OrderFinancialViewModel
 
 @{
-    ViewData["Title"] = $"Financial Audit - ORD-{Model.OrderId}";
+    ViewData[UiKeys.Title] = $"Financial Audit - ORD-{Model.OrderId}";
 
     string statusBadgeClass = Model.PaymentStatus switch
     {

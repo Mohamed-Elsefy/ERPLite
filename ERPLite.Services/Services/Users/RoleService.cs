@@ -55,7 +55,7 @@ namespace ERPLite.Services.Services.Users
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "AssignRole",
+                action: AuditActions.AssignRole,
                 entityName: SystemModules.Users,
                 entityId: 0,
                 description: $"Assigned application security role '{role}' to user account '{user.FullName}'."
@@ -82,7 +82,7 @@ namespace ERPLite.Services.Services.Users
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "RemoveRole",
+                action: AuditActions.RemoveRole,
                 entityName: SystemModules.Users,
                 entityId: 0,
                 description: $"Revoked application security role '{role}' from user account '{user.FullName}'."

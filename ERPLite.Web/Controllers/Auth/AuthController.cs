@@ -1,9 +1,10 @@
-﻿using ERPLite.Services.DTOs.Auth;
+using ERPLite.Services.DTOs.Auth;
 using ERPLite.Services.Interfaces.Auth;
 using ERPLite.Shared.Helpers;
 using ERPLite.Web.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ERPLite.Shared.Constants;
 
 namespace ERPLite.Web.Controllers.Auth
 {
@@ -25,7 +26,7 @@ namespace ERPLite.Web.Controllers.Auth
                 return RedirectUserByRole();
             }
 
-            ViewData["ReturnUrl"] = returnUrl;
+            ViewData[UiKeys.ReturnUrl] = returnUrl;
             return View();
         }
 
@@ -34,7 +35,7 @@ namespace ERPLite.Web.Controllers.Auth
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
-            ViewData["ReturnUrl"] = returnUrl;
+            ViewData[UiKeys.ReturnUrl] = returnUrl;
 
             if (!ModelState.IsValid)
                 return View(model);

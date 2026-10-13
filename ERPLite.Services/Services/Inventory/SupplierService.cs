@@ -55,13 +55,13 @@ namespace ERPLite.Services.Services.Inventory
                 userId: currentUserId,
                 title: "Supply Chain Expansion",
                 message: $"Vendor profile for '{supplier.Name}' registered successfully into global procurement tracking system.",
-                type: "Procurement",
-                priority: "Medium"
+                type: NotificationTypes.Procurement,
+                priority: NotificationPriorities.Medium
             );
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Create",
+                action: AuditActions.Create,
                 entityName: SystemModules.Suppliers,
                 entityId: supplier.Id,
                 description: $"Created supplier profile for '{supplier.Name}' with contact information."
@@ -85,7 +85,7 @@ namespace ERPLite.Services.Services.Inventory
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Update",
+                action: AuditActions.Update,
                 entityName: SystemModules.Suppliers,
                 entityId: supplier.Id,
                 description: $"Updated profile and supplier data for: '{supplier.Name}'."
@@ -109,7 +109,7 @@ namespace ERPLite.Services.Services.Inventory
 
             await _activityLogService.LogAsync(
                 userId: currentUserId,
-                action: "Delete",
+                action: AuditActions.Delete,
                 entityName: SystemModules.Suppliers,
                 entityId: id,
                 description: $"Soft-deleted supplier record: '{supplierName}'."

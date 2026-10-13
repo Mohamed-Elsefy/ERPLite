@@ -1,6 +1,6 @@
-﻿@model IEnumerable<ERPLite.Services.DTOs.HR.EmployeeDto>
+@model IEnumerable<ERPLite.Services.DTOs.HR.EmployeeDto>
 @{
-    ViewData["Title"] = "Master Employees Ledger";
+    ViewData[UiKeys.Title] = "Master Employees Ledger";
     var isAdmin = User.IsInRole("Admin");
 }
 
@@ -22,17 +22,17 @@
         }
     </div>
 
-    @if (TempData["Success"] != null)
+    @if (TempData[UiKeys.Success] != null)
     {
         <div class="alert alert-success alert-dismissible fade show border-0 rounded-3 small mb-4" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData[UiKeys.Success]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
-    @if (TempData["Error"] != null)
+    @if (TempData[UiKeys.Error] != null)
     {
         <div class="alert alert-danger alert-dismissible fade show border-0 rounded-3 small mb-4" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData[UiKeys.Error]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }

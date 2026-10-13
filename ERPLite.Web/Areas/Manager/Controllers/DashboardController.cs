@@ -1,4 +1,5 @@
-﻿using ERPLite.Services.Interfaces.Dashboard;
+using ERPLite.Services.Interfaces.Dashboard;
+using ERPLite.Shared.Constants;
 using ERPLite.Web.Models.Dashboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,7 @@ namespace ERPLite.Web.Areas.Manager.Controllers
                 Statistics = statisticsResult.Data
             };
 
-            ViewData["PageTitle"] = "Manager Operational Dashboard";
+            ViewData[UiKeys.PageTitle] = "Manager Operational Dashboard";
             return View(vm);
         }
 
@@ -51,18 +52,12 @@ namespace ERPLite.Web.Areas.Manager.Controllers
                 return View("Error");
             }
 
-            var viewModel = new ManagementDashboardViewModel
-            {
-                IsSuperAdmin = false,
-                DepartmentName = attendanceDataResult.Data.Records.FirstOrDefault()?.DepartmentName ?? "Assigned Department",
-                TotalEmployees = attendanceDataResult.Data.TotalEmployees,
-                PresentToday = attendanceDataResult.Data.PresentCount,
-                AbsentToday = attendanceDataResult.Data.AbsentCount,
-                LateToday = attendanceDataResult.Data.LateCount,
-                AttendanceRecords = attendanceDataResult.Data.Records
-            };
+            var viewModel = ManagementDashboardViewModel.FromAttendanceData(
+                attendanceDataResult.Data,
+                isSuperAdmin: false,
+                departmentName: attendanceDataResult.Data.Records.FirstOrDefault()?.DepartmentName ?? DisplayDefaults.AssignedDepartment);
 
-            ViewData["PageTitle"] = "Department Attendance Hub";
+            ViewData[UiKeys.PageTitle] = "Department Attendance Hub";
             return View(viewModel);
         }
     }

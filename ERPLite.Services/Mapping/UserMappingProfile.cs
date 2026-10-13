@@ -9,7 +9,6 @@ namespace ERPLite.Services.Mapping
         public UserMappingProfile()
         {
             CreateMap<ApplicationUser, UserDto>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => src.EmployeeId))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt)); 
