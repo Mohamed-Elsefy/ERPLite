@@ -1,6 +1,6 @@
 # 🚀 ERPLite - Enterprise Resource Planning System
 
-**ERPLite** is a lightweight, fully integrated Enterprise Resource Planning (ERP) system built on a multi-layered **Clean Architecture** utilizing **.NET 8** and **Entity Framework Core**. The system is architected for high scalability, financial precision, and enterprise-grade modularity, featuring native blueprints for AI integration.
+**ERPLite** is a lightweight, fully integrated Enterprise Resource Planning (ERP) system built on a multi-layered **Clean Architecture** utilizing **.NET 10** and **Entity Framework Core**. The system is architected for high scalability, financial precision, and enterprise-grade modularity, featuring native blueprints for AI integration.
 
 ---
 
@@ -47,11 +47,11 @@ The project follows a strict engineering timeline to ensure structural integrity
 
 [x] Phase 1: Core Infrastructure & Database Layer Implementation (Current Status).
 
-[ ] Phase 2: Repository Layer & Unit of Work implementation.
+[x] Phase 2: Repository Layer & Unit of Work implementation.
 
-[ ] Phase 3: Service Layer, DTO mappings, and Core Business Validation.
+[x] Phase 3: Service Layer, DTO mappings, and Core Business Validation.
 
-[ ] Phase 4: Presentation Web UI, Controller logic, and Identity Authentication setup.
+[x] Phase 4: Presentation Web UI, Controller logic, and Identity Authentication setup.
 
 [ ] Phase 5: AI Analytical Engine integration and smart reporting.
 

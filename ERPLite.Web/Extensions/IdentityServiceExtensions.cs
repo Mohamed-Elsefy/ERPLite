@@ -57,13 +57,10 @@ namespace ERPLite.Web.Extensions
                     policy.RequireRole(Roles.Employee));
 
                 options.AddPolicy("ManagerOnly", policy =>
-                    policy.RequireRole("Manager"));
+                    policy.RequireRole(Roles.Manager));
 
                 options.AddPolicy("RequireManagerOrAdmin", policy =>
                     policy.RequireRole(Roles.Admin, Roles.Manager));
-
-                options.AddPolicy("RequireAnyRole", policy =>
-                    policy.RequireRole(Roles.Admin, Roles.Manager, Roles.Employee));
 
                 options.AddPolicy("AuthenticatedUser", policy =>
                     policy.RequireAuthenticatedUser());

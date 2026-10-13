@@ -17,7 +17,6 @@ namespace ERPLite.Services.Services.Reports
 
         public byte[] GenerateReportPdf<T>(string title, T data)
         {
-            // 🌟 تعديل: استخدام Now بدلاً من LocalNow المتسببة في الخطأ
             var currentGenerationTime = _dateTimeProvider.Now;
 
             return Document.Create(container =>

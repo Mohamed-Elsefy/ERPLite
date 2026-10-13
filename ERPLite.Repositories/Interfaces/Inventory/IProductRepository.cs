@@ -11,8 +11,6 @@ namespace ERPLite.Repositories.Interfaces.Inventory
 
         Task<IEnumerable<Product>> GetLowStockProductsAsync();
 
-        Task<IEnumerable<Product>> SearchProductsAsync(string keyword);
-
         Task<IEnumerable<Product>> GetProductsByCategoryAsync(int categoryId);
 
         Task<bool> ExistsByNameAsync(string name, int? excludedProductId = null);
@@ -24,8 +22,6 @@ namespace ERPLite.Repositories.Interfaces.Inventory
         Task<int> GetOutOfStockCountAsync();
 
         Task<decimal> GetInventoryValueAsync();
-
-        Task<Product?> GetForOrderAsync(int id);
 
         Task<IEnumerable<Product>> GetProductsByIdsAsync(IEnumerable<int> ids);
     }

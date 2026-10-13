@@ -33,7 +33,6 @@ namespace ERPLite.Services.Services.Inventory
 
         public async Task<ServiceResult<SupplierDto>> GetByIdAsync(int id)
         {
-            // 🌟 جلب المورد مدمجاً بمنتجاته لحل مشاكل الأداء
             var supplier = await _unitOfWork.Suppliers.GetByIdAsync(id);
             if (supplier == null)
                 return ServiceResult<SupplierDto>.Failed("Supplier not found.");
@@ -50,7 +49,6 @@ namespace ERPLite.Services.Services.Inventory
             var supplier = _mapper.Map<Supplier>(dto);
             await _unitOfWork.Suppliers.AddAsync(supplier);
 
-            // 🌟 التعديل المعماري للحفظ أولاً
             await _unitOfWork.SaveChangesAsync();
 
             await _notificationService.CreateSystemNotificationAsync(

@@ -7,21 +7,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Constants\**" />
-	  <Compile Remove="Interfaces\AI\**" />
-	  <Compile Remove="Interfaces\Notifications\**" />
-	  <Compile Remove="Services\Notifications\**" />
-	  <EmbeddedResource Remove="Constants\**" />
-	  <EmbeddedResource Remove="Interfaces\AI\**" />
-	  <EmbeddedResource Remove="Interfaces\Notifications\**" />
-	  <EmbeddedResource Remove="Services\Notifications\**" />
-	  <None Remove="Constants\**" />
-	  <None Remove="Interfaces\AI\**" />
-	  <None Remove="Interfaces\Notifications\**" />
-	  <None Remove="Services\Notifications\**" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\ERPLite.Data\ERPLite.Data.csproj" />
 		<ProjectReference Include="..\ERPLite.Repositories\ERPLite.Repositories.csproj" />
 		<ProjectReference Include="..\ERPLite.Shared\ERPLite.Shared.csproj" />

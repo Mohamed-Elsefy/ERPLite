@@ -49,7 +49,6 @@ namespace ERPLite.Services.Services.Inventory
             var category = _mapper.Map<Category>(dto);
             await _unitOfWork.Categories.AddAsync(category);
 
-            // 🌟 تعديل الترتيب المعماري: الحفظ أولاً لضمان نجاح العملية في قاعدة البيانات وحفظ الـ Id الصحيح
             await _unitOfWork.SaveChangesAsync();
 
             await _notificationService.CreateSystemNotificationAsync(

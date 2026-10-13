@@ -42,20 +42,6 @@ namespace ERPLite.Repositories.Implementation.Inventory
         }
 
 
-        public async Task<IEnumerable<Product>> SearchProductsAsync(string keyword)
-        {
-            if (string.IsNullOrWhiteSpace(keyword))
-                return await GetAllAsync();
-
-            var cleanKeyword = keyword.Trim();
-
-            return await _dbSet
-                .AsNoTracking()
-                .Where(p => EF.Functions.Like(p.Name, $"%{cleanKeyword}%"))
-                .ToListAsync();
-        }
-
-
         public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(int categoryId)
         {
             return await _dbSet
@@ -98,13 +84,6 @@ namespace ERPLite.Repositories.Implementation.Inventory
         {
             return await _dbSet.SumAsync(x =>
                     x.Price * x.QuantityInStock);
-        }
-
-        public async Task<Product?> GetForOrderAsync(int id)
-        {
-            return await _dbSet
-                .AsNoTracking() 
-                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<IEnumerable<Product>> GetProductsByIdsAsync(IEnumerable<int> ids)
