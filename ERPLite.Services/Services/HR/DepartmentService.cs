@@ -6,6 +6,7 @@ using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.HR;
 using ERPLite.Services.Interfaces.System;
 using ERPLite.Shared.Constants;
+using FluentValidation;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,12 +18,21 @@ namespace ERPLite.Services.Services.HR
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
+        private readonly IValidator<CreateDepartmentDto> _createValidator;
+        private readonly IValidator<UpdateDepartmentDto> _updateValidator;
 
-        public DepartmentService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService)
+        public DepartmentService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IActivityLogService activityLogService,
+            IValidator<CreateDepartmentDto> createValidator,
+            IValidator<UpdateDepartmentDto> updateValidator)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         public async Task<ServiceResult<IEnumerable<DepartmentDto>>> GetAllAsync()
@@ -44,6 +54,10 @@ namespace ERPLite.Services.Services.HR
 
         public async Task<ServiceResult> CreateAsync(CreateDepartmentDto dto, string currentUserId)
         {
+            var validationResult = await _createValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult.Failed(validationResult.ToErrorString());
+
             var exists = await _unitOfWork.Departments.ExistsByNameAsync(dto.Name);
             if (exists)
                 return ServiceResult.Failed("Department already exists.");
@@ -66,6 +80,10 @@ namespace ERPLite.Services.Services.HR
 
         public async Task<ServiceResult> UpdateAsync(UpdateDepartmentDto dto, string currentUserId)
         {
+            var validationResult = await _updateValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult.Failed(validationResult.ToErrorString());
+
             var department = await _unitOfWork.Departments.GetByIdAsync(dto.Id);
             if (department is null)
                 return ServiceResult.Failed("Department not found.");

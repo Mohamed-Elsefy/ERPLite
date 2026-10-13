@@ -5,6 +5,7 @@ using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.HR;
 using ERPLite.Services.Interfaces.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace ERPLite.Services.Services.HR
 {
@@ -14,17 +15,20 @@ namespace ERPLite.Services.Services.HR
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ILogger<EmployeeAccountService> _logger;
 
         public EmployeeAccountService(
             IEmployeeService employeeService,
             UserManager<ApplicationUser> userManager,
             IUnitOfWork unitOfWork,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            ILogger<EmployeeAccountService> logger)
         {
             _employeeService = employeeService;
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _dateTimeProvider = dateTimeProvider;
+            _logger = logger;
         }
 
         public async Task<ServiceResult> CreateEmployeeWithAccountAsync(
@@ -91,7 +95,8 @@ namespace ERPLite.Services.Services.HR
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackTransactionAsync();
-                return ServiceResult.Failed($"An infrastructure breakdown occurred: {ex.Message}");
+                _logger.LogError(ex, "Failed to create employee {Email} with system account", employeeDto.Email);
+                return ServiceResult.Failed("An error occurred while creating the employee account.");
             }
         }
     }

@@ -9,8 +9,10 @@ using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.System;
 using ERPLite.Services.Interfaces.Users;
 using ERPLite.Shared.Constants;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ERPLite.Services.Services.Users
 {
@@ -20,17 +22,26 @@ namespace ERPLite.Services.Services.Users
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IValidator<CreateUserDto> _createValidator;
+        private readonly IValidator<UpdateUserRoleDto> _updateRoleValidator;
+        private readonly ILogger<UserService> _logger;
 
         public UserService(
             UserManager<ApplicationUser> userManager,
             IMapper mapper,
             IActivityLogService activityLogService,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IValidator<CreateUserDto> createValidator,
+            IValidator<UpdateUserRoleDto> updateRoleValidator,
+            ILogger<UserService> logger)
         {
             _userManager = userManager;
             _mapper = mapper;
             _activityLogService = activityLogService;
             _unitOfWork = unitOfWork;
+            _createValidator = createValidator;
+            _updateRoleValidator = updateRoleValidator;
+            _logger = logger;
         }
 
         public async Task<ServiceResult<UserDto>> GetUserByIdAsync(string userId)
@@ -49,6 +60,10 @@ namespace ERPLite.Services.Services.Users
 
         public async Task<ServiceResult> CreateUserAsync(CreateUserDto dto, string currentUserId)
         {
+            var validationResult = await _createValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult.Failed(validationResult.ToErrorString());
+
             var existingUser = await _userManager.FindByEmailAsync(dto.Email);
             if (existingUser != null)
                 return ServiceResult.Failed("Email already exists in user accounts.");
@@ -104,12 +119,14 @@ namespace ERPLite.Services.Services.Users
                     description: "Created user account and employee profile."
                 );
 
+                _logger.LogInformation("Created user account {Email} with role {Role}", dto.Email, dto.Role);
                 return ServiceResult.Successful("User account and matching Employee profile synchronized successfully.");
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackTransactionAsync();
-                return ServiceResult.Failed($"An error occurred during synchronization: {ex.Message}");
+                _logger.LogError(ex, "Failed to create user account {Email}", dto.Email);
+                return ServiceResult.Failed("An error occurred while creating the user account.");
             }
         }
 
@@ -160,17 +177,23 @@ namespace ERPLite.Services.Services.Users
                     description: "Granted employee access."
                 );
 
+                _logger.LogInformation("Granted system access to employee {EmployeeId} with role {Role}", employeeId, role);
                 return ServiceResult.Successful($"Access permission established successfully for '{employee.FullName}'.");
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackTransactionAsync();
-                return ServiceResult.Failed($"An error occurred during the promotion process: {ex.Message}");
+                _logger.LogError(ex, "Failed to grant access to employee {EmployeeId}", employeeId);
+                return ServiceResult.Failed("An error occurred while granting employee access.");
             }
         }
 
         public async Task<ServiceResult> UpdateUserRoleAsync(UpdateUserRoleDto dto, string currentUserId)
         {
+            var validationResult = await _updateRoleValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult.Failed(validationResult.ToErrorString());
+
             var user = await _userManager.FindByIdAsync(dto.UserId);
             if (user is null)
                 return ServiceResult.Failed("User not found.");
@@ -237,12 +260,14 @@ namespace ERPLite.Services.Services.Users
                     description: "Removed user access."
                 );
 
+                _logger.LogInformation("Removed user access {UserId}", userId);
                 return ServiceResult.Successful("User account successfully purged. Profile reverted to standard employee.");
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackTransactionAsync();
-                return ServiceResult.Failed($"Error during login identity purge: {ex.Message}");
+                _logger.LogError(ex, "Failed to remove user access {UserId}", userId);
+                return ServiceResult.Failed("An error occurred while removing user access.");
             }
         }
 
@@ -264,6 +289,7 @@ namespace ERPLite.Services.Services.Users
                 description: "Locked user account."
             );
 
+            _logger.LogInformation("Locked user account {UserId}", userId);
             return ServiceResult.Successful("User locked successfully.");
         }
 
@@ -285,6 +311,7 @@ namespace ERPLite.Services.Services.Users
                 description: "Unlocked user account."
             );
 
+            _logger.LogInformation("Unlocked user account {UserId}", userId);
             return ServiceResult.Successful("User unlocked successfully.");
         }
 

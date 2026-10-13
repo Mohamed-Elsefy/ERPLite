@@ -7,6 +7,7 @@ using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Inventory;
 using ERPLite.Services.Interfaces.System;
 using ERPLite.Shared.Constants;
+using FluentValidation;
 
 namespace ERPLite.Services.Services.Inventory
 {
@@ -16,13 +17,23 @@ namespace ERPLite.Services.Services.Inventory
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
         private readonly INotificationService _notificationService;
+        private readonly IValidator<CreateProductDto> _createValidator;
+        private readonly IValidator<UpdateProductDto> _updateValidator;
 
-        public ProductService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService, INotificationService notificationService)
+        public ProductService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IActivityLogService activityLogService,
+            INotificationService notificationService,
+            IValidator<CreateProductDto> createValidator,
+            IValidator<UpdateProductDto> updateValidator)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
             _notificationService = notificationService;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         public async Task<ServiceResult<IEnumerable<ProductDto>>> GetAllAsync()
@@ -62,6 +73,10 @@ namespace ERPLite.Services.Services.Inventory
 
         public async Task<ServiceResult> CreateAsync(CreateProductDto dto, string currentUserId)
         {
+            var validationResult = await _createValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult.Failed(validationResult.ToErrorString());
+
             if (await _unitOfWork.Products.ExistsByNameAsync(dto.Name))
                 return ServiceResult.Failed("Product already exists.");
 
@@ -90,6 +105,10 @@ namespace ERPLite.Services.Services.Inventory
 
         public async Task<ServiceResult> UpdateAsync(UpdateProductDto dto, string currentUserId)
         {
+            var validationResult = await _updateValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult.Failed(validationResult.ToErrorString());
+
             var product = await _unitOfWork.Products.GetByIdAsync(dto.Id);
             if (product == null)
                 return ServiceResult.Failed("Product not found.");

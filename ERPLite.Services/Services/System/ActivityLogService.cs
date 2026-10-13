@@ -6,6 +6,7 @@ using ERPLite.Services.DTOs.System;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.System;
 using ERPLite.Services.Interfaces.Infrastructure;
+using Microsoft.Extensions.Logging;
 
 namespace ERPLite.Services.Services.System
 {
@@ -13,29 +14,44 @@ namespace ERPLite.Services.Services.System
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IDateTimeProvider _dateTimeProvider; 
+        private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ILogger<ActivityLogService> _logger;
 
-        public ActivityLogService(IUnitOfWork unitOfWork, IMapper mapper, IDateTimeProvider dateTimeProvider)
+        public ActivityLogService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IDateTimeProvider dateTimeProvider,
+            ILogger<ActivityLogService> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _dateTimeProvider = dateTimeProvider;
+            _logger = logger;
         }
 
         public async Task LogAsync(string userId, string action, string entityName, int entityId, string description)
         {
-            var log = new ActivityLog
+            try
             {
-                UserId = userId,
-                Action = action,
-                EntityName = entityName,
-                EntityId = entityId,
-                Description = description,
-                Timestamp = _dateTimeProvider.UtcNow 
-            };
+                var log = new ActivityLog
+                {
+                    UserId = userId,
+                    Action = action,
+                    EntityName = entityName,
+                    EntityId = entityId,
+                    Description = description,
+                    Timestamp = _dateTimeProvider.UtcNow
+                };
 
-            await _unitOfWork.ActivityLogs.AddAsync(log);
-            await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.ActivityLogs.AddAsync(log);
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Audit logging must never break the primary flow - record and continue.
+                _logger.LogError(ex, "Failed to write activity log {Action} on {EntityName} #{EntityId}",
+                    action, entityName, entityId);
+            }
         }
 
         public async Task<ServiceResult<IEnumerable<ActivityLogDto>>> GetRecentLogsAsync()

@@ -8,6 +8,7 @@ using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Services.Interfaces.System;
 using ERPLite.Shared.Constants;
 using ERPLite.Shared.Enums;
+using FluentValidation;
 
 namespace ERPLite.Services.Services.HR
 {
@@ -17,21 +18,31 @@ namespace ERPLite.Services.Services.HR
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IValidator<CheckInDto> _checkInValidator;
+        private readonly IValidator<CheckOutDto> _checkOutValidator;
 
         public AttendanceService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             IActivityLogService activityLogService,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            IValidator<CheckInDto> checkInValidator,
+            IValidator<CheckOutDto> checkOutValidator)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
             _dateTimeProvider = dateTimeProvider;
+            _checkInValidator = checkInValidator;
+            _checkOutValidator = checkOutValidator;
         }
 
         public async Task<ServiceResult> CheckInAsync(CheckInDto dto, string currentUserId)
         {
+            var validationResult = await _checkInValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult.Failed(validationResult.ToErrorString());
+
             var employee = await _unitOfWork.Employees.GetByIdAsync(dto.EmployeeId);
             if (employee is null)
                 return ServiceResult.Failed("Employee not found.");
@@ -64,7 +75,11 @@ namespace ERPLite.Services.Services.HR
 
         public async Task<ServiceResult> CheckOutAsync(CheckOutDto dto, string currentUserId)
         {
-                var attendance = await _unitOfWork.Attendances.GetAttendanceByDateAsync(dto.EmployeeId, _dateTimeProvider.Today);
+            var validationResult = await _checkOutValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult.Failed(validationResult.ToErrorString());
+
+            var attendance = await _unitOfWork.Attendances.GetAttendanceByDateAsync(dto.EmployeeId, _dateTimeProvider.Today);
             if (attendance is null)
                 return ServiceResult.Failed("No check-in found today.");
 

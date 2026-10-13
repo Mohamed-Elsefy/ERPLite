@@ -8,6 +8,7 @@ using ERPLite.Services.Interfaces.Sales;
 using ERPLite.Services.Interfaces.System;
 using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Shared.Constants;
+using FluentValidation;
 
 namespace ERPLite.Services.Services.Sales
 {
@@ -17,17 +18,23 @@ namespace ERPLite.Services.Services.Sales
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IValidator<CreateCustomerDto> _createValidator;
+        private readonly IValidator<UpdateCustomerDto> _updateValidator;
 
         public CustomerService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             IActivityLogService activityLogService,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            IValidator<CreateCustomerDto> createValidator,
+            IValidator<UpdateCustomerDto> updateValidator)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
             _dateTimeProvider = dateTimeProvider;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         public async Task<ServiceResult<IEnumerable<CustomerDto>>> GetAllAsync()
@@ -61,6 +68,10 @@ namespace ERPLite.Services.Services.Sales
 
         public async Task<ServiceResult> CreateAsync(CreateCustomerDto dto, string currentUserId)
         {
+            var validationResult = await _createValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult.Failed(validationResult.ToErrorString());
+
             if (await _unitOfWork.Customers.CustomerExistsByPhoneAsync(dto.Phone))
                 return ServiceResult.Failed("Phone number already exists.");
 
@@ -83,6 +94,10 @@ namespace ERPLite.Services.Services.Sales
 
         public async Task<ServiceResult> UpdateAsync(UpdateCustomerDto dto, string currentUserId)
         {
+            var validationResult = await _updateValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult.Failed(validationResult.ToErrorString());
+
             var customer = await _unitOfWork.Customers.GetByIdAsync(dto.Id);
             if (customer == null)
                 return ServiceResult.Failed("Customer not found.");

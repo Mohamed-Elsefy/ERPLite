@@ -9,6 +9,8 @@ using ERPLite.Services.Interfaces.System;
 using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Shared.Constants;
 using ERPLite.Shared.Enums;
+using FluentValidation;
+using Microsoft.Extensions.Logging;
 
 namespace ERPLite.Services.Services.Sales
 {
@@ -19,19 +21,25 @@ namespace ERPLite.Services.Services.Sales
         private readonly IActivityLogService _activityLogService;
         private readonly INotificationService _notificationService;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IValidator<CreateOrderDto> _createValidator;
+        private readonly ILogger<OrderService> _logger;
 
         public OrderService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             IActivityLogService activityLogService,
             INotificationService notificationService,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            IValidator<CreateOrderDto> createValidator,
+            ILogger<OrderService> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
             _notificationService = notificationService;
             _dateTimeProvider = dateTimeProvider;
+            _createValidator = createValidator;
+            _logger = logger;
         }
 
         public async Task<ServiceResult<OrderDto>> GetOrderDetailsAsync(int id)
@@ -94,8 +102,9 @@ namespace ERPLite.Services.Services.Sales
             if (customer == null)
                 return ServiceResult<int>.Failed("Customer not found.");
 
-            if (dto.Items == null || !dto.Items.Any())
-                return ServiceResult<int>.Failed("Order must contain at least one item.");
+            var validationResult = await _createValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult<int>.Failed(validationResult.ToErrorString());
 
             var productIds = dto.Items.Select(i => i.ProductId).Distinct().ToList();
             var products = await _unitOfWork.Products.GetProductsByIdsAsync(productIds);
@@ -177,11 +186,14 @@ namespace ERPLite.Services.Services.Sales
                     description: $"Placed a new order for Customer: '{customer.FullName}' with a total price of {order.TotalPrice} across {dto.Items.Count} unique items."
                 );
 
+                _logger.LogInformation("Created order {OrderId} for customer {CustomerId}: {ItemCount} items, total {TotalPrice}",
+                    order.Id, dto.CustomerId, dto.Items.Count, totalPrice);
                 return ServiceResult<int>.Successful(order.Id, "Order created successfully.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await _unitOfWork.RollbackTransactionAsync();
+                _logger.LogError(ex, "Failed to create order for customer {CustomerId}", dto.CustomerId);
                 return ServiceResult<int>.Failed("An unexpected technical error occurred while processing the order.");
             }
         }

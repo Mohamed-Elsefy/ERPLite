@@ -5,9 +5,9 @@ using ERPLite.Services.DTOs.Common;
 using ERPLite.Services.DTOs.HR;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.HR;
-using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Services.Interfaces.System;
 using ERPLite.Shared.Constants;
+using FluentValidation;
 
 namespace ERPLite.Services.Services.HR
 {
@@ -16,18 +16,21 @@ namespace ERPLite.Services.Services.HR
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
-        private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IValidator<CreateEmployeeDto> _createValidator;
+        private readonly IValidator<UpdateEmployeeDto> _updateValidator;
 
         public EmployeeService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             IActivityLogService activityLogService,
-            IDateTimeProvider dateTimeProvider)
+            IValidator<CreateEmployeeDto> createValidator,
+            IValidator<UpdateEmployeeDto> updateValidator)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
-            _dateTimeProvider = dateTimeProvider;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         public async Task<ServiceResult<IEnumerable<EmployeeDto>>> GetAllAsync()
@@ -61,6 +64,10 @@ namespace ERPLite.Services.Services.HR
 
         public async Task<ServiceResult<int>> CreateAsync(CreateEmployeeDto dto, string currentUserId)
         {
+            var validationResult = await _createValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult<int>.Failed(validationResult.ToErrorString());
+
             var department = await _unitOfWork.Departments.GetByIdAsync(dto.DepartmentId);
             if (department is null)
                 return ServiceResult<int>.Failed("Department not found.");
@@ -68,9 +75,6 @@ namespace ERPLite.Services.Services.HR
             var emailExists = await _unitOfWork.Employees.ExistsByEmailAsync(dto.Email);
             if (emailExists)
                 return ServiceResult<int>.Failed("Email already exists.");
-
-            if (dto.HireDate > _dateTimeProvider.Today)
-                return ServiceResult<int>.Failed("Invalid hire date.");
 
             var employee = _mapper.Map<Employee>(dto);
 
@@ -90,6 +94,10 @@ namespace ERPLite.Services.Services.HR
 
         public async Task<ServiceResult> UpdateAsync(UpdateEmployeeDto dto, string currentUserId)
         {
+            var validationResult = await _updateValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult.Failed(validationResult.ToErrorString());
+
             var employee = await _unitOfWork.Employees.GetByIdAsync(dto.Id);
             if (employee is null)
                 return ServiceResult.Failed("Employee not found.");

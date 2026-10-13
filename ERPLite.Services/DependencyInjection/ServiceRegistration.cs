@@ -28,6 +28,9 @@ namespace ERPLite.Services.DependencyInjection
             // register automapper
             services.AddAutoMapper(cfg => cfg.AddMaps(Assembly.GetExecutingAssembly()));
 
+            // register FluentValidation validators (Services/Validators)
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
             // Auth
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IUserService, UserService>();

@@ -6,22 +6,33 @@ using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Inventory;
 using ERPLite.Services.Interfaces.System;
 using ERPLite.Shared.Constants;
+using FluentValidation;
 
 namespace ERPLite.Services.Services.Inventory
 {
     public class SupplierService : ISupplierService
     {
-        private readonly IUnitOfWork _unitOfWork; 
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IActivityLogService _activityLogService;
         private readonly INotificationService _notificationService;
+        private readonly IValidator<CreateSupplierDto> _createValidator;
+        private readonly IValidator<UpdateSupplierDto> _updateValidator;
 
-        public SupplierService(IUnitOfWork unitOfWork, IMapper mapper, IActivityLogService activityLogService, INotificationService notificationService)
+        public SupplierService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IActivityLogService activityLogService,
+            INotificationService notificationService,
+            IValidator<CreateSupplierDto> createValidator,
+            IValidator<UpdateSupplierDto> updateValidator)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _activityLogService = activityLogService;
             _notificationService = notificationService;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         public async Task<ServiceResult<IEnumerable<SupplierDto>>> GetAllAsync()
@@ -43,6 +54,10 @@ namespace ERPLite.Services.Services.Inventory
 
         public async Task<ServiceResult> CreateAsync(CreateSupplierDto dto, string currentUserId)
         {
+            var validationResult = await _createValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult.Failed(validationResult.ToErrorString());
+
             if (await _unitOfWork.Suppliers.SupplierExistsAsync(dto.Name))
                 return ServiceResult.Failed("Supplier already exists.");
 
@@ -72,6 +87,10 @@ namespace ERPLite.Services.Services.Inventory
 
         public async Task<ServiceResult> UpdateAsync(UpdateSupplierDto dto, string currentUserId)
         {
+            var validationResult = await _updateValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult.Failed(validationResult.ToErrorString());
+
             var supplier = await _unitOfWork.Suppliers.GetByIdAsync(dto.Id);
             if (supplier == null)
                 return ServiceResult.Failed("Supplier not found.");

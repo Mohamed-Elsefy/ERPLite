@@ -4,6 +4,7 @@ using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Auth;
 using ERPLite.Services.Interfaces.System;
 using ERPLite.Shared.Constants;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -14,19 +15,26 @@ namespace ERPLite.Services.Services.Auth
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IActivityLogService _activityLogService;
+        private readonly IValidator<LoginDto> _loginValidator;
 
         public AuthenticationService(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IActivityLogService activityLogService)
+            IActivityLogService activityLogService,
+            IValidator<LoginDto> loginValidator)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _activityLogService = activityLogService;
+            _loginValidator = loginValidator;
         }
 
         public async Task<ServiceResult> LoginAsync(LoginDto dto)
         {
+            var validationResult = await _loginValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+                return ServiceResult.Failed(validationResult.ToErrorString());
+
             var user = await _userManager.FindByEmailAsync(dto.Email);
 
             if (user is null)

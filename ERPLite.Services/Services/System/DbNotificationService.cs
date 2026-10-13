@@ -58,7 +58,8 @@ namespace ERPLite.Services.Services.System
             }
             catch (Exception ex)
             {
-                return ServiceResult<int>.Failed($"Failed to log infrastructure notification: {ex.Message}");
+                _logger.LogError(ex, "Failed to create system notification {Title} for user {UserId}", title, userId);
+                return ServiceResult<int>.Failed("Failed to log infrastructure notification.");
             }
         }
 

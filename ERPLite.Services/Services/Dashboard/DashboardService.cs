@@ -5,6 +5,7 @@ using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Dashboard;
 using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Shared.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace ERPLite.Services.Services.Dashboard
 {
@@ -13,12 +14,18 @@ namespace ERPLite.Services.Services.Dashboard
         private readonly IUnitOfWork _unitOfWork;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IMapper _mapper;
+        private readonly ILogger<DashboardService> _logger;
 
-        public DashboardService(IUnitOfWork unitOfWork, IDateTimeProvider dateTimeProvider, IMapper mapper)
+        public DashboardService(
+            IUnitOfWork unitOfWork,
+            IDateTimeProvider dateTimeProvider,
+            IMapper mapper,
+            ILogger<DashboardService> logger)
         {
             _unitOfWork = unitOfWork;
             _dateTimeProvider = dateTimeProvider;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<ServiceResult<DashboardStatisticsDto>> GetStatisticsAsync()
@@ -102,7 +109,8 @@ namespace ERPLite.Services.Services.Dashboard
             }
             catch (Exception ex)
             {
-                return ServiceResult<AttendanceDashboardDataDto>.Failed($"Error loading attendance analytics: {ex.Message}");
+                _logger.LogError(ex, "Failed to load attendance dashboard records for department {DepartmentId}", filterDepartmentId);
+                return ServiceResult<AttendanceDashboardDataDto>.Failed("Error loading attendance analytics.");
             }
         }
 
@@ -118,7 +126,8 @@ namespace ERPLite.Services.Services.Dashboard
             }
             catch (Exception ex)
             {
-                return ServiceResult<IEnumerable<AttendanceManagementDto>>.Failed($"Failed to load employee history: {ex.Message}");
+                _logger.LogError(ex, "Failed to load attendance history for employee {EmployeeId}", employeeId);
+                return ServiceResult<IEnumerable<AttendanceManagementDto>>.Failed("Failed to load employee history.");
             }
         }
     }
