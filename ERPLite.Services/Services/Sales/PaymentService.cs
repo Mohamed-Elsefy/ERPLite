@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ERPLite.Data.Entities.Sales;
 using ERPLite.Repositories.Interfaces.Common;
+using ERPLite.Services.DTOs.Common;
 using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Sales;
@@ -142,6 +143,16 @@ namespace ERPLite.Services.Services.Sales
                 await _unitOfWork.RollbackTransactionAsync();
                 return ServiceResult<int>.Failed("An unexpected technical error occurred while recording the payment.");
             }
+        }
+
+        public async Task<ServiceResult<PagedResponseDto<PaymentDto>>> GetPagedAsync(PagedRequestDto request)
+        {
+            var paged = await _unitOfWork.Payments.GetPagedRecentAsync(
+                request.PageNumber,
+                request.PageSize);
+
+            return ServiceResult<PagedResponseDto<PaymentDto>>.Successful(
+                paged.ToPagedResponse<Payment, PaymentDto>(_mapper));
         }
 
         public async Task<ServiceResult<IEnumerable<PaymentDto>>> GetRecentPaymentsAsync(int count)

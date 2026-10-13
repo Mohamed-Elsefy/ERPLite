@@ -1,7 +1,9 @@
 using AutoMapper;
+using ERPLite.Services.DTOs.Common;
 using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Interfaces.Sales;
 using ERPLite.Services.Interfaces.Infrastructure;
+using ERPLite.Web.Models.Common;
 using ERPLite.Web.Models.Customers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,26 +26,28 @@ namespace ERPLite.Web.Controllers.Sales
         }
 
         // GET: /Customers
-        public async Task<IActionResult> Index(string keyword)
+        public async Task<IActionResult> Index(string? keyword, int page = 1, int pageSize = 10)
         {
-            var result = string.IsNullOrWhiteSpace(keyword)
-                ? await _customerService.GetAllAsync()
-                : await _customerService.SearchAsync(keyword);
-
-            var customersData = result.Data ?? new List<CustomerDto>();
-
+            int? departmentId = null;
             if (_currentUser.IsManager)
             {
-                var deptId = _currentUser.DepartmentId;
-                if (!deptId.HasValue) return Forbid();
-
-                customersData = customersData.Where(c => c.Orders.Any(o => o.DepartmentId == deptId.Value)).ToList();
+                departmentId = _currentUser.DepartmentId;
+                if (!departmentId.HasValue) return Forbid();
             }
+
+            var request = new PagedRequestDto { PageNumber = page, PageSize = pageSize, SearchTerm = keyword };
+            var result = await _customerService.GetPagedAsync(request, departmentId);
+            var paged = result.Data ?? new PagedResponseDto<CustomerDto>();
+
+            var filters = new Dictionary<string, string>();
+            if (!string.IsNullOrWhiteSpace(keyword))
+                filters["keyword"] = keyword;
 
             var viewModel = new CustomerIndexViewModel
             {
-                Customers = customersData,
-                SearchTerm = keyword
+                Customers = paged.Items,
+                SearchTerm = keyword,
+                Pagination = PaginationViewModel.FromPagedResponse(paged, filters)
             };
 
             return View(viewModel);

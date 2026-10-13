@@ -1,4 +1,5 @@
-﻿using ERPLite.Services.DTOs.Inventory;
+﻿using ERPLite.Services.DTOs.Common;
+using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.Helpers;
 
 namespace ERPLite.Services.Interfaces.Inventory
@@ -6,6 +7,8 @@ namespace ERPLite.Services.Interfaces.Inventory
     public interface IProductService
     {
         Task<ServiceResult<IEnumerable<ProductDto>>> GetAllAsync();
+
+        Task<ServiceResult<PagedResponseDto<ProductDto>>> GetPagedAsync(PagedRequestDto request);
 
         Task<ServiceResult<ProductDto>> GetByIdAsync(int id);
 

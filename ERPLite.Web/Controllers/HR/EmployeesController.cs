@@ -1,8 +1,10 @@
 using AutoMapper;
+using ERPLite.Services.DTOs.Common;
 using ERPLite.Services.DTOs.HR;
 using ERPLite.Services.Interfaces.Dashboard;
 using ERPLite.Services.Interfaces.HR;
 using ERPLite.Services.Interfaces.Infrastructure;
+using ERPLite.Web.Models.Common;
 using ERPLite.Web.Models.Employees;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,20 +40,31 @@ namespace ERPLite.Web.Controllers.HR
         }
 
         // GET: /Employees
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? search, int page = 1, int pageSize = 10)
         {
-            var result = await _employeeService.GetAllAsync();
-            var employees = result.Data ?? new List<EmployeeDto>();
-
+            int? departmentId = null;
             if (_currentUser.IsManager)
             {
-                var deptId = _currentUser.DepartmentId;
-                if (!deptId.HasValue) return Forbid();
-
-                employees = employees.Where(e => e.DepartmentId == deptId.Value).ToList();
+                departmentId = _currentUser.DepartmentId;
+                if (!departmentId.HasValue) return Forbid();
             }
 
-            return View(employees);
+            var request = new PagedRequestDto { PageNumber = page, PageSize = pageSize, SearchTerm = search };
+            var result = await _employeeService.GetPagedAsync(request, departmentId);
+            var paged = result.Data ?? new PagedResponseDto<EmployeeDto>();
+
+            var filters = new Dictionary<string, string>();
+            if (!string.IsNullOrWhiteSpace(search))
+                filters["search"] = search;
+
+            var viewModel = new EmployeeIndexViewModel
+            {
+                Employees = paged.Items,
+                SearchTerm = search,
+                Pagination = PaginationViewModel.FromPagedResponse(paged, filters)
+            };
+
+            return View(viewModel);
         }
 
         // GET: /Employees/Details/{id}

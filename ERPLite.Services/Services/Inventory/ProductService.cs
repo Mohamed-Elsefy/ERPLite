@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ERPLite.Data.Entities.Inventory;
 using ERPLite.Repositories.Interfaces.Common;
+using ERPLite.Services.DTOs.Common;
 using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Inventory;
@@ -29,6 +30,17 @@ namespace ERPLite.Services.Services.Inventory
             var products = await _unitOfWork.Products.GetAllWithDetailsAsync();
             var result = _mapper.Map<IEnumerable<ProductDto>>(products);
             return ServiceResult<IEnumerable<ProductDto>>.Successful(result);
+        }
+
+        public async Task<ServiceResult<PagedResponseDto<ProductDto>>> GetPagedAsync(PagedRequestDto request)
+        {
+            var paged = await _unitOfWork.Products.GetPagedWithDetailsAsync(
+                request.SearchTerm,
+                request.PageNumber,
+                request.PageSize);
+
+            return ServiceResult<PagedResponseDto<ProductDto>>.Successful(
+                paged.ToPagedResponse<Product, ProductDto>(_mapper));
         }
 
         public async Task<ServiceResult<ProductDto>> GetByIdAsync(int id)

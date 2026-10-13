@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using ERPLite.Data.Entities.HR;
 using ERPLite.Data.Entities.Identity;
+using ERPLite.Repositories.Extensions;
 using ERPLite.Repositories.Interfaces.Common;
+using ERPLite.Services.DTOs.Common;
 using ERPLite.Services.DTOs.Users;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.System;
@@ -29,27 +31,6 @@ namespace ERPLite.Services.Services.Users
             _mapper = mapper;
             _activityLogService = activityLogService;
             _unitOfWork = unitOfWork;
-        }
-
-        public async Task<ServiceResult<IEnumerable<UserDto>>> GetAllUsersAsync()
-        {
-            var users = await _userManager.Users
-                .AsNoTracking()
-                .OrderBy(x => x.FullName)
-                .ToListAsync();
-
-            var result = new List<UserDto>();
-
-            foreach (var user in users)
-            {
-                var dto = _mapper.Map<UserDto>(user);
-                var roles = await _userManager.GetRolesAsync(user);
-                dto.Role = roles.FirstOrDefault() ?? "None";
-                dto.IsLocked = await _userManager.IsLockedOutAsync(user);
-                result.Add(dto);
-            }
-
-            return ServiceResult<IEnumerable<UserDto>>.Successful(result);
         }
 
         public async Task<ServiceResult<UserDto>> GetUserByIdAsync(string userId)
@@ -307,31 +288,42 @@ namespace ERPLite.Services.Services.Users
             return ServiceResult.Successful("User unlocked successfully.");
         }
 
-        public async Task<ServiceResult<IEnumerable<UserDto>>> GetFilteredUsersAsync(string? search)
+        public async Task<ServiceResult<PagedResponseDto<UserDto>>> GetPagedUsersAsync(string? search, PagedRequestDto request)
         {
             var query = _userManager.Users.AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                search = search.Trim().ToLower();
+                var cleanSearch = search.Trim().ToLower();
                 query = query.Where(u =>
-                    u.FullName.ToLower().Contains(search) ||
-                    u.Email!.ToLower().Contains(search));
+                    u.FullName.ToLower().Contains(cleanSearch) ||
+                    u.Email!.ToLower().Contains(cleanSearch));
             }
 
-            var users = await query.OrderBy(x => x.FullName).ToListAsync();
-            var result = new List<UserDto>();
+            // Page first so role/lockout lookups run only for the visible slice,
+            // bounding the former 2N+1 fan-out to the page size.
+            var pagedUsers = await query
+                .OrderBy(x => x.FullName)
+                .ToPagedResultAsync(request.PageNumber, request.PageSize);
 
-            foreach (var user in users)
+            var items = new List<UserDto>();
+            foreach (var user in pagedUsers.Items)
             {
                 var dto = _mapper.Map<UserDto>(user);
                 var roles = await _userManager.GetRolesAsync(user);
                 dto.Role = roles.FirstOrDefault() ?? "";
                 dto.IsLocked = await _userManager.IsLockedOutAsync(user);
-                result.Add(dto);
+                items.Add(dto);
             }
 
-            return ServiceResult<IEnumerable<UserDto>>.Successful(result);
+            return ServiceResult<PagedResponseDto<UserDto>>.Successful(new PagedResponseDto<UserDto>
+            {
+                Items = items,
+                PageNumber = pagedUsers.PageNumber,
+                PageSize = pagedUsers.PageSize,
+                TotalCount = pagedUsers.TotalCount,
+                TotalPages = pagedUsers.TotalPages
+            });
         }
     }
 }

@@ -1,6 +1,8 @@
 using AutoMapper;
+using ERPLite.Services.DTOs.Common;
 using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.Interfaces.Inventory;
+using ERPLite.Web.Models.Common;
 using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Web.Models.Products;
 using Microsoft.AspNetCore.Authorization;
@@ -34,22 +36,22 @@ namespace ERPLite.Web.Controllers.Inventory
         }
 
         // GET: /Products
-        public async Task<IActionResult> Index(string search)
+        public async Task<IActionResult> Index(string? search, int page = 1, int pageSize = 10)
         {
-            var result = await _productService.GetAllAsync();
-            var products = result.Data ?? new List<ProductDto>();
+            var request = new PagedRequestDto { PageNumber = page, PageSize = pageSize, SearchTerm = search };
+            var result = await _productService.GetPagedAsync(request);
+            var paged = result.Data ?? new PagedResponseDto<ProductDto>();
 
+            var filters = new Dictionary<string, string>();
             if (!string.IsNullOrWhiteSpace(search))
-            {
-                var cleanSearch = search.Trim().ToLower();
-                products = products.Where(p =>
-                    p.Name.ToLower().Contains(cleanSearch) ||
-                    p.CategoryName.ToLower().Contains(cleanSearch) ||
-                    p.SupplierName.ToLower().Contains(cleanSearch)
-                ).ToList();
-            }
+                filters["search"] = search;
 
-            var viewModel = new ProductIndexViewModel { Products = products, SearchTerm = search };
+            var viewModel = new ProductIndexViewModel
+            {
+                Products = paged.Items,
+                SearchTerm = search,
+                Pagination = PaginationViewModel.FromPagedResponse(paged, filters)
+            };
             return View(viewModel);
         }
 

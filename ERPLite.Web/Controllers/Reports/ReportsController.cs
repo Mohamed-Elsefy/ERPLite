@@ -29,7 +29,7 @@ namespace ERPLite.Web.Controllers.Reports
         public async Task<IActionResult> EmployeesPdf()
         {
             var report = await _reportService.GenerateEmployeesReportAsync();
-            var pdf = _exportService.ExportToPdf(report.ReportName, report.Data);
+            var pdf = await _exportService.ExportToPdfAsync(report.ReportName, report.Data, HttpContext.RequestAborted);
             return File(pdf, "application/pdf", $"EmployeesReport_{_dateTimeProvider.Now:yyyyMMdd}.pdf");
         }
 
@@ -37,7 +37,7 @@ namespace ERPLite.Web.Controllers.Reports
         public async Task<IActionResult> InventoryPdf()
         {
             var report = await _reportService.GenerateInventoryReportAsync();
-            var pdf = _exportService.ExportToPdf(report.ReportName, report.Data);
+            var pdf = await _exportService.ExportToPdfAsync(report.ReportName, report.Data, HttpContext.RequestAborted);
             return File(pdf, "application/pdf", $"InventoryReport_{_dateTimeProvider.Now:yyyyMMdd}.pdf");
         }
 
@@ -49,7 +49,7 @@ namespace ERPLite.Web.Controllers.Reports
             var endDate = to ?? today;
 
             var report = await _reportService.GenerateSalesReportAsync(startDate, endDate);
-            var pdf = _exportService.ExportToPdf(report.ReportName, report.Data);
+            var pdf = await _exportService.ExportToPdfAsync(report.ReportName, report.Data, HttpContext.RequestAborted);
             return File(pdf, "application/pdf", $"SalesReport_{startDate:yyyyMMdd}_to_{endDate:yyyyMMdd}.pdf");
         }
 
@@ -57,7 +57,7 @@ namespace ERPLite.Web.Controllers.Reports
         public async Task<IActionResult> FinancialPdf()
         {
             var report = await _reportService.GenerateFinancialReportAsync();
-            var pdf = _exportService.ExportToPdf(report.ReportName, report.Data);
+            var pdf = await _exportService.ExportToPdfAsync(report.ReportName, report.Data, HttpContext.RequestAborted);
             return File(pdf, "application/pdf", $"FinancialReport_{_dateTimeProvider.Now:yyyyMMdd}.pdf");
         }
 
@@ -69,7 +69,7 @@ namespace ERPLite.Web.Controllers.Reports
             var endDate = to ?? today;
 
             var report = await _reportService.GenerateAttendanceReportAsync(startDate, endDate);
-            var pdf = _exportService.ExportToPdf(report.ReportName, report.Data);
+            var pdf = await _exportService.ExportToPdfAsync(report.ReportName, report.Data, HttpContext.RequestAborted);
             return File(pdf, "application/pdf", $"AttendanceReport_{startDate:yyyyMMdd}_to_{endDate:yyyyMMdd}.pdf");
         }
     }

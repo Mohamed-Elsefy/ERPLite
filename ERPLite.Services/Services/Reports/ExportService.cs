@@ -15,5 +15,10 @@ namespace ERPLite.Services.Services.Reports
         {
             return _pdfGenerator.GenerateReportPdf(title, data);
         }
+
+        public Task<byte[]> ExportToPdfAsync<T>(string title, T data, CancellationToken cancellationToken = default)
+        {
+            return _pdfGenerator.GenerateReportPdfAsync(title, data, cancellationToken);
+        }
     }
 }

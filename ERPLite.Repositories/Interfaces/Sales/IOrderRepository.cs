@@ -1,4 +1,5 @@
 ﻿using ERPLite.Data.Entities.Sales;
+using ERPLite.Repositories.Extensions;
 using ERPLite.Repositories.Interfaces.Common;
 
 namespace ERPLite.Repositories.Interfaces.Sales
@@ -8,6 +9,8 @@ namespace ERPLite.Repositories.Interfaces.Sales
         Task<Order?> GetOrderWithDetailsAsync(int id);
 
         Task<IEnumerable<Order>> GetRecentOrdersAsync(int count);
+
+        Task<PaginationResult<Order>> GetPagedRecentAsync(int pageNumber, int pageSize);
 
         Task<IEnumerable<Order>> GetOrdersByCustomerAsync(int customerId);
 

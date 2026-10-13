@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ERPLite.Data.Entities.Sales;
 using ERPLite.Repositories.Interfaces.Common;
+using ERPLite.Services.DTOs.Common;
 using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Sales;
@@ -34,6 +35,18 @@ namespace ERPLite.Services.Services.Sales
             var customers = await _unitOfWork.Customers.GetActiveCustomersAsync();
             var result = _mapper.Map<IEnumerable<CustomerDto>>(customers);
             return ServiceResult<IEnumerable<CustomerDto>>.Successful(result);
+        }
+
+        public async Task<ServiceResult<PagedResponseDto<CustomerDto>>> GetPagedAsync(PagedRequestDto request, int? departmentId)
+        {
+            var paged = await _unitOfWork.Customers.GetPagedWithOrdersAsync(
+                request.SearchTerm,
+                departmentId,
+                request.PageNumber,
+                request.PageSize);
+
+            return ServiceResult<PagedResponseDto<CustomerDto>>.Successful(
+                paged.ToPagedResponse<Customer, CustomerDto>(_mapper));
         }
 
         public async Task<ServiceResult<CustomerDto>> GetByIdAsync(int id)

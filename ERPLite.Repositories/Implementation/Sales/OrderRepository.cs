@@ -1,5 +1,6 @@
 ﻿using ERPLite.Data.Context;
 using ERPLite.Data.Entities.Sales;
+using ERPLite.Repositories.Extensions;
 using ERPLite.Repositories.Implementation.Common;
 using ERPLite.Repositories.Interfaces.Sales;
 using ERPLite.Shared.Enums;
@@ -33,6 +34,16 @@ namespace ERPLite.Repositories.Implementation.Sales
                 .OrderByDescending(o => o.OrderDate)
                 .Take(count)
                 .ToListAsync();
+        }
+
+
+        public async Task<PaginationResult<Order>> GetPagedRecentAsync(int pageNumber, int pageSize)
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .Include(o => o.Customer)
+                .OrderByDescending(o => o.OrderDate)
+                .ToPagedResultAsync(pageNumber, pageSize);
         }
 
 

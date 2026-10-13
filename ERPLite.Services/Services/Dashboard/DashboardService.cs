@@ -5,7 +5,6 @@ using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.Dashboard;
 using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Shared.Enums;
-using Microsoft.EntityFrameworkCore;
 
 namespace ERPLite.Services.Services.Dashboard
 {
@@ -28,33 +27,25 @@ namespace ERPLite.Services.Services.Dashboard
             var startOfMonth = new DateTime(today.Year, today.Month, 1);
             var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 
+            // NOTE: kept sequential on purpose - the scoped DbContext is not thread-safe,
+            // so Task.WhenAll fan-out over the same context would corrupt change tracking.
             var totalEmployees = await _unitOfWork.Employees.GetActiveCountAsync();
             var totalDepartments = await _unitOfWork.Departments.GetCountAsync();
             var totalProducts = await _unitOfWork.Products.GetTotalProductsCountAsync();
             var totalCustomers = await _unitOfWork.Customers.GetCountAsync();
             var totalOrders = await _unitOfWork.Orders.GetCountAsync();
             var totalRevenue = await _unitOfWork.Orders.GetTotalRevenueAsync();
-            var lowStockProductsList = await _unitOfWork.Products.GetLowStockProductsAsync();
+            var lowStockProducts = await _unitOfWork.Products.GetLowStockCountAsync();
             var monthlyRevenue = await _unitOfWork.Orders.GetRevenueByDateRangeAsync(startOfMonth, endOfMonth);
             var newOrdersThisMonth = await _unitOfWork.Orders.CountAsync(o => o.OrderDate >= startOfMonth && o.OrderDate <= endOfMonth);
             var outOfStockProducts = await _unitOfWork.Products.GetOutOfStockCountAsync();
             var totalInventoryValue = await _unitOfWork.Products.GetInventoryValueAsync();
-            var activeCustomers = await _unitOfWork.Customers.GetCountAsync();
             var paidOrders = await _unitOfWork.Orders.GetPaidOrdersCountAsync();
             var unpaidOrders = await _unitOfWork.Orders.GetUnpaidOrdersCountAsync();
             var outstandingBalance = await _unitOfWork.Orders.GetUnpaidRevenueAsync();
             var totalPaidRevenue = await _unitOfWork.Payments.GetGlobalTotalPaidAmountAsync();
             var partialPaidOrders = await _unitOfWork.Orders.CountAsync(o => o.PaymentStatus == OrderPaymentStatus.PartiallyPaid);
-
-            int newCustomersThisMonth = 0;
-            try
-            {
-                newCustomersThisMonth = await _unitOfWork.Customers.CountAsync(c => EF.Property<DateTime>(c, "CreatedAt") >= startOfMonth && EF.Property<DateTime>(c, "CreatedAt") <= endOfMonth);
-            }
-            catch
-            {
-                newCustomersThisMonth = 0;
-            }
+            var newCustomersThisMonth = await _unitOfWork.Customers.CountAsync(c => c.CreatedAt >= startOfMonth && c.CreatedAt <= endOfMonth);
 
             var dto = new DashboardStatisticsDto
             {
@@ -64,13 +55,13 @@ namespace ERPLite.Services.Services.Dashboard
                 TotalCustomers = totalCustomers,
                 TotalOrders = totalOrders,
                 TotalRevenue = totalRevenue,
-                LowStockProducts = lowStockProductsList?.Count() ?? 0,
+                LowStockProducts = lowStockProducts,
                 MonthlyRevenue = monthlyRevenue,
                 NewOrdersThisMonth = newOrdersThisMonth,
                 OutOfStockProducts = outOfStockProducts,
                 NewCustomersThisMonth = newCustomersThisMonth,
                 TotalInventoryValue = totalInventoryValue,
-                ActiveCustomers = activeCustomers,
+                ActiveCustomers = totalCustomers,
                 PaidOrders = paidOrders,
                 UnpaidOrders = unpaidOrders,
                 OutstandingBalance = outstandingBalance,

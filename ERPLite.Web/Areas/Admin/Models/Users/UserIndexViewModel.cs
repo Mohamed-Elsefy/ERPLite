@@ -1,9 +1,12 @@
-﻿namespace ERPLite.Web.Areas.Admin.Models.Users
+﻿using ERPLite.Web.Models.Common;
+
+namespace ERPLite.Web.Areas.Admin.Models.Users
 {
     public class UserIndexViewModel
     {
         public string? SearchTerm { get; set; }
         public List<UserListViewModel> Users { get; set; } = new();
+        public PaginationViewModel Pagination { get; set; } = new();
     }
 
     public class UserListViewModel

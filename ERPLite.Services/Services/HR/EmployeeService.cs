@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ERPLite.Data.Entities.HR;
 using ERPLite.Repositories.Interfaces.Common;
+using ERPLite.Services.DTOs.Common;
 using ERPLite.Services.DTOs.HR;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.HR;
@@ -34,6 +35,18 @@ namespace ERPLite.Services.Services.HR
             var employees = await _unitOfWork.Employees.GetAllWithDepartmentsAsync();
             var result = _mapper.Map<IEnumerable<EmployeeDto>>(employees);
             return ServiceResult<IEnumerable<EmployeeDto>>.Successful(result);
+        }
+
+        public async Task<ServiceResult<PagedResponseDto<EmployeeDto>>> GetPagedAsync(PagedRequestDto request, int? departmentId)
+        {
+            var paged = await _unitOfWork.Employees.GetPagedWithDepartmentAsync(
+                departmentId,
+                request.SearchTerm,
+                request.PageNumber,
+                request.PageSize);
+
+            return ServiceResult<PagedResponseDto<EmployeeDto>>.Successful(
+                paged.ToPagedResponse<Employee, EmployeeDto>(_mapper));
         }
 
         public async Task<ServiceResult<EmployeeDto>> GetByIdAsync(int id)

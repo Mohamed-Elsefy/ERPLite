@@ -1,5 +1,6 @@
 ﻿using ERPLite.Data.Context;
 using ERPLite.Data.Entities.Sales;
+using ERPLite.Repositories.Extensions;
 using ERPLite.Repositories.Implementation.Common;
 using ERPLite.Repositories.Interfaces.Sales;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,43 @@ namespace ERPLite.Repositories.Implementation.Sales
             return await _dbSet
                 .AsNoTracking()
                 .Include(c => c.Orders)
+                    .ThenInclude(o => o.CreatedByUser)
+                        .ThenInclude(u => u.Employee)
                 .FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<PaginationResult<Customer>> GetPagedWithOrdersAsync(
+            string? search,
+            int? departmentId,
+            int pageNumber,
+            int pageSize)
+        {
+            var query = _dbSet
+                .AsNoTracking()
+                .Include(c => c.Orders)
+                    .ThenInclude(o => o.CreatedByUser)
+                        .ThenInclude(u => u.Employee)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var cleanSearch = search.Trim().ToLower();
+                query = query.Where(c =>
+                    c.FullName.ToLower().Contains(cleanSearch) ||
+                    c.Phone.Contains(cleanSearch));
+            }
+
+            if (departmentId.HasValue)
+            {
+                var deptId = departmentId.Value;
+                query = query.Where(c => c.Orders.Any(o =>
+                    o.CreatedByUser.Employee != null &&
+                    o.CreatedByUser.Employee.DepartmentId == deptId));
+            }
+
+            return await query
+                .OrderBy(c => c.FullName)
+                .ToPagedResultAsync(pageNumber, pageSize);
         }
 
         public async Task<IEnumerable<Customer>> SearchCustomersAsync(string keyword)

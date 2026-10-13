@@ -1,5 +1,6 @@
 ﻿using ERPLite.Data.Context;
 using ERPLite.Data.Entities.HR;
+using ERPLite.Repositories.Extensions;
 using ERPLite.Repositories.Implementation.Common;
 using ERPLite.Repositories.Interfaces.HR;
 using Microsoft.EntityFrameworkCore;
@@ -46,6 +47,36 @@ namespace ERPLite.Repositories.Implementation.HR
             return await _dbSet
                 .Include(x => x.Department)
                 .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<PaginationResult<Employee>> GetPagedWithDepartmentAsync(
+            int? departmentId,
+            string? search,
+            int pageNumber,
+            int pageSize)
+        {
+            var query = _dbSet
+                .AsNoTracking()
+                .Include(e => e.Department)
+                .AsQueryable();
+
+            if (departmentId.HasValue)
+            {
+                var deptId = departmentId.Value;
+                query = query.Where(e => e.DepartmentId == deptId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var cleanSearch = search.Trim().ToLower();
+                query = query.Where(e =>
+                    e.FullName.ToLower().Contains(cleanSearch) ||
+                    e.Email.ToLower().Contains(cleanSearch));
+            }
+
+            return await query
+                .OrderBy(e => e.FullName)
+                .ToPagedResultAsync(pageNumber, pageSize);
         }
 
         public async Task<IEnumerable<Employee>> GetAllWithDepartmentsAsync()

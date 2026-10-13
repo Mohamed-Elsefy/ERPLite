@@ -1,6 +1,8 @@
 using AutoMapper;
+using ERPLite.Services.DTOs.Common;
 using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Interfaces.Sales;
+using ERPLite.Web.Models.Common;
 using ERPLite.Services.Interfaces.Infrastructure;
 using ERPLite.Web.Models.Payments;
 using Microsoft.AspNetCore.Authorization;
@@ -34,12 +36,17 @@ namespace ERPLite.Web.Controllers.Sales
         }
 
         // GET: /Payments
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
-            var result = await _paymentService.GetRecentPaymentsAsync(50);
-            var data = result.Data ?? new List<PaymentDto>();
+            var request = new PagedRequestDto { PageNumber = page, PageSize = pageSize };
+            var result = await _paymentService.GetPagedAsync(request);
+            var paged = result.Data ?? new PagedResponseDto<PaymentDto>();
 
-            var vm = _mapper.Map<List<PaymentsIndexViewModel>>(data);
+            var vm = new PaymentsListViewModel
+            {
+                Payments = _mapper.Map<List<PaymentsIndexViewModel>>(paged.Items),
+                Pagination = PaginationViewModel.FromPagedResponse(paged)
+            };
             return View(vm);
         }
 

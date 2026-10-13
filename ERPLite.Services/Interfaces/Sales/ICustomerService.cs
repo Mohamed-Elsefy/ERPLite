@@ -1,4 +1,5 @@
-﻿using ERPLite.Services.DTOs.Sales;
+﻿using ERPLite.Services.DTOs.Common;
+using ERPLite.Services.DTOs.Sales;
 using ERPLite.Services.Helpers;
 
 namespace ERPLite.Services.Interfaces.Sales
@@ -6,6 +7,8 @@ namespace ERPLite.Services.Interfaces.Sales
     public interface ICustomerService
     {
         Task<ServiceResult<IEnumerable<CustomerDto>>> GetAllAsync();
+
+        Task<ServiceResult<PagedResponseDto<CustomerDto>>> GetPagedAsync(PagedRequestDto request, int? departmentId);
 
         Task<ServiceResult<CustomerDto>> GetByIdAsync(int id);
 

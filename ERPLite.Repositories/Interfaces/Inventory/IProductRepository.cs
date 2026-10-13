@@ -1,4 +1,5 @@
 ﻿using ERPLite.Data.Entities.Inventory;
+using ERPLite.Repositories.Extensions;
 using ERPLite.Repositories.Interfaces.Common;
 
 namespace ERPLite.Repositories.Interfaces.Inventory
@@ -6,6 +7,8 @@ namespace ERPLite.Repositories.Interfaces.Inventory
     public interface IProductRepository : IGenericRepository<Product, int>
     {
         Task<IEnumerable<Product>> GetAllWithDetailsAsync();
+
+        Task<PaginationResult<Product>> GetPagedWithDetailsAsync(string? search, int pageNumber, int pageSize);
 
         Task<Product?> GetByIdWithDetailsAsync(int id);
 
@@ -20,6 +23,8 @@ namespace ERPLite.Repositories.Interfaces.Inventory
         Task<int> GetTotalProductsCountAsync();
 
         Task<int> GetOutOfStockCountAsync();
+
+        Task<int> GetLowStockCountAsync();
 
         Task<decimal> GetInventoryValueAsync();
 

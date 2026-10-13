@@ -1,4 +1,4 @@
-@model IEnumerable<ERPLite.Services.DTOs.HR.EmployeeDto>
+@model ERPLite.Web.Models.Employees.EmployeeIndexViewModel
 @{
     ViewData[UiKeys.Title] = "Master Employees Ledger";
     var isAdmin = User.IsInRole("Admin");
@@ -37,14 +37,21 @@
         </div>
     }
 
-    <div class="row g-2 mb-4">
+    <form asp-action="Index" method="get" class="row g-2 mb-4">
         <div class="col-12 col-md-6 col-lg-4">
             <div class="input-group border rounded-3" style="border-color: #cbd5e1 !important;">
                 <span class="input-group-text bg-light border-0 text-muted px-3"><i class="bi bi-search small"></i></span>
-                <input type="text" id="employeeSearchInput" class="form-control border-0 bg-white py-2 small shadow-none" placeholder="Search by name, email or position..." />
+                <input type="text" name="search" value="@Model.SearchTerm" class="form-control border-0 bg-white py-2 small shadow-none" placeholder="Search by name or email..." />
             </div>
         </div>
-    </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-light border fw-semibold rounded-3 px-3">Filter</button>
+            @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+            {
+                <a asp-action="Index" class="btn btn-link text-decoration-none text-muted small">Clear Criteria</a>
+            }
+        </div>
+    </form>
 
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0" id="employeesTable">
@@ -58,7 +65,7 @@
                 </tr>
             </thead>
             <tbody>
-                @if (Model == null || !Model.Any())
+                @if (Model.Employees == null || !Model.Employees.Any())
                 {
                     <tr>
                         <td colspan="6" class="text-center text-muted py-5">
@@ -68,12 +75,12 @@
                 }
                 else
                 {
-                    foreach (var item in Model)
+                    foreach (var item in Model.Employees)
                     {
-                        <tr class="employee-row" style="border-color: #f1f5f9 !important;">
+                        <tr style="border-color: #f1f5f9 !important;">
                             <td class="ps-3 py-3">
                                 <div>
-                                    <h6 class="fw-bold mb-0 text-dark small search-target" style="font-size: 0.85rem;">@item.FullName</h6>
+                                    <h6 class="fw-bold mb-0 text-dark small" style="font-size: 0.85rem;">@item.FullName</h6>
                                     <small class="text-muted font-monospace" style="font-size: 0.7rem;">EMP-ID: #@item.Id.ToString("D4")</small>
                                 </div>
                             </td>
@@ -84,7 +91,7 @@
                                 </span>
                             </td>
 
-                            <td class="py-3 font-monospace text-muted small search-target" style="font-size: 0.75rem;">
+                            <td class="py-3 font-monospace text-muted small" style="font-size: 0.75rem;">
                                 @item.Email
                             </td>
 
@@ -130,30 +137,6 @@
             </tbody>
         </table>
     </div>
+
+    <partial name="~/Views/Shared/Common/_Pagination.cshtml" model="Model.Pagination" />
 </div>
-
-@section Scripts {
-    <script>
-        document.getElementById('employeeSearchInput').addEventListener('input', function (e) {
-            const term = e.target.value.toLowerCase().trim();
-            const rows = document.querySelectorAll('.employee-row');
-
-            rows.forEach(row => {
-                const targets = row.querySelectorAll('.search-target');
-                let matchFound = false;
-
-                targets.forEach(t => {
-                    if (t.innerText.toLowerCase().includes(term)) {
-                        matchFound = true;
-                    }
-                });
-
-                if (matchFound || term === '') {
-                    row.style.setProperty('display', '', 'important');
-                } else {
-                    row.style.setProperty('display', 'none', 'important');
-                }
-            });
-        });
-    </script>
-}

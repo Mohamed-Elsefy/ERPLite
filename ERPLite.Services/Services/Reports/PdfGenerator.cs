@@ -16,6 +16,11 @@ namespace ERPLite.Services.Services.Reports
             _dateTimeProvider = dateTimeProvider;
         }
 
+        public Task<byte[]> GenerateReportPdfAsync<T>(string title, T data, CancellationToken cancellationToken = default)
+        {
+            return Task.Run(() => GenerateReportPdf(title, data), cancellationToken);
+        }
+
         public byte[] GenerateReportPdf<T>(string title, T data)
         {
             var currentGenerationTime = _dateTimeProvider.Now;

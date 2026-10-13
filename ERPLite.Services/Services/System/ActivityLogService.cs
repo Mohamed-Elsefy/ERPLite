@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ERPLite.Data.Entities.System;
 using ERPLite.Repositories.Interfaces.Common;
+using ERPLite.Services.DTOs.Common;
 using ERPLite.Services.DTOs.System;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.System;
@@ -42,6 +43,21 @@ namespace ERPLite.Services.Services.System
             var logs = await _unitOfWork.ActivityLogs.GetRecentLogsAsync(100);
             var dto = _mapper.Map<IEnumerable<ActivityLogDto>>(logs);
             return ServiceResult<IEnumerable<ActivityLogDto>>.Successful(dto);
+        }
+
+        public async Task<ServiceResult<PagedResponseDto<ActivityLogDto>>> GetPagedAsync(
+            PagedRequestDto request,
+            string? userFilter,
+            string? moduleFilter)
+        {
+            var paged = await _unitOfWork.ActivityLogs.GetPagedAsync(
+                userFilter,
+                moduleFilter,
+                request.PageNumber,
+                request.PageSize);
+
+            return ServiceResult<PagedResponseDto<ActivityLogDto>>.Successful(
+                paged.ToPagedResponse<ActivityLog, ActivityLogDto>(_mapper));
         }
 
         public async Task<ServiceResult<ActivityLogDto>> GetLogByIdAsync(int id)

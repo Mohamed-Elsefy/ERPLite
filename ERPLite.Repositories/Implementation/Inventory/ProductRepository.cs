@@ -1,5 +1,6 @@
 ﻿using ERPLite.Data.Context;
 using ERPLite.Data.Entities.Inventory;
+using ERPLite.Repositories.Extensions;
 using ERPLite.Repositories.Implementation.Common;
 using ERPLite.Repositories.Interfaces.Inventory;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +40,33 @@ namespace ERPLite.Repositories.Implementation.Inventory
                 .Where(p =>
                     p.QuantityInStock <= p.MinStockLevel)
                 .ToListAsync();
+        }
+
+        public async Task<PaginationResult<Product>> GetPagedWithDetailsAsync(string? search, int pageNumber, int pageSize)
+        {
+            var query = _dbSet
+                .AsNoTracking()
+                .Include(p => p.Category)
+                .Include(p => p.Supplier)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var cleanSearch = search.Trim().ToLower();
+                query = query.Where(p =>
+                    p.Name.ToLower().Contains(cleanSearch) ||
+                    p.Category.Name.ToLower().Contains(cleanSearch) ||
+                    p.Supplier!.Name.ToLower().Contains(cleanSearch));
+            }
+
+            return await query
+                .OrderBy(p => p.Name)
+                .ToPagedResultAsync(pageNumber, pageSize);
+        }
+
+        public async Task<int> GetLowStockCountAsync()
+        {
+            return await _dbSet.CountAsync(p => p.QuantityInStock <= p.MinStockLevel);
         }
 
 

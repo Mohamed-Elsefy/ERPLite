@@ -1,6 +1,8 @@
 using AutoMapper;
+using ERPLite.Services.DTOs.Common;
 using ERPLite.Services.DTOs.HR;
 using ERPLite.Services.DTOs.Users;
+using ERPLite.Web.Models.Common;
 using ERPLite.Services.Helpers;
 using ERPLite.Services.Interfaces.HR;
 using ERPLite.Services.Interfaces.Users;
@@ -35,9 +37,10 @@ namespace ERPLite.Web.Areas.Admin.Controllers
         }
 
         // GET: /Admin/Users
-        public async Task<IActionResult> Index(string? search)
+        public async Task<IActionResult> Index(string? search, int page = 1, int pageSize = 10)
         {
-            var result = await _userService.GetFilteredUsersAsync(search);
+            var request = new PagedRequestDto { PageNumber = page, PageSize = pageSize };
+            var result = await _userService.GetPagedUsersAsync(search, request);
 
             if (!result.Success)
             {
@@ -45,10 +48,16 @@ namespace ERPLite.Web.Areas.Admin.Controllers
                 return View(new UserIndexViewModel { SearchTerm = search });
             }
 
+            var paged = result.Data ?? new PagedResponseDto<UserDto>();
+            var filters = new Dictionary<string, string>();
+            if (!string.IsNullOrWhiteSpace(search))
+                filters["search"] = search;
+
             var viewModel = new UserIndexViewModel
             {
                 SearchTerm = search,
-                Users = _mapper.Map<List<UserListViewModel>>(result.Data ?? Enumerable.Empty<UserDto>())
+                Users = _mapper.Map<List<UserListViewModel>>(paged.Items),
+                Pagination = PaginationViewModel.FromPagedResponse(paged, filters)
             };
 
             return View(viewModel);

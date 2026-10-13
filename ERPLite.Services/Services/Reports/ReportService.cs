@@ -77,12 +77,11 @@ namespace ERPLite.Services.Reports.Services
         {
             var products = await _unitOfWork.Products.GetAllAsync();
             var productList = products.ToList();
-            var lowStockProducts = await _unitOfWork.Products.GetLowStockProductsAsync();
 
             var reportData = new InventoryReportDto
             {
                 TotalProducts = productList.Count,
-                LowStockProducts = lowStockProducts?.Count() ?? 0,
+                LowStockProducts = productList.Count(p => p.QuantityInStock <= p.MinStockLevel),
                 OutOfStockProducts = productList.Count(p => p.QuantityInStock == 0),
                 InventoryValue = productList.Sum(p => p.QuantityInStock * p.Price),
                 Products = _mapper.Map<List<ProductDto>>(productList)

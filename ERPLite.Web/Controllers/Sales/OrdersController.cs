@@ -1,6 +1,8 @@
 using AutoMapper;
+using ERPLite.Services.DTOs.Common;
 using ERPLite.Services.DTOs.Inventory;
 using ERPLite.Services.DTOs.Sales;
+using ERPLite.Web.Models.Common;
 using ERPLite.Services.Interfaces.Inventory;
 using ERPLite.Services.Interfaces.Sales;
 using ERPLite.Services.Interfaces.Infrastructure;
@@ -36,11 +38,18 @@ namespace ERPLite.Web.Controllers.Sales
         }
 
         // GET: /Orders
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
-            var result = await _orderService.GetRecentOrdersAsync();
-            var orders = result.Data ?? new List<OrderDto>();
-            return View(orders);
+            var request = new PagedRequestDto { PageNumber = page, PageSize = pageSize };
+            var result = await _orderService.GetPagedAsync(request);
+            var paged = result.Data ?? new PagedResponseDto<OrderDto>();
+
+            var viewModel = new OrderIndexViewModel
+            {
+                Orders = paged.Items,
+                Pagination = PaginationViewModel.FromPagedResponse(paged)
+            };
+            return View(viewModel);
         }
 
         // GET: /Orders/Details/{id}

@@ -1,10 +1,17 @@
 ﻿using ERPLite.Data.Entities.HR;
+using ERPLite.Repositories.Extensions;
 using ERPLite.Repositories.Interfaces.Common;
 
 namespace ERPLite.Repositories.Interfaces.HR
 {
     public interface IEmployeeRepository : IGenericRepository<Employee, int>
     {
+        Task<PaginationResult<Employee>> GetPagedWithDepartmentAsync(
+            int? departmentId,
+            string? search,
+            int pageNumber,
+            int pageSize);
+
         Task<Employee?> GetEmployeeWithAttendanceAsync(int employeeId);
 
         Task<Employee?> GetByEmailAsync(string email);

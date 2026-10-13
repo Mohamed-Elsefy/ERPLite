@@ -17,7 +17,11 @@ namespace ERPLite.Services.Mapping
 
             CreateMap<Order, OrderDto>()
                 .ForMember(d => d.CustomerName, o => o.MapFrom(s => s.Customer.FullName))
-                .ForMember(d => d.Items, o => o.MapFrom(s => s.OrderItems));
+                .ForMember(d => d.Items, o => o.MapFrom(s => s.OrderItems))
+                .ForMember(d => d.DepartmentId, o => o.MapFrom(s =>
+                    s.CreatedByUser != null && s.CreatedByUser.Employee != null
+                        ? s.CreatedByUser.Employee.DepartmentId
+                        : 0));
 
             CreateMap<Payment, PaymentDto>();
             CreateMap<CreatePaymentDto, Payment>();

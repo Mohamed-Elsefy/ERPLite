@@ -1,5 +1,6 @@
 ﻿using ERPLite.Data.Context;
 using ERPLite.Data.Entities.Sales;
+using ERPLite.Repositories.Extensions;
 using ERPLite.Repositories.Implementation.Common;
 using ERPLite.Repositories.Interfaces.Sales;
 using ERPLite.Shared.Enums;
@@ -40,6 +41,16 @@ namespace ERPLite.Repositories.Implementation.Sales
             return await _dbSet
                 .Where(x => x.OrderId == orderId)
                 .SumAsync(x => (decimal?)x.Amount) ?? 0;
+        }
+
+
+        public async Task<PaginationResult<Payment>> GetPagedRecentAsync(int pageNumber, int pageSize)
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .Include(p => p.Order)
+                .OrderByDescending(p => p.PaymentDate)
+                .ToPagedResultAsync(pageNumber, pageSize);
         }
 
 
